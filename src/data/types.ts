@@ -2,6 +2,18 @@
 
 export type Iso3 = string;
 
+/** Sentinel used in `targets` (every partner) and `hs` (every product). */
+export const ALL = 'ALL';
+/** EU member states are represented on the map by the Union itself. */
+export const EU = 'EUN';
+
+export const coversAllGoods = (a: Pick<TariffAction, 'hs'>) => a.hs.includes(ALL);
+export const targetsEveryone = (a: Pick<TariffAction, 'targets'>) => a.targets.includes(ALL);
+/** The ISO3 an entity trades under: EU members collapse to EUN. */
+export const tradeIso = (e: Pick<Endpoint, 'iso3' | 'eu'>) => (e.eu ? EU : e.iso3);
+/** Human label for a measure's product scope. */
+export const hsLabelOf = (a: Pick<TariffAction, 'hs' | 'hsLabel'>) => a.hsLabel ?? (coversAllGoods(a) ? 'all goods' : `HS ${a.hs.join(', ')}`);
+
 export type Status = 'active' | 'suspended' | 'revoked' | 'announced';
 
 export type LegalBasis =
@@ -59,8 +71,6 @@ export interface TariffAction {
   tradeUsd?: number;
   /** tradeUsd × current rate — a ceiling on annual duty, before exemptions and trade diversion. */
   dutyUsd?: number;
-  /** Per-target covered imports, USD. */
-  tradeByTarget?: Record<Iso3, number>;
   /** Data year(s) behind the trade figures, e.g. "2025" or "2024–2025". */
   tradeYear?: string;
 }
@@ -80,22 +90,16 @@ export interface Endpoint {
   eu?: boolean;
 }
 
-/** A renderable arc, produced by the build pipeline (one per imposer→target pair at country level). */
+/** A renderable arc, produced by the build pipeline (one per imposer→target pair at country level). Rates are resolved at runtime. */
 export interface Arc {
   id: string;
   imposer: Iso3;
   target: Iso3;
   from: [number, number];
   to: [number, number];
-  /** Headline rate in percent for the pair (max of non-stacking, sum of stacking actions). */
-  rate: number;
-  /** Annual bilateral trade affected, USD, if known. */
-  tradeUsd?: number;
   actionIds: string[];
-  /** Earliest effective date among contributing actions (for the timeline). */
-  since: string;
-  /** Imposer's annual imports from the target: total and by the HS codes its actions reference. */
-  trade?: {year: number; total: number; byCode: Record<string, number>};
+  /** Imposer's annual imports from the target by HS code (plus TOTAL), USD. */
+  trade?: {year: number; byCode: Record<string, number>};
 }
 
 export interface Meta {

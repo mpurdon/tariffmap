@@ -1,7 +1,7 @@
 import {ScatterplotLayer, TextLayer} from '@deck.gl/layers';
 import type {Viewport} from '@deck.gl/core';
 import type {Endpoint} from '../data/types';
-import {imposerColor} from '../data/palette';
+import {imposerColor, NEUTRAL_COLOR, withAlpha} from '../data/palette';
 
 export interface NodeDatum extends Endpoint {
   /** Total headline-rate weight, used for glow size. */
@@ -13,6 +13,7 @@ export interface NodeDatum extends Endpoint {
  * Greedy screen-space label culling: higher-priority labels (imposers, heavily
  * targeted countries) win; anything whose box overlaps a placed label is dropped.
  */
+let lastLabels: NodeDatum[] = [];
 export function visibleLabels(nodes: NodeDatum[], viewport: Viewport | undefined, zoom: number): NodeDatum[] {
   if (!viewport) return nodes;
   const ranked = nodes
@@ -28,8 +29,12 @@ export function visibleLabels(nodes: NodeDatum[], viewport: Viewport | undefined
     placed.push(box);
     out.push(d);
   }
-  return out;
+  // Same labels as last time → same array, so TextLayer sees no data change.
+  if (out.length === lastLabels.length && out.every((d, i) => d === lastLabels[i])) return lastLabels;
+  return (lastLabels = out);
 }
+
+const nodeRgb = (d: NodeDatum) => (d.imposes ? imposerColor(d.iso3) : NEUTRAL_COLOR);
 
 export function nodeLayers(nodes: NodeDatum[], labels: NodeDatum[], zoom: number) {
   const scale = Math.max(0.6, Math.min(1.6, zoom / 2.2));
@@ -40,7 +45,7 @@ export function nodeLayers(nodes: NodeDatum[], labels: NodeDatum[], zoom: number
       getPosition: d => [d.lon, d.lat],
       radiusUnits: 'pixels',
       getRadius: d => (6 + Math.min(14, d.weight / 40)) * scale,
-      getFillColor: d => [...(d.imposes ? imposerColor(d.iso3) : [230, 236, 250]), 40] as [number, number, number, number],
+      getFillColor: d => withAlpha(nodeRgb(d), 40),
       pickable: false,
       updateTriggers: {getRadius: [zoom]}
     }),
@@ -50,7 +55,7 @@ export function nodeLayers(nodes: NodeDatum[], labels: NodeDatum[], zoom: number
       getPosition: d => [d.lon, d.lat],
       radiusUnits: 'pixels',
       getRadius: 2.2 * scale,
-      getFillColor: d => [...(d.imposes ? imposerColor(d.iso3) : [230, 236, 250]), 255] as [number, number, number, number],
+      getFillColor: d => withAlpha(nodeRgb(d), 255),
       pickable: true,
       updateTriggers: {getRadius: [zoom]}
     }),

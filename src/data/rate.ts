@@ -1,12 +1,16 @@
 import type {TariffAction} from './types';
 
+/** The date a measure stops applying, or null while it is open-ended. */
+export function endDate(a: TariffAction): string | null {
+  return a.expires ?? null;
+}
+
 /** Is the action in force on the given ISO date? */
 export function isActiveOn(a: TariffAction, date: string): boolean {
   if (a.status === 'suspended') return false;
   if (a.effective > date) return false;
-  if (a.expires && a.expires <= date) return false;
-  if (a.status === 'revoked' && !a.expires) return false;
-  return true;
+  const end = endDate(a);
+  return !end || end > date;
 }
 
 /** The rate in force on a date, following rateHistory when present. */
