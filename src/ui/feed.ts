@@ -1,6 +1,6 @@
 import type {Dataset} from '../data/load';
 import type {TariffAction} from '../data/types';
-import {imposerCss} from '../data/palette';
+import {flag} from './flag';
 import {fmtDate, fmtRate} from './format';
 
 export interface FeedCallbacks {
@@ -11,7 +11,9 @@ export interface FeedCallbacks {
 export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[], focus: string | null, date: string, cb: FeedCallbacks) {
   const name = (iso: string) => ds.entityByIso.get(iso)?.name ?? iso;
   const targetsLabel = (a: TariffAction) =>
-    a.targets.length > 6 ? `${a.targets.length} countries` : a.targets.map(name).join(', ');
+    a.targets.length > 4
+      ? `<span class="flag-stack">${a.targets.slice(0, 4).map(t => flag(ds, t, {size: 'sm'})).join('')}</span> ${a.targets.length} countries`
+      : a.targets.map(t => `${flag(ds, t, {size: 'sm'})} ${name(t)}`).join(', ');
   // How the measure's lifecycle reads from the viewed date's point of view.
   const lifecycle = (a: TariffAction) => {
     if (a.expires && a.expires > date) return ` · until ${fmtDate(a.expires)}`;
@@ -20,15 +22,14 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
   };
 
   const head = focus
-    ? `<div class="feed-head"><button class="back" data-back>←</button><h2>${name(focus)}</h2><span class="count">${actions.length} in force</span></div>`
+    ? `<div class="feed-head"><button class="back" data-back>←</button>${flag(ds, focus, {size: 'lg'})}<h2>${name(focus)}</h2><span class="count">${actions.length} in force</span></div>`
     : `<div class="feed-head"><h2>Tariffs in force</h2><span class="count">${actions.length}</span></div>`;
 
   const items = actions
     .map(
       a => `<li class="item" data-id="${a.id}">
         <div class="item-top">
-          <span class="swatch" style="background:${imposerCss(a.imposer)}"></span>
-          <span class="pair"><b>${name(a.imposer)}</b> → ${targetsLabel(a)}</span>
+          <span class="pair">${flag(ds, a.imposer, {ring: true})} <b>${name(a.imposer)}</b> <span class="arrow">→</span> ${targetsLabel(a)}</span>
           <span class="rate">${fmtRate(a.rate, a.rateNote)}</span>
         </div>
         <div class="item-title">${a.title}</div>

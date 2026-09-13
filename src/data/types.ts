@@ -53,6 +53,8 @@ export interface TariffAction {
 /** Endpoint for arcs: a national capital or a sub-national region centroid. */
 export interface Endpoint {
   iso3: Iso3;
+  /** ISO 3166-1 alpha-2, lower-case — the flag-icons code. */
+  iso2: string;
   name: string;
   capital: string;
   lon: number;
