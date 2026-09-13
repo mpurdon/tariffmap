@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Tariff Wars — live map of who is taxing whom</title>
+    <meta name="description" content="A live, sourced map of tariffs firing between countries — who imposes them, who they hit, and how much trade is affected." />
+  </head>
+  <body>
+    <div id="map"></div>
+    <header id="topbar">
+      <div class="brand">
+        <span class="brand-mark"></span>
+        <span class="brand-name">TARIFF WARS</span>
+      </div>
+      <div id="freshness" class="freshness"></div>
+      <div class="spacer"></div>
+      <div class="controls">
+        <label class="toggle"><input type="checkbox" id="viewToggle" /><span>Globe</span></label>
+      </div>
+    </header>
+    <aside id="feed" class="feed"></aside>
+    <div id="legend" class="legend"></div>
+    <div id="tooltip" class="tooltip" hidden></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

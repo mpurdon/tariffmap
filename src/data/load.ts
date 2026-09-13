@@ -1,0 +1,45 @@
+import * as topojson from 'topojson-client';
+import type {Topology, GeometryCollection} from 'topojson-specification';
+import type {FeatureCollection} from 'geojson';
+import type {TariffAction, Arc, Endpoint, Meta} from './types';
+
+export interface Dataset {
+  actions: TariffAction[];
+  actionsById: Map<string, TariffAction>;
+  arcs: Arc[];
+  entities: Endpoint[];
+  entityByIso: Map<string, Endpoint>;
+  entityByNum: Map<string, Endpoint>;
+  countries: FeatureCollection;
+  meta: Meta;
+}
+
+async function json<T>(url: string): Promise<T> {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`${url}: ${r.status}`);
+  return r.json();
+}
+
+export async function loadDataset(): Promise<Dataset> {
+  const [actions, arcs, geo, topo, meta] = await Promise.all([
+    json<TariffAction[]>('/data/actions.json'),
+    json<Arc[]>('/data/arcs-country.json'),
+    json<{entities: Endpoint[]}>('/geo/capitals.json'),
+    json<Topology>('/geo/countries-50m.topo.json'),
+    json<Meta>('/data/meta.json')
+  ]);
+  const countries = topojson.feature(topo, topo.objects.countries as GeometryCollection) as FeatureCollection;
+  // Antarctica clamps to the Mercator edge and draws a stray line across the map.
+  countries.features = countries.features.filter(f => String(f.id) !== '010');
+  const entities = geo.entities;
+  return {
+    actions,
+    actionsById: new Map(actions.map(a => [a.id, a])),
+    arcs,
+    entities,
+    entityByIso: new Map(entities.map(e => [e.iso3, e])),
+    entityByNum: new Map(entities.filter(e => e.num).map(e => [e.num!, e])),
+    countries,
+    meta
+  };
+}

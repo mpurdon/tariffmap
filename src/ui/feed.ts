@@ -1,0 +1,47 @@
+import type {Dataset} from '../data/load';
+import type {TariffAction} from '../data/types';
+import {imposerCss} from '../data/palette';
+import {fmtDate, fmtRate} from './format';
+
+export interface FeedCallbacks {
+  onHover: (id: string | null) => void;
+  onFocus: (iso3: string | null) => void;
+}
+
+export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[], focus: string | null, cb: FeedCallbacks) {
+  const name = (iso: string) => ds.entityByIso.get(iso)?.name ?? iso;
+  const targetsLabel = (a: TariffAction) =>
+    a.targets.length > 6 ? `${a.targets.length} countries` : a.targets.map(name).join(', ');
+
+  const head = focus
+    ? `<div class="feed-head"><button class="back" data-back>←</button><h2>${name(focus)}</h2><span class="count">${actions.length} in force</span></div>`
+    : `<div class="feed-head"><h2>Tariffs in force</h2><span class="count">${actions.length}</span></div>`;
+
+  const items = actions
+    .map(
+      a => `<li class="item" data-id="${a.id}">
+        <div class="item-top">
+          <span class="swatch" style="background:${imposerCss(a.imposer)}"></span>
+          <span class="pair"><b>${name(a.imposer)}</b> → ${targetsLabel(a)}</span>
+          <span class="rate">${fmtRate(a.rate, a.rateNote)}</span>
+        </div>
+        <div class="item-title">${a.title}</div>
+        <div class="item-meta">${a.legalBasis} · ${a.hsLabel ?? (a.hs.includes('ALL') ? 'all goods' : 'HS ' + a.hs.join(', '))} · since ${fmtDate(a.effective)}${a.status !== 'active' ? ` · <em>${a.status}</em>` : ''}</div>
+        <details class="item-more"><summary>details</summary>
+          ${a.rateNote ? `<p>${a.rateNote}</p>` : ''}
+          ${a.exemptions ? `<p><b>Exemptions:</b> ${a.exemptions}</p>` : ''}
+          ${a.notes ? `<p>${a.notes}</p>` : ''}
+          <p class="sources">${a.sources.map((s, i) => `<a href="${s}" target="_blank" rel="noopener">source ${i + 1}</a>`).join(' · ')} · verified ${fmtDate(a.lastVerified)}</p>
+        </details>
+      </li>`
+    )
+    .join('');
+
+  el.innerHTML = `${head}<ul class="feed-list">${items || '<li class="empty">Nothing in force on this date.</li>'}</ul>`;
+
+  el.querySelector('[data-back]')?.addEventListener('click', () => cb.onFocus(null));
+  el.querySelectorAll<HTMLLIElement>('.item').forEach(li => {
+    li.addEventListener('mouseenter', () => cb.onHover(li.dataset.id!));
+    li.addEventListener('mouseleave', () => cb.onHover(null));
+  });
+}
