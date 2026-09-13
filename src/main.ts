@@ -192,7 +192,7 @@ function makeDeck() {
     layers: [],
     style: {background: `rgb(${COLORS.ocean.slice(0, 3).join(' ')})`},
     onViewStateChange: ({viewState}) => { zoom = viewState.zoom; },
-    onHover: (info: PickingInfo) => showTooltip(info, ds),
+    onHover: (info: PickingInfo) => showTooltip(info, ds, state.date),
     onClick: (info: PickingInfo) => { if (!info.object) setFocus(null); },
     getCursor: ({isHovering}) => (isHovering ? 'pointer' : 'grab')
   });

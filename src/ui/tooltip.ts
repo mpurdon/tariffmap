@@ -4,6 +4,7 @@ import type {NodeDatum} from '../layers/labels';
 import type {Dataset} from '../data/load';
 import {flag} from './flag';
 import {fmtDate, fmtRate} from './format';
+import {rateOn} from '../data/rate';
 
 const el = document.getElementById('tooltip')!;
 
@@ -11,7 +12,7 @@ export function hideTooltip() {
   el.hidden = true;
 }
 
-export function showTooltip(info: PickingInfo, ds: Dataset) {
+export function showTooltip(info: PickingInfo, ds: Dataset, date: string) {
   if (!info.object) return hideTooltip();
   let html = '';
   if (info.layer?.id === 'flow-arcs' || info.layer?.id === 'base-arcs') {
@@ -20,9 +21,9 @@ export function showTooltip(info: PickingInfo, ds: Dataset) {
     const to = ds.entityByIso.get(a.target)!;
     const rows = a.active
       .slice()
-      .sort((x, y) => (y.rate ?? 0) - (x.rate ?? 0))
+      .sort((x, y) => (rateOn(y, date) ?? 0) - (rateOn(x, date) ?? 0))
       .map(
-        x => `<li><b>${fmtRate(x.rate, x.rateNote)}</b> ${x.title}<span class="dim"> · ${x.legalBasis} · since ${fmtDate(x.effective)}</span></li>`
+        x => `<li><b>${fmtRate(rateOn(x, date), x.rateNote)}</b> ${x.title}<span class="dim"> · ${x.legalBasis} · since ${fmtDate(x.effective)}</span></li>`
       )
       .join('');
     html = `<div class="tt-head">${flag(ds, a.imposer, {ring: true})} ${from.name} <span class="arrow">→</span> ${flag(ds, a.target)} ${to.name}</div>

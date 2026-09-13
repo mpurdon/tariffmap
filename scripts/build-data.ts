@@ -26,6 +26,15 @@ for (const a of actions) {
   for (const t of a.targets) if (t !== 'ALL' && !byIso.has(t)) errors.push(`${a.id}: unknown target ${t}`);
   if (!a.sources?.length) errors.push(`${a.id}: no sources`);
   if (a.rate !== null && (a.rate < 0 || a.rate > 250)) errors.push(`${a.id}: implausible rate ${a.rate}`);
+  for (const x of a.except ?? []) if (!byIso.has(x)) errors.push(`${a.id}: unknown except ${x}`);
+  if (a.except && !a.targets.includes('ALL')) errors.push(`${a.id}: except only applies with targets ALL`);
+  if (a.rateHistory) {
+    for (const h of a.rateHistory) if (!/^\d{4}-\d{2}-\d{2}$/.test(h.from) || h.rate < 0 || h.rate > 250) errors.push(`${a.id}: bad rateHistory entry`);
+    const last = a.rateHistory.at(-1)!;
+    if (a.rate !== null && last.rate !== a.rate) errors.push(`${a.id}: rate ${a.rate} disagrees with last rateHistory ${last.rate}`);
+    if (a.rateHistory[0].from !== a.effective) errors.push(`${a.id}: first rateHistory.from must equal effective`);
+  }
+  if (a.status === 'revoked' && !a.expires) errors.push(`${a.id}: revoked without expires date`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(a.effective)) errors.push(`${a.id}: bad effective date`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(a.lastVerified)) errors.push(`${a.id}: bad lastVerified date`);
 }
@@ -39,7 +48,8 @@ if (errors.length) {
 // "ALL" → every entity except the imposer; EU member states collapse into EUN.
 function expandTargets(a: TariffAction): string[] {
   if (a.targets.includes('ALL')) {
-    return entities.filter(e => !e.eu && e.iso3 !== a.imposer).map(e => e.iso3);
+    const skip = new Set([a.imposer, ...(a.except ?? [])]);
+    return entities.filter(e => !e.eu && !skip.has(e.iso3)).map(e => e.iso3);
   }
   return [...new Set(a.targets.map(t => (byIso.get(t)?.eu ? 'EUN' : t)))];
 }
