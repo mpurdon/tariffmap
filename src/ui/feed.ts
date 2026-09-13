@@ -19,6 +19,11 @@ export interface Upcoming {
   kind: 'start' | 'end' | 'rate';
 }
 
+const FOOTER = `<footer class="site-footer">
+  <p><a href="https://tariffmap.org">tariffmap.org</a> · © ${new Date().getUTCFullYear()} <a href="https://matthewpurdon.me" rel="author">Matthew Purdon</a></p>
+  <p>Tariff measures are curated from primary sources and linked on every entry. Trade values are annual goods imports from <a href="https://comtradeplus.un.org" rel="noopener" target="_blank">UN Comtrade</a>; duty figures are ceilings, not revenue. Not trade or legal advice.</p>
+</footer>`;
+
 const SORTS: {key: SortKey; label: string; title: string}[] = [
   {key: 'date', label: 'Newest', title: 'Most recently in force first'},
   {key: 'rate', label: 'Rate', title: 'Highest ad valorem rate first'},
@@ -82,7 +87,7 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
     )
     .join('');
 
-  el.innerHTML = `${head}${upcomingHtml}<ul class="feed-list">${items || '<li class="empty">Nothing in force on this date.</li>'}</ul>`;
+  el.innerHTML = `${head}${upcomingHtml}<ul class="feed-list">${items || '<li class="empty">Nothing in force on this date.</li>'}</ul>${FOOTER}`;
   el.querySelectorAll<HTMLButtonElement>('[data-jump]').forEach(b => b.addEventListener('click', () => cb.onJump(b.dataset.jump!)));
 
   el.querySelector('[data-back]')?.addEventListener('click', () => cb.onFocus(null));
