@@ -126,7 +126,8 @@ function arcAlpha(a: LiveArc): number {
 function layers(time: number) {
   const involved = new Set<string>();
   for (const a of arcs) { involved.add(a.imposer); involved.add(a.target); }
-  const width = (a: LiveArc) => 1 + Math.min(4, a.rate / 20);
+  // Economy-wide tariffs carry the visual weight; product-only measures stay slim until trade weighting lands.
+  const width = (a: LiveArc) => (a.productOnly ? 0.8 + Math.min(1.2, a.rate / 60) : 1 + Math.min(4, a.rate / 20));
   const color = (a: LiveArc, alpha: number) => [...imposerColor(a.imposer), Math.round(alpha * 255 * arcAlpha(a))] as [number, number, number, number];
   const trig = [state.highlight];
 
@@ -162,7 +163,7 @@ function layers(time: number) {
       getHeight: globe ? 0.08 : 0.32,
       getTilt: globe ? 0 : 55,
       getPhase: a => hash(a.id),
-      getDensity: a => 1 + Math.min(3, Math.floor(a.rate / 25)),
+      getDensity: a => (a.productOnly ? 1 : 1 + Math.min(3, Math.floor(a.rate / 25))),
       getSpeed: () => 0.22,
       tail: 0.3,
       time,

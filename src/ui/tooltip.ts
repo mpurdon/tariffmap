@@ -27,7 +27,7 @@ export function showTooltip(info: PickingInfo, ds: Dataset, date: string) {
       )
       .join('');
     html = `<div class="tt-head">${flag(ds, a.imposer, {ring: true})} ${from.name} <span class="arrow">→</span> ${flag(ds, a.target)} ${to.name}</div>
-      <div class="tt-rate">${a.rate}%<span class="dim"> headline</span></div>
+      <div class="tt-rate">${a.rate}%<span class="dim"> ${a.productOnly ? 'on targeted products' : 'on all goods'}${a.peak > a.rate ? ` · up to ${a.peak}% on some products` : ''}</span></div>
       <ul class="tt-list">${rows}</ul>`;
   } else if (info.layer?.id === 'node-core') {
     const n = info.object as NodeDatum;

@@ -4,7 +4,12 @@ import {headlineRate, isActiveOn, rateOn} from './rate';
 
 /** An arc with its state resolved for a given date + focus. */
 export interface LiveArc extends Arc {
+  /** Headline: the economy-wide rate if one applies, else the highest product-specific rate. */
   rate: number;
+  /** Highest rate on any covered product. */
+  peak: number;
+  /** True when the headline comes from product-specific measures only. */
+  productOnly: boolean;
   active: TariffAction[];
 }
 
@@ -35,9 +40,11 @@ export function liveArcs(ds: Dataset, view: ViewState): LiveArc[] {
     if (view.focus && arc.imposer !== view.focus && arc.target !== view.focus) continue;
     const active = arc.actionIds.map(id => ds.actionsById.get(id)!).filter(a => isActiveOn(a, view.date));
     if (!active.length) continue;
-    const rate = headlineRate(active, view.date);
-    if (rate <= 0) continue;
-    out.push({...arc, rate, active});
+    const broad = active.filter(a => a.hs.includes('ALL'));
+    const peak = headlineRate(active, view.date);
+    const rate = broad.length ? headlineRate(broad, view.date) : peak;
+    if (rate <= 0 && peak <= 0) continue;
+    out.push({...arc, rate: rate || peak, peak, productOnly: !broad.length, active});
   }
   return out;
 }
