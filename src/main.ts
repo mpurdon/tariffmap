@@ -12,6 +12,7 @@ import {renderFreshness} from './ui/freshness';
 import {renderFeed} from './ui/feed';
 import {buildSteps} from './data/timeline';
 import {renderTimeline, type TimelineState} from './ui/timeline';
+import 'flag-icons/css/flag-icons.min.css';
 import './styles.css';
 
 const MAP_VIEW = {longitude: 12, latitude: 24, zoom: 1.3, minZoom: 0.8, maxZoom: 9, pitch: 0, bearing: 0};
@@ -57,7 +58,7 @@ function recompute() {
     .filter(e => weights.has(e.iso3))
     .map(e => ({...e, weight: weights.get(e.iso3)!.w, imposes: weights.get(e.iso3)!.imposes}));
 
-  renderLegend(document.getElementById('legend')!, new Set(ds.arcs.map(a => a.imposer)), state.hidden, toggleImposer);
+  renderLegend(document.getElementById('legend')!, ds, new Set(ds.arcs.map(a => a.imposer)), state.hidden, toggleImposer);
   renderTimeline(document.getElementById('timeline')!, timeline, {onIndex: setStep, onPlay: setPlaying, onDelay: setDelay});
   renderFeed(document.getElementById('feed')!, ds, liveActions(ds, state), state.focus, state.date, {
     onHover: id => { state.highlight = id; render(); },
