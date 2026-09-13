@@ -26,7 +26,8 @@ export function renderTimeline(el: HTMLElement, st: TimelineState, cb: TimelineC
       .map((s, i) => {
         const pct = (i / (st.steps.length - 1)) * 100;
         const major = s.kind !== 'month' || /^\d{4}$/.test(s.label);
-        return `<span class="tick ${s.kind}${major ? ' major' : ''}" style="left:${pct}%"><i></i><b>${s.label}</b></span>`;
+        const title = s.events ? ` title="${s.events.join('\n').replace(/"/g, '&quot;')}"` : '';
+        return `<span class="tick ${s.kind}${major ? ' major' : ''}" style="left:${pct}%"${title}><i></i><b>${s.label}</b></span>`;
       })
       .join('');
     el.innerHTML = `
@@ -47,7 +48,10 @@ export function renderTimeline(el: HTMLElement, st: TimelineState, cb: TimelineC
   el.querySelector<HTMLInputElement>('[data-range]')!.value = String(st.index);
   el.querySelector<HTMLSelectElement>('[data-delay]')!.value = String(st.delayMs);
   el.querySelector<HTMLButtonElement>('[data-play]')!.setAttribute('aria-label', st.playing ? 'Pause' : 'Play');
-  const title = step.kind === 'now' ? 'Now' : step.kind === 'year' ? `End of ${step.label}` : monthTitle(step.date);
-  el.querySelector('[data-asof]')!.innerHTML = `<b>${title}</b><span>as of ${fmtDate(step.date)}</span>`;
+  const title = step.kind === 'now' ? 'Now' : step.kind === 'year' ? `End of ${step.label}` : step.kind === 'future' ? 'Scheduled' : monthTitle(step.date);
+  el.querySelector('[data-asof]')!.innerHTML = `<b>${title}</b><span>${step.kind === 'future' ? 'from' : 'as of'} ${fmtDate(step.date)}</span>`;
+  el.classList.toggle('in-future', step.kind === 'future');
+  const nowIdx = st.steps.findIndex(s => s.kind === 'now');
+  el.style.setProperty('--now-pct', `${(nowIdx / (st.steps.length - 1)) * 100}%`);
   el.querySelectorAll<HTMLElement>('.tick').forEach((t, i) => t.classList.toggle('current', i === st.index));
 }

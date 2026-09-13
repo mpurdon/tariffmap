@@ -1282,7 +1282,9 @@
       "notes": "Signed July 20, 2026; suspended Aug 19–22 during talks, which collapsed Aug 21. First use of Section 338 (Tariff Act of 1930) since the 1930s.",
       "lastVerified": "2026-09-13",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "coveredTradeUsd": 28000000000.0,
+      "coveredTradeNote": "US$28B of Canadian exports targeted, per the July 2026 proclamations' scope estimate"
     },
     {
       "id": "us-338-can-ban",
@@ -1338,7 +1340,9 @@
         "https://www.blakes.com/insights/us-canada-tariffs-timeline-of-key-dates-and-documents/"
       ],
       "notes": "United States Surtax Order (2025). Removed Sept 1, 2025 as Canada aligned with CUSMA-compliant exemptions.",
-      "lastVerified": "2026-09-13"
+      "lastVerified": "2026-09-13",
+      "coveredTradeUsd": 21900000000.0,
+      "coveredTradeNote": "C$30B (~US$21B) of US goods, per Finance Canada"
     },
     {
       "id": "ca-counter-us-steel-alu-2025",
@@ -1363,7 +1367,9 @@
       ],
       "lastVerified": "2026-09-13",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "coveredTradeUsd": 11400000000.0,
+      "coveredTradeNote": "C$15.6B (~US$11B) of US steel and aluminum, per Finance Canada"
     },
     {
       "id": "ca-counter-us-autos-2025",
@@ -1453,7 +1459,9 @@
       "notes": "'Dollar for dollar' response announced Aug 25, 2026 after US–Canada talks collapsed. The US answered with import bans effective Sept 29.",
       "lastVerified": "2026-09-13",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "coveredTradeUsd": 20100000000.0,
+      "coveredTradeNote": "C$27.6B (~US$20B) of US imports, per Finance Canada"
     },
     {
       "id": "ca-ev-chn-2024",
@@ -1724,7 +1732,9 @@
       ],
       "notes": "The EU instead removed its tariffs on US industrial goods from July 1, 2026.",
       "lastVerified": "2026-09-13",
-      "expires": null
+      "expires": null,
+      "coveredTradeUsd": 108000000000.0,
+      "coveredTradeNote": "€93B (~US$108B) of US goods, per the European Commission"
     },
     {
       "id": "eu-steel-2026",

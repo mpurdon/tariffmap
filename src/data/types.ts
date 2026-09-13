@@ -52,8 +52,17 @@ export interface TariffAction {
   /** ISO date a human last confirmed the entry against its sources. */
   lastVerified: string;
   notes?: string;
-  /** Annual trade affected in USD, filled in by the build pipeline from trade data (Phase 3). */
+  /** Curated: official statement of trade covered, USD (e.g. "C$27.6B of US goods"). Overrides the computed figure. */
+  coveredTradeUsd?: number;
+  coveredTradeNote?: string;
+  /** Filled in by the build pipeline from UN Comtrade: annual imports of the covered goods from all targets, USD. */
   tradeUsd?: number;
+  /** tradeUsd × current rate — a ceiling on annual duty, before exemptions and trade diversion. */
+  dutyUsd?: number;
+  /** Per-target covered imports, USD. */
+  tradeByTarget?: Record<Iso3, number>;
+  /** Data year(s) behind the trade figures, e.g. "2025" or "2024–2025". */
+  tradeYear?: string;
 }
 
 /** Endpoint for arcs: a national capital or a sub-national region centroid. */
@@ -61,6 +70,8 @@ export interface Endpoint {
   iso3: Iso3;
   /** ISO 3166-1 alpha-2, lower-case — the flag-icons code. */
   iso2: string;
+  /** UN Comtrade M49 code. */
+  m49: number;
   name: string;
   capital: string;
   lon: number;
@@ -83,11 +94,13 @@ export interface Arc {
   actionIds: string[];
   /** Earliest effective date among contributing actions (for the timeline). */
   since: string;
+  /** Imposer's annual imports from the target: total and by the HS codes its actions reference. */
+  trade?: {year: number; total: number; byCode: Record<string, number>};
 }
 
 export interface Meta {
   builtAt: string;
   actionsVerifiedThrough: string;
   sources: Record<string, string>;
-  counts: {actions: number; arcs: number};
+  counts: {actions: number; arcs: number; arcsWithTrade?: number};
 }

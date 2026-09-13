@@ -1,4 +1,4 @@
-import {Deck, MapView, _GlobeView as GlobeView, type PickingInfo} from '@deck.gl/core';
+import {Deck, MapView, _GlobeView as GlobeView, LinearInterpolator, type PickingInfo} from '@deck.gl/core';
 import {ArcLayer} from '@deck.gl/layers';
 import {loadDataset, type Dataset} from './data/load';
 import {liveArcs, liveActions, today, type ViewState, type LiveArc} from './data/filter';
@@ -10,7 +10,7 @@ import {showTooltip, hideTooltip} from './ui/tooltip';
 import {renderLegend} from './ui/legend';
 import {renderFreshness} from './ui/freshness';
 import {renderFeed} from './ui/feed';
-import {buildSteps} from './data/timeline';
+import {buildSteps, scheduledChanges} from './data/timeline';
 import {renderTimeline, type TimelineState} from './ui/timeline';
 import 'flag-icons/css/flag-icons.min.css';
 import './styles.css';
@@ -21,10 +21,12 @@ const GLOBE_VIEW = {longitude: -60, latitude: 35, zoom: 1.75, minZoom: 0.5, maxZ
 const state: ViewState = {date: today(), focus: null, highlight: null, hidden: new Set(), sort: 'date'};
 const timeline: TimelineState = {steps: [], index: 0, playing: false, delayMs: 1000};
 let playTimer: number | null = null;
+let upcoming: ReturnType<typeof scheduledChanges> = [];
 let motion = true;
 let frozenAt = 0;
 let globe = new URLSearchParams(location.search).has('globe');
 let zoom = MAP_VIEW.zoom;
+let viewState: {longitude: number; latitude: number; zoom: number; [k: string]: unknown} = {...MAP_VIEW};
 let ds: Dataset;
 let deck: Deck<MapView | GlobeView>;
 let arcs: LiveArc[] = [];
@@ -60,10 +62,11 @@ function recompute() {
 
   renderLegend(document.getElementById('legend')!, ds, new Set(ds.arcs.map(a => a.imposer)), state.hidden, toggleImposer);
   renderTimeline(document.getElementById('timeline')!, timeline, {onIndex: setStep, onPlay: setPlaying, onDelay: setDelay});
-  renderFeed(document.getElementById('feed')!, ds, liveActions(ds, state), state.focus, state.date, state.sort, {
+  renderFeed(document.getElementById('feed')!, ds, liveActions(ds, state), state.focus, state.date, state.sort, upcoming, {
     onHover: id => { state.highlight = id; render(); },
     onFocus: setFocus,
-    onSort: key => { state.sort = key; recompute(); render(); }
+    onSort: key => { state.sort = key; recompute(); render(); },
+    onJump: date => { const i = timeline.steps.findIndex(s => s.date === date); if (i >= 0) setStep(i); }
   });
 }
 
@@ -85,10 +88,11 @@ function setPlaying(playing: boolean) {
   if (playTimer !== null) { clearInterval(playTimer); playTimer = null; }
   timeline.playing = playing;
   if (playing) {
-    // Restart from the beginning when play is hit at the end.
-    if (timeline.index >= timeline.steps.length - 1) setStep(0);
+    // Play runs through history and stops at Now; future steps are for browsing only.
+    const nowIdx = timeline.steps.findIndex(s => s.kind === 'now');
+    if (timeline.index >= nowIdx) setStep(0);
     playTimer = window.setInterval(() => {
-      if (timeline.index >= timeline.steps.length - 1) return setPlaying(false);
+      if (timeline.index >= nowIdx) return setPlaying(false);
       setStep(timeline.index + 1);
     }, timeline.delayMs);
   }
@@ -116,6 +120,38 @@ function setFocus(iso3: string | null) {
   state.highlight = null;
   recompute();
   render();
+  if (globe && state.focus) flyTo(state.focus);
+}
+
+/** Rotate the globe so the focused country faces the viewer. */
+function flyTo(iso3: string) {
+  const e = ds.entityByIso.get(iso3);
+  if (!e) return;
+  deck.setProps({
+    initialViewState: {
+      ...viewState,
+      longitude: e.lon,
+      latitude: e.lat,
+      transitionDuration: 900,
+      transitionInterpolator: new LinearInterpolator(['longitude', 'latitude'])
+    }
+  });
+}
+
+let zen = false;
+function setZen(on: boolean) {
+  zen = on;
+  document.body.classList.toggle('zen', on);
+  (document.getElementById('zenExit') as HTMLButtonElement).hidden = !on;
+  hideTooltip();
+}
+
+function setFeedCollapsed(collapsed: boolean) {
+  document.body.classList.toggle('feed-collapsed', collapsed);
+  const btn = document.getElementById('feedToggle')!;
+  btn.setAttribute('aria-expanded', String(!collapsed));
+  btn.title = collapsed ? 'Expand panel' : 'Collapse panel';
+  try { localStorage.setItem('feedCollapsed', String(collapsed)); } catch { /* private mode */ }
 }
 
 function arcAlpha(a: LiveArc): number {
@@ -126,8 +162,10 @@ function arcAlpha(a: LiveArc): number {
 function layers(time: number) {
   const involved = new Set<string>();
   for (const a of arcs) { involved.add(a.imposer); involved.add(a.target); }
-  // Economy-wide tariffs carry the visual weight; product-only measures stay slim until trade weighting lands.
-  const width = (a: LiveArc) => (a.productOnly ? 0.8 + Math.min(1.2, a.rate / 60) : 1 + Math.min(4, a.rate / 20));
+  // Width encodes dollars of imports covered (log scale: $100M → 1px, $10B → ~3px, $300B → 5px);
+  // pairs without trade data fall back to rate.
+  const width = (a: LiveArc) =>
+    a.tradeUsd !== undefined ? 0.7 + Math.max(0, Math.min(4.3, Math.log10(Math.max(a.tradeUsd, 1e7) / 1e8) * 1.25)) : 1 + Math.min(3, a.rate / 25);
   const color = (a: LiveArc, alpha: number) => [...imposerColor(a.imposer), Math.round(alpha * 255 * arcAlpha(a))] as [number, number, number, number];
   const trig = [state.highlight];
 
@@ -163,7 +201,7 @@ function layers(time: number) {
       getHeight: globe ? 0.08 : 0.32,
       getTilt: globe ? 0 : 55,
       getPhase: a => hash(a.id),
-      getDensity: a => (a.productOnly ? 1 : 1 + Math.min(3, Math.floor(a.rate / 25))),
+      getDensity: a => 1 + Math.min(3, Math.floor(a.rate / 25)),
       getSpeed: () => 0.22,
       tail: 0.3,
       time,
@@ -185,6 +223,8 @@ function frame() {
 }
 
 function makeDeck() {
+  viewState = {...(globe ? GLOBE_VIEW : MAP_VIEW)};
+  zoom = viewState.zoom;
   deck = new Deck({
     parent: document.getElementById('map') as HTMLDivElement,
     views: globe ? new GlobeView({id: 'globe'}) : new MapView({id: 'map', repeat: true}),
@@ -192,7 +232,7 @@ function makeDeck() {
     controller: {inertia: 250},
     layers: [],
     style: {background: `rgb(${COLORS.ocean.slice(0, 3).join(' ')})`},
-    onViewStateChange: ({viewState}) => { zoom = viewState.zoom; },
+    onViewStateChange: ({viewState: vs}) => { zoom = vs.zoom; viewState = vs as typeof viewState; },
     onHover: (info: PickingInfo) => showTooltip(info, ds, state.date),
     onClick: (info: PickingInfo) => { if (!info.object) setFocus(null); },
     getCursor: ({isHovering}) => (isHovering ? 'pointer' : 'grab')
@@ -204,8 +244,9 @@ async function main() {
   ds = await loadDataset();
   renderFreshness(document.getElementById('freshness')!, ds.meta);
   const earliest = ds.actions.map(a => a.effective).sort()[0] ?? today();
-  timeline.steps = buildSteps(earliest, today());
-  timeline.index = timeline.steps.length - 1;
+  upcoming = scheduledChanges(ds.actions, today());
+  timeline.steps = buildSteps(earliest, today(), upcoming);
+  timeline.index = timeline.steps.findIndex(s => s.kind === 'now');
   recompute();
   makeDeck();
   frame();
@@ -221,11 +262,18 @@ async function main() {
   const motionToggle = document.getElementById('motionToggle') as HTMLInputElement;
   motionToggle.checked = motion;
   motionToggle.addEventListener('change', () => setMotion(motionToggle.checked));
+  document.getElementById('zenToggle')!.addEventListener('click', () => setZen(true));
+  document.getElementById('zenExit')!.addEventListener('click', () => setZen(false));
+  document.getElementById('feedToggle')!.addEventListener('click', () => setFeedCollapsed(!document.body.classList.contains('feed-collapsed')));
+  try { if (localStorage.getItem('feedCollapsed') === 'true') setFeedCollapsed(true); } catch { /* ignore */ }
   window.addEventListener('keydown', e => {
-    if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'SELECT') return;
+    const tag = (e.target as HTMLElement).tagName;
+    if (tag === 'INPUT' || tag === 'SELECT' || tag === 'TEXTAREA') return;
     if (e.key === ' ') { e.preventDefault(); setPlaying(!timeline.playing); }
     else if (e.key === 'ArrowLeft') setStep(timeline.index - 1);
     else if (e.key === 'ArrowRight') setStep(timeline.index + 1);
+    else if (e.key === 'z' || e.key === 'Z') setZen(!zen);
+    else if (e.key === 'Escape') { if (zen) setZen(false); else if (state.focus) setFocus(null); }
   });
 }
 

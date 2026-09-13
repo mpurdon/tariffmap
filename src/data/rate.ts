@@ -2,7 +2,7 @@ import type {TariffAction} from './types';
 
 /** Is the action in force on the given ISO date? */
 export function isActiveOn(a: TariffAction, date: string): boolean {
-  if (a.status === 'announced' || a.status === 'suspended') return false;
+  if (a.status === 'suspended') return false;
   if (a.effective > date) return false;
   if (a.expires && a.expires <= date) return false;
   if (a.status === 'revoked' && !a.expires) return false;
