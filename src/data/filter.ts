@@ -15,6 +15,8 @@ export interface ViewState {
   focus: string | null;
   /** Hovered/selected action id, or null. */
   highlight: string | null;
+  /** Imposers toggled off in the legend. */
+  hidden: Set<string>;
 }
 
 export function today(): string {
@@ -25,6 +27,7 @@ export function today(): string {
 export function liveArcs(ds: Dataset, view: ViewState): LiveArc[] {
   const out: LiveArc[] = [];
   for (const arc of ds.arcs) {
+    if (view.hidden.has(arc.imposer)) continue;
     if (view.focus && arc.imposer !== view.focus && arc.target !== view.focus) continue;
     const active = arc.actionIds.map(id => ds.actionsById.get(id)!).filter(a => isActiveOn(a, view.date));
     if (!active.length) continue;
@@ -38,7 +41,7 @@ export function liveArcs(ds: Dataset, view: ViewState): LiveArc[] {
 /** Actions in force on the date, optionally restricted to a focused country, newest first. */
 export function liveActions(ds: Dataset, view: ViewState): TariffAction[] {
   return ds.actions
-    .filter(a => isActiveOn(a, view.date))
+    .filter(a => isActiveOn(a, view.date) && !view.hidden.has(a.imposer))
     .filter(a => !view.focus || a.imposer === view.focus || a.targets.includes(view.focus))
     .sort((a, b) => (a.effective < b.effective ? 1 : -1));
 }

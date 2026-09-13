@@ -10,12 +10,18 @@ import {showTooltip, hideTooltip} from './ui/tooltip';
 import {renderLegend} from './ui/legend';
 import {renderFreshness} from './ui/freshness';
 import {renderFeed} from './ui/feed';
+import {buildSteps} from './data/timeline';
+import {renderTimeline, type TimelineState} from './ui/timeline';
 import './styles.css';
 
 const MAP_VIEW = {longitude: 12, latitude: 24, zoom: 1.3, minZoom: 0.8, maxZoom: 9, pitch: 0, bearing: 0};
 const GLOBE_VIEW = {longitude: -60, latitude: 35, zoom: 1.75, minZoom: 0.5, maxZoom: 9};
 
-const state: ViewState = {date: today(), focus: null, highlight: null};
+const state: ViewState = {date: today(), focus: null, highlight: null, hidden: new Set()};
+const timeline: TimelineState = {steps: [], index: 0, playing: false, delayMs: 1000};
+let playTimer: number | null = null;
+let motion = true;
+let frozenAt = 0;
 let globe = new URLSearchParams(location.search).has('globe');
 let zoom = MAP_VIEW.zoom;
 let ds: Dataset;
@@ -51,11 +57,56 @@ function recompute() {
     .filter(e => weights.has(e.iso3))
     .map(e => ({...e, weight: weights.get(e.iso3)!.w, imposes: weights.get(e.iso3)!.imposes}));
 
-  renderLegend(document.getElementById('legend')!, new Set(arcs.map(a => a.imposer)));
-  renderFeed(document.getElementById('feed')!, ds, liveActions(ds, state), state.focus, {
+  renderLegend(document.getElementById('legend')!, new Set(ds.arcs.map(a => a.imposer)), state.hidden, toggleImposer);
+  renderTimeline(document.getElementById('timeline')!, timeline, {onIndex: setStep, onPlay: setPlaying, onDelay: setDelay});
+  renderFeed(document.getElementById('feed')!, ds, liveActions(ds, state), state.focus, state.date, {
     onHover: id => { state.highlight = id; render(); },
     onFocus: setFocus
   });
+}
+
+function toggleImposer(iso3: string) {
+  if (state.hidden.has(iso3)) state.hidden.delete(iso3);
+  else state.hidden.add(iso3);
+  recompute();
+  render();
+}
+
+function setStep(i: number) {
+  timeline.index = Math.max(0, Math.min(timeline.steps.length - 1, i));
+  state.date = timeline.steps[timeline.index].date;
+  recompute();
+  render();
+}
+
+function setPlaying(playing: boolean) {
+  if (playTimer !== null) { clearInterval(playTimer); playTimer = null; }
+  timeline.playing = playing;
+  if (playing) {
+    // Restart from the beginning when play is hit at the end.
+    if (timeline.index >= timeline.steps.length - 1) setStep(0);
+    playTimer = window.setInterval(() => {
+      if (timeline.index >= timeline.steps.length - 1) return setPlaying(false);
+      setStep(timeline.index + 1);
+    }, timeline.delayMs);
+  }
+  renderTimeline(document.getElementById('timeline')!, timeline, {onIndex: setStep, onPlay: setPlaying, onDelay: setDelay});
+}
+
+function setDelay(ms: number) {
+  timeline.delayMs = ms;
+  if (timeline.playing) setPlaying(true);
+}
+
+function setMotion(on: boolean) {
+  motion = on;
+  if (!on) frozenAt = clock();
+  render();
+}
+
+/** Animation clock in seconds; holds still while motion is off. */
+function clock(): number {
+  return motion ? (performance.now() - t0) / 1000 : frozenAt;
 }
 
 function setFocus(iso3: string | null) {
@@ -122,11 +173,11 @@ function layers(time: number) {
 }
 
 function render() {
-  deck.setProps({layers: layers((performance.now() - t0) / 1000)});
+  deck.setProps({layers: layers(clock())});
 }
 
 function frame() {
-  render();
+  if (motion) render();
   requestAnimationFrame(frame);
 }
 
@@ -149,6 +200,9 @@ function makeDeck() {
 async function main() {
   ds = await loadDataset();
   renderFreshness(document.getElementById('freshness')!, ds.meta);
+  const earliest = ds.actions.map(a => a.effective).sort()[0] ?? today();
+  timeline.steps = buildSteps(earliest, today());
+  timeline.index = timeline.steps.length - 1;
   recompute();
   makeDeck();
   frame();
@@ -161,6 +215,15 @@ async function main() {
     makeDeck();
   });
   document.getElementById('map')!.addEventListener('mouseleave', hideTooltip);
+  const motionToggle = document.getElementById('motionToggle') as HTMLInputElement;
+  motionToggle.checked = motion;
+  motionToggle.addEventListener('change', () => setMotion(motionToggle.checked));
+  window.addEventListener('keydown', e => {
+    if ((e.target as HTMLElement).tagName === 'INPUT' || (e.target as HTMLElement).tagName === 'SELECT') return;
+    if (e.key === ' ') { e.preventDefault(); setPlaying(!timeline.playing); }
+    else if (e.key === 'ArrowLeft') setStep(timeline.index - 1);
+    else if (e.key === 'ArrowRight') setStep(timeline.index + 1);
+  });
 }
 
 main().catch(err => {
