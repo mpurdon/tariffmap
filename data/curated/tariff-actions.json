@@ -1,0 +1,220 @@
+{
+  "$schema": "./schema.json",
+  "_readme": "PROTOTYPE SEED — Phase 1 visual prototype. Every entry is re-verified against primary sources in Phase 2 before launch. See README.md for the schema and editing rules.",
+  "actions": [
+    {
+      "id": "us-ieepa-can-2025-03",
+      "imposer": "USA", "targets": ["CAN"],
+      "title": "IEEPA 'fentanyl' tariff on Canadian goods",
+      "rate": 35, "rateNote": "25% from 2025-03-04, raised to 35% on 2025-08-01; 10% on energy and potash",
+      "hs": ["ALL"], "hsLabel": "all non-USMCA goods", "exemptions": "USMCA-compliant goods exempt",
+      "legalBasis": "IEEPA", "effective": "2025-03-04", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/02/imposing-duties-to-address-the-flow-of-illicit-drugs-across-our-northern-border/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-ieepa-mex-2025-03",
+      "imposer": "USA", "targets": ["MEX"],
+      "title": "IEEPA 'fentanyl' tariff on Mexican goods",
+      "rate": 25, "hs": ["ALL"], "hsLabel": "all non-USMCA goods", "exemptions": "USMCA-compliant goods exempt",
+      "legalBasis": "IEEPA", "effective": "2025-03-04", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/02/imposing-duties-to-address-the-situation-at-our-southern-border/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-ieepa-chn-2025-02",
+      "imposer": "USA", "targets": ["CHN"],
+      "title": "IEEPA 'fentanyl' tariff on Chinese goods",
+      "rate": 10, "rateNote": "20% from 2025-03-04; cut to 10% on 2025-11-10 under the Kuala Lumpur/Busan arrangement",
+      "hs": ["ALL"], "legalBasis": "IEEPA", "effective": "2025-02-04", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/02/imposing-duties-to-address-the-synthetic-opioid-supply-chain-in-the-peoples-republic-of-china/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-ieepa-reciprocal-chn-2025-04",
+      "imposer": "USA", "targets": ["CHN"],
+      "title": "IEEPA reciprocal tariff on China",
+      "rate": 10, "rateNote": "Peaked at 125% in April 2025; 10% under the Geneva truce since 2025-05-14, extended",
+      "hs": ["ALL"], "stacksWith": ["us-ieepa-chn-2025-02", "us-301-chn-2018"],
+      "legalBasis": "IEEPA", "effective": "2025-04-09", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/04/regulating-imports-with-a-reciprocal-tariff-to-rectify-trade-practices-that-contribute-to-large-and-persistent-annual-united-states-goods-trade-deficits/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-301-chn-2018",
+      "imposer": "USA", "targets": ["CHN"],
+      "title": "Section 301 tariffs on Chinese goods (Lists 1–4A)",
+      "rate": 25, "rateNote": "7.5%–100% depending on list; 25% on Lists 1–3, 100% on EVs, 50% on semiconductors/solar",
+      "hs": ["84","85","87","90"], "hsLabel": "machinery, electronics, vehicles, instruments (and more)",
+      "legalBasis": "Section 301", "effective": "2018-07-06", "expires": null, "status": "active",
+      "sources": ["https://ustr.gov/issue-areas/enforcement/section-301-investigations/section-301-china/china-section-301-tariff-actions-and-exclusion-process"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-232-steel-alu-2025-03",
+      "imposer": "USA", "targets": ["ALL"],
+      "title": "Section 232 tariffs on steel and aluminum",
+      "rate": 50, "rateNote": "25% from 2025-03-12; 50% from 2025-06-04 (UK stays at 25%)",
+      "hs": ["72","73","76"], "hsLabel": "steel & aluminum and derivative products",
+      "legalBasis": "Section 232", "effective": "2025-03-12", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/02/adjusting-imports-of-steel-into-the-united-states/", "https://www.whitehouse.gov/presidential-actions/2025/06/adjusting-imports-of-aluminum-and-steel-into-the-united-states/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-232-autos-2025-04",
+      "imposer": "USA", "targets": ["ALL"],
+      "title": "Section 232 tariffs on automobiles and parts",
+      "rate": 25, "rateNote": "15% for EU, Japan, Korea under trade deals; USMCA vehicles taxed on non-US content only",
+      "hs": ["8703","8704","8708"], "hsLabel": "passenger vehicles, light trucks, auto parts",
+      "legalBasis": "Section 232", "effective": "2025-04-03", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/03/adjusting-imports-of-automobiles-and-autombile-parts-into-the-united-states/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-232-copper-2025-08",
+      "imposer": "USA", "targets": ["ALL"],
+      "title": "Section 232 tariff on semi-finished copper",
+      "rate": 50, "hs": ["74"], "hsLabel": "copper pipes, wire, sheets, fittings",
+      "legalBasis": "Section 232", "effective": "2025-08-01", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/07/adjusting-imports-of-copper-into-the-united-states/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-ieepa-reciprocal-eun-2025-08",
+      "imposer": "USA", "targets": ["EUN"],
+      "title": "Reciprocal tariff on EU goods (15% all-in ceiling under EU–US framework)",
+      "rate": 15, "hs": ["ALL"], "exemptions": "Aircraft, generic pharma, some chemicals at 0%",
+      "legalBasis": "deal", "effective": "2025-08-07", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/fact-sheets/2025/07/fact-sheet-the-united-states-and-european-union-reach-massive-trade-deal/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-ieepa-reciprocal-jpn-2025-08",
+      "imposer": "USA", "targets": ["JPN", "KOR"],
+      "title": "Reciprocal tariff on Japan and Korea (15% under bilateral deals)",
+      "rate": 15, "hs": ["ALL"], "legalBasis": "deal", "effective": "2025-08-07", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/07/further-modifying-the-reciprocal-tariff-rates/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-ieepa-reciprocal-ind-2025-08",
+      "imposer": "USA", "targets": ["IND"],
+      "title": "Reciprocal tariff on India plus Russian-oil penalty",
+      "rate": 50, "rateNote": "25% reciprocal from 2025-08-07 + 25% secondary tariff over Russian oil from 2025-08-27",
+      "hs": ["ALL"], "legalBasis": "IEEPA", "effective": "2025-08-07", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/08/addressing-threats-to-the-united-states-by-the-government-of-the-russian-federation/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-ieepa-reciprocal-bra-2025-08",
+      "imposer": "USA", "targets": ["BRA"],
+      "title": "Reciprocal tariff on Brazil plus 40% political penalty",
+      "rate": 50, "rateNote": "10% reciprocal + 40% IEEPA surcharge; many ag exclusions added Nov 2025",
+      "hs": ["ALL"], "legalBasis": "IEEPA", "effective": "2025-08-06", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/07/addressing-threats-to-the-united-states-by-the-government-of-brazil/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-ieepa-reciprocal-che-2025-08",
+      "imposer": "USA", "targets": ["CHE"],
+      "title": "Reciprocal tariff on Switzerland",
+      "rate": 15, "rateNote": "39% from 2025-08-07; cut to 15% under Nov 2025 framework", "hs": ["ALL"],
+      "legalBasis": "deal", "effective": "2025-08-07", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/07/further-modifying-the-reciprocal-tariff-rates/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-ieepa-reciprocal-baseline-2025-04",
+      "imposer": "USA", "targets": ["GBR","AUS","SGP","TUR","ARG","CHL","COL","PER","SAU","ARE","EGY","MAR","NZL","ISR","NOR","ISL"],
+      "title": "Reciprocal baseline tariff (10%)",
+      "rate": 10, "hs": ["ALL"], "legalBasis": "IEEPA", "effective": "2025-04-05", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/04/regulating-imports-with-a-reciprocal-tariff-to-rectify-trade-practices-that-contribute-to-large-and-persistent-annual-united-states-goods-trade-deficits/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "us-ieepa-reciprocal-asean-2025-08",
+      "imposer": "USA", "targets": ["VNM","THA","MYS","IDN","PHL","KHM","BGD","PAK","LKA","TWN"],
+      "title": "Reciprocal tariffs on Southeast & South Asia (19–20%)",
+      "rate": 20, "rateNote": "19% Thailand/Malaysia/Indonesia/Philippines/Cambodia/Pakistan; 20% Vietnam/Bangladesh/Sri Lanka/Taiwan",
+      "hs": ["ALL"], "legalBasis": "IEEPA", "effective": "2025-08-07", "expires": null, "status": "active",
+      "sources": ["https://www.whitehouse.gov/presidential-actions/2025/07/further-modifying-the-reciprocal-tariff-rates/"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "ca-counter-us-2025-03",
+      "imposer": "CAN", "targets": ["USA"],
+      "title": "Canadian counter-tariffs on US steel, aluminum and autos",
+      "rate": 25, "rateNote": "The broader C$30B consumer-goods list (bourbon, orange juice, appliances…) was withdrawn 2025-09-01; steel, aluminum and non-CUSMA autos remain",
+      "hs": ["72","73","76","8703"], "hsLabel": "steel, aluminum, US-assembled vehicles",
+      "legalBasis": "countermeasure", "effective": "2025-03-04", "expires": null, "status": "active",
+      "sources": ["https://www.canada.ca/en/department-finance/news/2025/03/canada-announces-robust-tariff-package-in-response-to-unjustified-us-tariffs.html", "https://www.canada.ca/en/department-finance/news/2025/08/canada-to-remove-counter-tariffs-on-cusma-compliant-goods.html"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "ca-counter-us-bourbon-2025-03",
+      "imposer": "CAN", "targets": ["USA"],
+      "title": "Canadian 25% counter-tariff on US consumer goods (bourbon, orange juice, appliances)",
+      "rate": 25, "hs": ["2208","2009","8418","8450"], "hsLabel": "spirits, orange juice, appliances",
+      "legalBasis": "countermeasure", "effective": "2025-03-04", "expires": "2025-09-01", "status": "revoked",
+      "sources": ["https://www.canada.ca/en/department-finance/news/2025/03/canada-announces-robust-tariff-package-in-response-to-unjustified-us-tariffs.html"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "cn-counter-us-ag-2025-03",
+      "imposer": "CHN", "targets": ["USA"],
+      "title": "Chinese counter-tariffs on US agricultural goods",
+      "rate": 15, "rateNote": "15% on chicken, wheat, corn, cotton; 10% on soybeans, pork, beef, dairy, fruit; partly suspended Nov 2025",
+      "hs": ["02","04","08","10","12","52"], "hsLabel": "meat, dairy, fruit, grains, soybeans, cotton",
+      "legalBasis": "countermeasure", "effective": "2025-03-10", "expires": null, "status": "active",
+      "sources": ["https://gss.mof.gov.cn/gzdt/zhengcefabu/202503/t20250304_3958072.htm"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "cn-counter-us-reciprocal-2025-04",
+      "imposer": "CHN", "targets": ["USA"],
+      "title": "Chinese counter-tariff on all US goods",
+      "rate": 10, "rateNote": "Peaked at 125% in April 2025; 10% under the Geneva truce since 2025-05-14",
+      "hs": ["ALL"], "legalBasis": "countermeasure", "effective": "2025-04-10", "expires": null, "status": "active",
+      "sources": ["https://gss.mof.gov.cn/gzdt/zhengcefabu/202504/t20250404_3960826.htm"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "cn-counter-can-2025-03",
+      "imposer": "CHN", "targets": ["CAN"],
+      "title": "Chinese tariffs on Canadian canola oil, peas, pork and seafood",
+      "rate": 100, "rateNote": "100% on canola oil, oil cake and peas; 25% on pork and aquatic products",
+      "hs": ["1514","2306","0713","0203","03"], "hsLabel": "canola oil, peas, pork, seafood",
+      "legalBasis": "countermeasure", "effective": "2025-03-20", "expires": null, "status": "active",
+      "sources": ["https://gss.mof.gov.cn/gzdt/zhengcefabu/202503/t20250308_3958374.htm"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "ca-ev-chn-2024-10",
+      "imposer": "CAN", "targets": ["CHN"],
+      "title": "Canadian surtax on Chinese electric vehicles",
+      "rate": 100, "hs": ["8703"], "hsLabel": "electric and hybrid vehicles",
+      "legalBasis": "safeguard", "effective": "2024-10-01", "expires": null, "status": "active",
+      "sources": ["https://www.canada.ca/en/department-finance/news/2024/08/canada-implementing-measures-to-protect-canadian-workers-and-key-economic-sectors-from-unfair-chinese-trade-practices.html"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "eu-ev-chn-2024-10",
+      "imposer": "EUN", "targets": ["CHN"],
+      "title": "EU countervailing duties on Chinese battery EVs",
+      "rate": 35, "rateNote": "7.8%–35.3% by producer, on top of 10% MFN", "hs": ["8703"], "hsLabel": "battery electric vehicles",
+      "legalBasis": "anti-dumping", "effective": "2024-10-30", "expires": "2029-10-30", "status": "active",
+      "sources": ["https://eur-lex.europa.eu/eli/reg_impl/2024/2754/oj"],
+      "lastVerified": "2026-05-01"
+    },
+    {
+      "id": "mx-tariff-chn-2026-01",
+      "imposer": "MEX", "targets": ["CHN", "IND", "KOR", "THA", "VNM", "IDN"],
+      "title": "Mexican tariffs on autos, steel, textiles from non-FTA countries",
+      "rate": 50, "rateNote": "Up to 50% on vehicles; 10–35% on ~1,400 tariff lines", "hs": ["8703","72","61","62"],
+      "hsLabel": "vehicles, steel, apparel, textiles",
+      "legalBasis": "MFN", "effective": "2026-01-01", "expires": null, "status": "active",
+      "sources": ["https://www.dof.gob.mx/"],
+      "lastVerified": "2026-05-01"
+    }
+  ]
+}
