@@ -8,9 +8,10 @@
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page"
   },
-  // tariffmap.org must be a zone on this Cloudflare account for the custom domain to attach.
-  "routes": [
-    {"pattern": "tariffmap.org", "custom_domain": true},
-    {"pattern": "www.tariffmap.org", "custom_domain": true}
-  ]
+  "workers_dev": true
+  // Custom domain — enable once tariffmap.org is a zone on this Cloudflare account:
+  // "routes": [
+  //   {"pattern": "tariffmap.org", "custom_domain": true},
+  //   {"pattern": "www.tariffmap.org", "custom_domain": true}
+  // ]
 }
