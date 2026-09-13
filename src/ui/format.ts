@@ -3,7 +3,7 @@ export function fmtDate(iso: string): string {
   return d.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC'});
 }
 export function fmtRate(rate: number | null, note?: string): string {
-  if (rate === null) return note ? 'non-ad valorem' : '—';
+  if (rate === null) return note && /ban/i.test(note) ? 'BAN' : note ? 'n/a' : '—';
   return `${rate}%`;
 }
 export function fmtUsd(n?: number): string {

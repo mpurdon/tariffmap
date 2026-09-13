@@ -1,6 +1,6 @@
 import type {Dataset} from './load';
 import type {Arc, TariffAction} from './types';
-import {headlineRate, isActiveOn} from './rate';
+import {headlineRate, isActiveOn, rateOn} from './rate';
 
 /** An arc with its state resolved for a given date + focus. */
 export interface LiveArc extends Arc {
@@ -35,7 +35,7 @@ export function liveArcs(ds: Dataset, view: ViewState): LiveArc[] {
     if (view.focus && arc.imposer !== view.focus && arc.target !== view.focus) continue;
     const active = arc.actionIds.map(id => ds.actionsById.get(id)!).filter(a => isActiveOn(a, view.date));
     if (!active.length) continue;
-    const rate = headlineRate(active);
+    const rate = headlineRate(active, view.date);
     if (rate <= 0) continue;
     out.push({...arc, rate, active});
   }
@@ -45,7 +45,7 @@ export function liveArcs(ds: Dataset, view: ViewState): LiveArc[] {
 /** Actions in force on the date, optionally restricted to a focused country, ordered by view.sort. */
 export function liveActions(ds: Dataset, view: ViewState): TariffAction[] {
   const byDate = (a: TariffAction, b: TariffAction) => (a.effective < b.effective ? 1 : a.effective > b.effective ? -1 : 0);
-  const byRate = (a: TariffAction, b: TariffAction) => (b.rate ?? -1) - (a.rate ?? -1) || byDate(a, b);
+  const byRate = (a: TariffAction, b: TariffAction) => (rateOn(b, view.date) ?? -1) - (rateOn(a, view.date) ?? -1) || byDate(a, b);
   const byValue = (a: TariffAction, b: TariffAction) => (b.tradeUsd ?? -1) - (a.tradeUsd ?? -1) || byRate(a, b);
   const cmp = view.sort === 'rate' ? byRate : view.sort === 'value' ? byValue : byDate;
   return ds.actions

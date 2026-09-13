@@ -69,6 +69,8 @@ a { color: var(--accent); }
 .item-more[open] summary::before { content: '− '; }
 .item-more p { margin: 6px 0; line-height: 1.4; }
 .sources { font-family: var(--mono); font-size: 10.5px; }
+.history { font-family: var(--mono); font-size: 10.5px; display: flex; flex-direction: column; gap: 2px; }
+.history i { color: var(--ink-3); font-style: normal; }
 .empty { padding: 20px 16px; color: var(--ink-3); }
 .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 2px; flex: none; }
 .flag { display: inline-block; flex: none; border-radius: 2px; vertical-align: -2px; background-size: cover; }

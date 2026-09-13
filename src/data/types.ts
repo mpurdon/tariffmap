@@ -24,10 +24,14 @@ export interface TariffAction {
   imposer: Iso3;
   /** ISO3 targets, or ["ALL"] for every trading partner (expanded at build time). */
   targets: Iso3[];
+  /** With targets ["ALL"]: partners carved out because a separate entry covers them (e.g. deal partners). */
+  except?: Iso3[];
   title: string;
-  /** Ad valorem rate in percent. null when the action is a quota / specific duty — describe in rateNote. */
+  /** Current headline ad valorem rate in percent. null for import bans / quotas / specific duties — describe in rateNote. */
   rate: number | null;
   rateNote?: string;
+  /** Rate changes over the life of the measure, oldest first; the entry whose `from` ≤ the viewed date applies. */
+  rateHistory?: {from: string; rate: number; note?: string}[];
   /** Actions whose rates add on top of this one for the same goods (e.g. IEEPA + Section 232). */
   stacksWith?: string[];
   /** Actions superseded by this one at the pair level. */

@@ -3,6 +3,7 @@ import type {TariffAction} from '../data/types';
 import {flag} from './flag';
 import {fmtDate, fmtRate, fmtUsd} from './format';
 import type {SortKey} from '../data/filter';
+import {rateOn} from '../data/rate';
 
 export interface FeedCallbacks {
   onHover: (id: string | null) => void;
@@ -42,12 +43,13 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
       a => `<li class="item" data-id="${a.id}">
         <div class="item-top">
           <span class="pair">${flag(ds, a.imposer, {ring: true})} <b>${name(a.imposer)}</b> <span class="arrow">→</span> ${targetsLabel(a)}</span>
-          <span class="rate">${fmtRate(a.rate, a.rateNote)}${a.tradeUsd ? `<small>${fmtUsd(a.tradeUsd)}</small>` : ''}</span>
+          <span class="rate">${fmtRate(rateOn(a, date), a.rateNote)}${a.tradeUsd ? `<small>${fmtUsd(a.tradeUsd)}</small>` : ''}</span>
         </div>
         <div class="item-title">${a.title}</div>
         <div class="item-meta">${a.legalBasis} · ${a.hsLabel ?? (a.hs.includes('ALL') ? 'all goods' : 'HS ' + a.hs.join(', '))} · since ${fmtDate(a.effective)}${lifecycle(a)}</div>
         <details class="item-more"><summary>details</summary>
           ${a.rateNote ? `<p>${a.rateNote}</p>` : ''}
+          ${a.rateHistory?.length ? `<p class="history">${a.rateHistory.map(h => `<span><b>${h.rate}%</b> from ${fmtDate(h.from)}${h.note ? ` <i>${h.note}</i>` : ''}</span>`).join('')}</p>` : ''}
           ${a.exemptions ? `<p><b>Exemptions:</b> ${a.exemptions}</p>` : ''}
           ${a.notes ? `<p>${a.notes}</p>` : ''}
           <p class="sources">${a.sources.map((s, i) => `<a href="${s}" target="_blank" rel="noopener">source ${i + 1}</a>`).join(' · ')} · verified ${fmtDate(a.lastVerified)}</p>
