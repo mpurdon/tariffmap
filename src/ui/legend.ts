@@ -13,6 +13,6 @@ export function renderLegend(el: HTMLElement, ds: Dataset, present: Set<string>,
     .map(([iso, c]) => row(ds, iso, ds.entityByIso.get(iso)?.name ?? iso, c, hidden.has(iso)));
   const others = [...present].filter(p => !(p in IMPOSER_COLORS));
   for (const iso of others) rows.push(row(ds, iso, ds.entityByIso.get(iso)?.name ?? iso, OTHER_COLOR, hidden.has(iso)));
-  el.innerHTML = `<div class="lg-title">Imposed by <span class="lg-hint">click to hide</span></div>${rows.join('')}<div class="lg-note">Arc flows from the country setting the tariff to the country it hits. Thicker = higher headline rate.</div>`;
+  el.innerHTML = `<div class="lg-title">Imposed by <span class="lg-hint">click to hide</span></div>${rows.join('')}<div class="lg-note">Arc flows from the country setting the tariff to the country it hits. Thicker = higher rate on all goods (or on targeted products where no economy-wide tariff applies).</div>`;
   el.querySelectorAll<HTMLButtonElement>('[data-iso]').forEach(b => b.addEventListener('click', () => onToggle(b.dataset.iso!)));
 }
