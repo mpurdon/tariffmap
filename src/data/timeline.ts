@@ -1,3 +1,6 @@
+import {endDate} from './rate';
+import type {TariffAction} from './types';
+
 /** Discrete positions for the timeline scrubber. */
 export interface Step {
   /** ISO date the map shows at this step (state as of end of period). */
@@ -5,8 +8,20 @@ export interface Step {
   label: string;
   kind: 'year' | 'month' | 'now' | 'future';
   /** For future steps: what changes on that date. */
-  events?: string[];
+  events?: Upcoming[];
 }
+
+/** A scheduled change to a measure after today. */
+export interface Upcoming {
+  date: string;
+  kind: 'start' | 'end' | 'rate';
+  id: string;
+  title: string;
+  /** For `rate` changes: the new rate. */
+  rate?: number;
+}
+
+export const nowIndex = (steps: Step[]) => steps.findIndex(s => s.kind === 'now');
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -19,7 +34,7 @@ function lastDay(y: number, m: number): string {
  * Yearly steps from the first year with data up to two years ago, then monthly
  * steps from January of last year through the current month, then "Now".
  */
-export function buildSteps(earliest: string, today: string, future: {date: string; label: string}[] = []): Step[] {
+export function buildSteps(earliest: string, today: string, future: Upcoming[] = []): Step[] {
   const y0 = Number(earliest.slice(0, 4));
   const yNow = Number(today.slice(0, 4));
   const mNow = Number(today.slice(5, 7)) - 1;
@@ -34,10 +49,10 @@ export function buildSteps(earliest: string, today: string, future: {date: strin
   }
   steps.push({date: today, label: 'Now', kind: 'now'});
   // Scheduled changes after today, one step per distinct date.
-  const byDate = new Map<string, string[]>();
+  const byDate = new Map<string, Upcoming[]>();
   for (const f of future) {
     if (f.date <= today) continue;
-    byDate.set(f.date, [...(byDate.get(f.date) ?? []), f.label]);
+    byDate.set(f.date, [...(byDate.get(f.date) ?? []), f]);
   }
   for (const [date, events] of [...byDate.entries()].sort()) {
     const d = new Date(date + 'T00:00:00Z');
@@ -47,13 +62,15 @@ export function buildSteps(earliest: string, today: string, future: {date: strin
   return steps;
 }
 
-/** Every dated change a measure has scheduled: start, end, and future rate steps. */
-export function scheduledChanges(actions: {id: string; title: string; effective: string; expires?: string | null; status: string; rateHistory?: {from: string; rate: number}[]}[], today: string) {
-  const out: {date: string; label: string; id: string; kind: 'start' | 'end' | 'rate'}[] = [];
+/** Every dated change a measure has scheduled after today: start, end, and future rate steps. */
+export function scheduledChanges(actions: TariffAction[], today: string): Upcoming[] {
+  const out: Upcoming[] = [];
   for (const a of actions) {
-    if (a.effective > today) out.push({date: a.effective, label: `Starts: ${a.title}`, id: a.id, kind: 'start'});
-    if (a.expires && a.expires > today && a.status !== 'revoked') out.push({date: a.expires, label: `Ends: ${a.title}`, id: a.id, kind: 'end'});
-    for (const h of a.rateHistory ?? []) if (h.from > today) out.push({date: h.from, label: `${h.rate}%: ${a.title}`, id: a.id, kind: 'rate'});
+    const {id, title} = a;
+    if (a.effective > today) out.push({date: a.effective, kind: 'start', id, title});
+    const end = endDate(a);
+    if (end && end > today) out.push({date: end, kind: 'end', id, title});
+    for (const h of a.rateHistory ?? []) if (h.from > today) out.push({date: h.from, kind: 'rate', id, title, rate: h.rate});
   }
-  return out.sort((x, y) => (x.date < y.date ? -1 : 1));
+  return out.sort((x, y) => x.date.localeCompare(y.date));
 }

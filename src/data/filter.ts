@@ -2,6 +2,7 @@ import type {Dataset} from './load';
 import type {Arc, TariffAction} from './types';
 import {headlineRate, isActiveOn, rateOn} from './rate';
 import {coveredValue, unionCodes} from './coverage';
+import {coversAllGoods} from './types';
 
 /** An arc with its state resolved for a given date + focus. */
 export interface LiveArc extends Arc {
@@ -37,37 +38,40 @@ export function today(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
+/** Does the focused country impose or receive this measure? (No focus = everything.) */
+export const involves = (a: Pick<TariffAction, 'imposer' | 'targets'>, focus: string | null) =>
+  !focus || a.imposer === focus || a.targets.includes(focus);
+
 /** Resolve every arc's headline rate on the given date; drop arcs with nothing in force. */
 export function liveArcs(ds: Dataset, view: ViewState): LiveArc[] {
   const out: LiveArc[] = [];
   for (const arc of ds.arcs) {
     if (view.hidden.has(arc.imposer)) continue;
-    if (view.focus && arc.imposer !== view.focus && arc.target !== view.focus) continue;
+    if (!involves({imposer: arc.imposer, targets: [arc.target]}, view.focus)) continue;
     const active = arc.actionIds.map(id => ds.actionsById.get(id)!).filter(a => isActiveOn(a, view.date));
     if (!active.length) continue;
-    const broad = active.filter(a => a.hs.includes('ALL'));
+    const broad = active.filter(coversAllGoods);
     const peak = headlineRate(active, view.date);
-    const rate = broad.length ? headlineRate(broad, view.date) : peak;
-    if (rate <= 0 && peak <= 0) continue;
+    if (peak <= 0) continue;
+    const rate = (broad.length && headlineRate(broad, view.date)) || peak;
     let tradeUsd: number | undefined;
     let dutyUsd: number | undefined;
     if (arc.trade) {
       tradeUsd = coveredValue(arc.trade.byCode, unionCodes(active));
       dutyUsd = active.reduce((sum, a) => sum + coveredValue(arc.trade!.byCode, a.hs) * (rateOn(a, view.date) ?? 0) / 100, 0);
     }
-    out.push({...arc, rate: rate || peak, peak, productOnly: !broad.length, tradeUsd, dutyUsd, active});
+    out.push({...arc, rate, peak, productOnly: !broad.length, tradeUsd, dutyUsd, active});
   }
   return out;
 }
 
 /** Actions in force on the date, optionally restricted to a focused country, ordered by view.sort. */
 export function liveActions(ds: Dataset, view: ViewState): TariffAction[] {
-  const byDate = (a: TariffAction, b: TariffAction) => (a.effective < b.effective ? 1 : a.effective > b.effective ? -1 : 0);
+  const byDate = (a: TariffAction, b: TariffAction) => b.effective.localeCompare(a.effective);
   const byRate = (a: TariffAction, b: TariffAction) => (rateOn(b, view.date) ?? -1) - (rateOn(a, view.date) ?? -1) || byDate(a, b);
   const byValue = (a: TariffAction, b: TariffAction) => (b.tradeUsd ?? -1) - (a.tradeUsd ?? -1) || byRate(a, b);
   const cmp = view.sort === 'rate' ? byRate : view.sort === 'value' ? byValue : byDate;
   return ds.actions
-    .filter(a => isActiveOn(a, view.date) && !view.hidden.has(a.imposer))
-    .filter(a => !view.focus || a.imposer === view.focus || a.targets.includes(view.focus))
+    .filter(a => isActiveOn(a, view.date) && !view.hidden.has(a.imposer) && involves(a, view.focus))
     .sort(cmp);
 }

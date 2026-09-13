@@ -1,5 +1,6 @@
 import {ArcLayer, type ArcLayerProps} from '@deck.gl/layers';
 import type {ShaderModule} from '@luma.gl/shadertools';
+import type {Accessor} from '@deck.gl/core';
 import type {Arc} from '../data/types';
 
 /*
@@ -29,24 +30,24 @@ const flowUniforms = {
 } as const satisfies ShaderModule<FlowProps>;
 
 export type FlowArcLayerProps<D = Arc> = ArcLayerProps<D> & {
-  /** Seconds; advance every frame. */
-  time?: number;
+  /** Animation clock in seconds, read on every draw (pair with Deck's `_animate`). */
+  clock?: () => number;
   /** Tail length as a fraction of the spacing between comets (0..1). */
   tail?: number;
   /** Extra brightness at the comet head. */
   headGlow?: number;
-  getPhase?: (d: D) => number;
+  getPhase?: Accessor<D, number>;
   /** Comets per arc. */
-  getDensity?: (d: D) => number;
+  getDensity?: Accessor<D, number>;
   /** Arc-lengths per second. */
-  getSpeed?: (d: D) => number;
+  getSpeed?: Accessor<D, number>;
 };
 
 export class FlowArcLayer<D = Arc> extends ArcLayer<D, FlowArcLayerProps<D>> {
   static override layerName = 'FlowArcLayer';
   static override defaultProps = {
     ...ArcLayer.defaultProps,
-    time: {type: 'number', value: 0},
+    clock: {type: 'function', value: () => 0},
     tail: {type: 'number', value: 0.35},
     headGlow: {type: 'number', value: 1.6},
     getPhase: {type: 'accessor', value: 0},
@@ -100,8 +101,8 @@ export class FlowArcLayer<D = Arc> extends ArcLayer<D, FlowArcLayerProps<D>> {
   }
 
   override draw(params: any) {
-    const {time, tail, headGlow} = this.props as Required<FlowArcLayerProps<D>>;
-    this.setShaderModuleProps({flow: {time, tail, headGlow}});
+    const {clock, tail, headGlow} = this.props as Required<FlowArcLayerProps<D>>;
+    this.setShaderModuleProps({flow: {time: clock(), tail, headGlow}});
     super.draw(params);
   }
 }

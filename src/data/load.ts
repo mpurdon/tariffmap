@@ -14,6 +14,8 @@ export interface Dataset {
   meta: Meta;
 }
 
+export const entityName = (ds: Dataset, iso3: string) => ds.entityByIso.get(iso3)?.name ?? iso3;
+
 async function json<T>(url: string): Promise<T> {
   const r = await fetch(url);
   if (!r.ok) throw new Error(`${url}: ${r.status}`);
