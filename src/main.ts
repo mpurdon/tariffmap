@@ -18,7 +18,7 @@ import './styles.css';
 const MAP_VIEW = {longitude: 12, latitude: 24, zoom: 1.3, minZoom: 0.8, maxZoom: 9, pitch: 0, bearing: 0};
 const GLOBE_VIEW = {longitude: -60, latitude: 35, zoom: 1.75, minZoom: 0.5, maxZoom: 9};
 
-const state: ViewState = {date: today(), focus: null, highlight: null, hidden: new Set()};
+const state: ViewState = {date: today(), focus: null, highlight: null, hidden: new Set(), sort: 'date'};
 const timeline: TimelineState = {steps: [], index: 0, playing: false, delayMs: 1000};
 let playTimer: number | null = null;
 let motion = true;
@@ -60,9 +60,10 @@ function recompute() {
 
   renderLegend(document.getElementById('legend')!, ds, new Set(ds.arcs.map(a => a.imposer)), state.hidden, toggleImposer);
   renderTimeline(document.getElementById('timeline')!, timeline, {onIndex: setStep, onPlay: setPlaying, onDelay: setDelay});
-  renderFeed(document.getElementById('feed')!, ds, liveActions(ds, state), state.focus, state.date, {
+  renderFeed(document.getElementById('feed')!, ds, liveActions(ds, state), state.focus, state.date, state.sort, {
     onHover: id => { state.highlight = id; render(); },
-    onFocus: setFocus
+    onFocus: setFocus,
+    onSort: key => { state.sort = key; recompute(); render(); }
   });
 }
 

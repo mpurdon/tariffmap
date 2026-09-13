@@ -48,6 +48,8 @@ export interface TariffAction {
   /** ISO date a human last confirmed the entry against its sources. */
   lastVerified: string;
   notes?: string;
+  /** Annual trade affected in USD, filled in by the build pipeline from trade data (Phase 3). */
+  tradeUsd?: number;
 }
 
 /** Endpoint for arcs: a national capital or a sub-national region centroid. */

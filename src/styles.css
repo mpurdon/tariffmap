@@ -42,7 +42,12 @@ a { color: var(--accent); }
   background: var(--panel); border: 1px solid var(--panel-border); border-radius: 10px;
   backdrop-filter: blur(10px); overflow: hidden auto; scrollbar-width: thin; scrollbar-color: #2a3452 transparent;
 }
-.feed-head { position: sticky; top: 0; display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px; background: linear-gradient(var(--panel) 75%, transparent); z-index: 1; }
+.feed-head { position: sticky; top: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 16px 10px; background: linear-gradient(var(--panel) 80%, transparent); z-index: 1; }
+.feed-head .sort { flex-basis: 100%; display: flex; gap: 4px; }
+.feed-head .sort button { font: 500 10.5px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); background: rgb(255 255 255 / 0.04); border: 1px solid transparent; border-radius: 6px; padding: 4px 9px; cursor: pointer; }
+.feed-head .sort button:hover:not(:disabled) { color: var(--ink-2); }
+.feed-head .sort button.on { color: var(--ink); border-color: var(--panel-border); background: rgb(255 255 255 / 0.08); }
+.feed-head .sort button:disabled { opacity: 0.4; cursor: not-allowed; }
 .feed-head .flag { margin-right: 2px; }
 .feed-head h2 { margin: 0; font-size: 13px; font-family: var(--mono); letter-spacing: 0.12em; text-transform: uppercase; font-weight: 600; flex: 1; }
 .feed-head .count { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
@@ -54,7 +59,8 @@ a { color: var(--accent); }
 .item-top .pair { flex: 1; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 5px; }
 .item-top .arrow { color: var(--ink-3); }
 .item-top .pair b { color: var(--ink); font-weight: 600; }
-.item-top .rate { font-family: var(--mono); font-weight: 600; font-size: 15px; }
+.item-top .rate { font-family: var(--mono); font-weight: 600; font-size: 15px; text-align: right; line-height: 1; }
+.item-top .rate small { display: block; font-size: 9.5px; font-weight: 500; color: var(--ink-3); margin-top: 3px; }
 .item-title { margin-top: 4px; font-size: 13px; line-height: 1.35; }
 .item-meta { margin-top: 3px; font-family: var(--mono); font-size: 10.5px; color: var(--ink-3); }
 .item-more { margin-top: 4px; font-size: 12px; color: var(--ink-2); }
