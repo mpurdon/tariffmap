@@ -9,7 +9,8 @@
     "build": "npm run build:data && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json",
-    "build:data": "tsx scripts/build-data.ts"
+    "build:data": "tsx scripts/build-data.ts",
+    "deploy": "npm run build && wrangler deploy"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +30,7 @@
   "devDependencies": {
     "@types/geojson": "^7946.0.16",
     "@types/topojson-specification": "^1.0.5",
-    "tsx": "^4.23.13"
+    "tsx": "^4.23.13",
+    "wrangler": "^4.131.1"
   }
 }

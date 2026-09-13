@@ -1,0 +1,44 @@
+name: Build & deploy
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    # Weekly refresh of trade data + rebuild, Mondays 06:00 UTC.
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      # Scheduled runs refresh UN Comtrade; push builds reuse the committed cache.
+      - name: Build data
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then npm run build:data; else npm run build:data -- --offline; fi
+      - name: Commit refreshed trade cache
+        if: github.event_name == 'schedule'
+        run: |
+          git config user.name "tariffmap-bot"
+          git config user.email "bot@tariffmap.org"
+          git add data/cache/comtrade
+          git diff --cached --quiet || git commit -m "chore: refresh Comtrade cache" && git push
+      - run: npx vite build
+      - name: Deploy to Cloudflare
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
