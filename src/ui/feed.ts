@@ -8,10 +8,16 @@ export interface FeedCallbacks {
   onFocus: (iso3: string | null) => void;
 }
 
-export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[], focus: string | null, cb: FeedCallbacks) {
+export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[], focus: string | null, date: string, cb: FeedCallbacks) {
   const name = (iso: string) => ds.entityByIso.get(iso)?.name ?? iso;
   const targetsLabel = (a: TariffAction) =>
     a.targets.length > 6 ? `${a.targets.length} countries` : a.targets.map(name).join(', ');
+  // How the measure's lifecycle reads from the viewed date's point of view.
+  const lifecycle = (a: TariffAction) => {
+    if (a.expires && a.expires > date) return ` · until ${fmtDate(a.expires)}`;
+    if (a.status !== 'active') return ` · <em>${a.status}</em>`;
+    return '';
+  };
 
   const head = focus
     ? `<div class="feed-head"><button class="back" data-back>←</button><h2>${name(focus)}</h2><span class="count">${actions.length} in force</span></div>`
@@ -26,7 +32,7 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
           <span class="rate">${fmtRate(a.rate, a.rateNote)}</span>
         </div>
         <div class="item-title">${a.title}</div>
-        <div class="item-meta">${a.legalBasis} · ${a.hsLabel ?? (a.hs.includes('ALL') ? 'all goods' : 'HS ' + a.hs.join(', '))} · since ${fmtDate(a.effective)}${a.status !== 'active' ? ` · <em>${a.status}</em>` : ''}</div>
+        <div class="item-meta">${a.legalBasis} · ${a.hsLabel ?? (a.hs.includes('ALL') ? 'all goods' : 'HS ' + a.hs.join(', '))} · since ${fmtDate(a.effective)}${lifecycle(a)}</div>
         <details class="item-more"><summary>details</summary>
           ${a.rateNote ? `<p>${a.rateNote}</p>` : ''}
           ${a.exemptions ? `<p><b>Exemptions:</b> ${a.exemptions}</p>` : ''}
