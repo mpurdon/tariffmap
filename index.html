@@ -19,8 +19,11 @@
       <div class="controls">
         <label class="toggle"><input type="checkbox" id="motionToggle" checked /><span>Motion</span></label>
         <label class="toggle"><input type="checkbox" id="viewToggle" /><span>Globe</span></label>
+        <button class="zen-btn" id="zenToggle" title="Zen mode — hide the interface (Z)">Zen</button>
       </div>
     </header>
+    <button id="zenExit" class="zen-exit" title="Leave zen mode (Esc)" hidden>✕</button>
+    <button id="feedToggle" class="feed-toggle" title="Collapse panel" aria-expanded="true"><span></span></button>
     <aside id="feed" class="feed"></aside>
     <div id="legend" class="legend"></div>
     <div id="timeline" class="timeline"></div>

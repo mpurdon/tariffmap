@@ -8,7 +8,9 @@ export function fmtRate(rate: number | null, note?: string): string {
 }
 export function fmtUsd(n?: number): string {
   if (!n) return '';
-  if (n >= 1e9) return `$${(n / 1e9).toFixed(1)}B`;
-  if (n >= 1e6) return `$${(n / 1e6).toFixed(0)}M`;
-  return `$${n.toLocaleString()}`;
+  const f = (v: number) => (v >= 100 ? v.toFixed(0) : v >= 10 ? v.toFixed(1) : v.toFixed(2));
+  if (n >= 1e12) return `$${f(n / 1e12)}T`;
+  if (n >= 1e9) return `$${f(n / 1e9)}B`;
+  if (n >= 1e6) return `$${f(n / 1e6)}M`;
+  return `$${Math.round(n).toLocaleString()}`;
 }

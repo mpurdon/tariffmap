@@ -3,7 +3,7 @@ import type {LiveArc} from '../data/filter';
 import type {NodeDatum} from '../layers/labels';
 import type {Dataset} from '../data/load';
 import {flag} from './flag';
-import {fmtDate, fmtRate} from './format';
+import {fmtDate, fmtRate, fmtUsd} from './format';
 import {rateOn} from '../data/rate';
 
 const el = document.getElementById('tooltip')!;
@@ -28,6 +28,7 @@ export function showTooltip(info: PickingInfo, ds: Dataset, date: string) {
       .join('');
     html = `<div class="tt-head">${flag(ds, a.imposer, {ring: true})} ${from.name} <span class="arrow">→</span> ${flag(ds, a.target)} ${to.name}</div>
       <div class="tt-rate">${a.rate}%<span class="dim"> ${a.productOnly ? 'on targeted products' : 'on all goods'}${a.peak > a.rate ? ` · up to ${a.peak}% on some products` : ''}</span></div>
+      ${a.tradeUsd !== undefined ? `<div class="tt-money"><b>${fmtUsd(a.tradeUsd)}</b> of imports covered${a.dutyUsd ? ` · <b>${fmtUsd(a.dutyUsd)}</b> est. duty/yr` : ''}<span class="dim"> · ${a.trade?.year} imports, UN Comtrade</span></div>` : ''}
       <ul class="tt-list">${rows}</ul>`;
   } else if (info.layer?.id === 'node-core') {
     const n = info.object as NodeDatum;

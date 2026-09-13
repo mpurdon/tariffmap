@@ -6,6 +6,11 @@
 import {readFileSync, writeFileSync, mkdirSync} from 'node:fs';
 import {resolve} from 'node:path';
 import type {TariffAction, Endpoint, Arc, Meta} from '../src/data/types';
+import {importsByCode} from './sources/comtrade';
+import {coveredValue} from '../src/data/coverage';
+
+const OFFLINE = process.argv.includes('--offline');
+const TRADE_YEARS = [2025, 2024, 2023];
 
 const ROOT = resolve(import.meta.dirname, '..');
 const OUT = resolve(ROOT, 'public/data');
@@ -35,6 +40,7 @@ for (const a of actions) {
     if (a.rateHistory[0].from !== a.effective) errors.push(`${a.id}: first rateHistory.from must equal effective`);
   }
   if (a.status === 'revoked' && !a.expires) errors.push(`${a.id}: revoked without expires date`);
+  if (a.coveredTradeUsd !== undefined && !(a.coveredTradeUsd > 0)) errors.push(`${a.id}: coveredTradeUsd must be positive`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(a.effective)) errors.push(`${a.id}: bad effective date`);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(a.lastVerified)) errors.push(`${a.id}: bad lastVerified date`);
 }
@@ -73,15 +79,51 @@ for (const a of expanded) {
 }
 const arcs = [...pairs.values()];
 
+// ---- trade values (UN Comtrade) ---------------------------------------------
+const euMembers = entities.filter(e => e.eu).map(e => e.m49);
+const actionById = new Map(expanded.map(a => [a.id, a]));
+let missing = 0;
+for (const arc of arcs) {
+  const acts = arc.actionIds.map(id => actionById.get(id)!);
+  const codes = ['TOTAL', ...new Set(acts.flatMap(a => a.hs).filter(c => c !== 'ALL'))];
+  const reporter = byIso.get(arc.imposer)!.m49;
+  const partners = arc.target === 'EUN' ? euMembers : [byIso.get(arc.target)!.m49];
+  const res = await importsByCode(reporter, partners, codes, TRADE_YEARS, {offline: OFFLINE});
+  if (!res) { missing++; continue; }
+  arc.trade = {year: res.year, total: res.byCode.TOTAL, byCode: res.byCode};
+}
+for (const a of expanded) {
+  const byTarget: Record<string, number> = {};
+  const years = new Set<number>();
+  for (const t of a.targets) {
+    const arc = pairs.get(`${a.imposer}>${t}`);
+    if (!arc?.trade) continue;
+    byTarget[t] = coveredValue(arc.trade.byCode, a.hs);
+    years.add(arc.trade.year);
+  }
+  if (!years.size) continue;
+  const computed = Object.values(byTarget).reduce((s, v) => s + v, 0);
+  if (a.coveredTradeUsd && computed > 0) {
+    // Scale the per-target split to the official coverage figure.
+    for (const t of Object.keys(byTarget)) byTarget[t] *= a.coveredTradeUsd / computed;
+  }
+  a.tradeByTarget = byTarget;
+  a.tradeUsd = a.coveredTradeUsd ?? computed;
+  if (a.rate !== null) a.dutyUsd = a.tradeUsd * a.rate / 100;
+  const ys = [...years].sort();
+  a.tradeYear = a.coveredTradeUsd ? 'official estimate' : ys.length === 1 ? String(ys[0]) : `${ys[0]}–${ys.at(-1)}`;
+}
+const withTrade = arcs.filter(a => a.trade).length;
+
 // ---- write -----------------------------------------------------------------
 mkdirSync(OUT, {recursive: true});
 const meta: Meta = {
   builtAt: new Date().toISOString(),
   actionsVerifiedThrough: actions.map(a => a.lastVerified).sort().at(-1)!,
-  sources: {curated: 'data/curated/tariff-actions.json'},
-  counts: {actions: actions.length, arcs: arcs.length}
+  sources: {curated: 'data/curated/tariff-actions.json', trade: 'UN Comtrade (annual imports, reporter-side, USD)'},
+  counts: {actions: actions.length, arcs: arcs.length, arcsWithTrade: withTrade}
 };
 writeFileSync(resolve(OUT, 'actions.json'), JSON.stringify(expanded));
 writeFileSync(resolve(OUT, 'arcs-country.json'), JSON.stringify(arcs));
 writeFileSync(resolve(OUT, 'meta.json'), JSON.stringify(meta, null, 2));
-console.log(`actions: ${actions.length}  pairs: ${arcs.length}  verified through: ${meta.actionsVerifiedThrough}`);
+console.log(`actions: ${actions.length}  pairs: ${arcs.length}  with trade: ${withTrade} (${missing} missing)  verified through: ${meta.actionsVerifiedThrough}`);

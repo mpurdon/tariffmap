@@ -9,6 +9,14 @@ export interface FeedCallbacks {
   onHover: (id: string | null) => void;
   onFocus: (iso3: string | null) => void;
   onSort: (key: SortKey) => void;
+  onJump: (date: string) => void;
+}
+
+export interface Upcoming {
+  date: string;
+  label: string;
+  id: string;
+  kind: 'start' | 'end' | 'rate';
 }
 
 const SORTS: {key: SortKey; label: string; title: string}[] = [
@@ -17,7 +25,7 @@ const SORTS: {key: SortKey; label: string; title: string}[] = [
   {key: 'value', label: 'Value', title: 'Most trade affected first (needs trade data)'}
 ];
 
-export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[], focus: string | null, date: string, sort: SortKey, cb: FeedCallbacks) {
+export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[], focus: string | null, date: string, sort: SortKey, upcoming: Upcoming[], cb: FeedCallbacks) {
   const name = (iso: string) => ds.entityByIso.get(iso)?.name ?? iso;
   const targetsLabel = (a: TariffAction) =>
     a.targets.length > 4
@@ -38,6 +46,21 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
     ? `<div class="feed-head"><button class="back" data-back>←</button>${flag(ds, focus, {size: 'lg'})}<h2>${name(focus)}</h2><span class="count">${actions.length} in force</span>${sortBar}</div>`
     : `<div class="feed-head"><h2>Tariffs in force</h2><span class="count">${actions.length}</span>${sortBar}</div>`;
 
+  // Scheduled changes after the viewed date (only when looking at today or later).
+  const today = new Date().toISOString().slice(0, 10);
+  const future = date >= today ? upcoming.filter(u => u.date > date && (!focus || ds.actionsById.get(u.id)?.imposer === focus || ds.actionsById.get(u.id)?.targets.includes(focus))) : [];
+  const upcomingHtml = future.length
+    ? `<details class="upcoming" open><summary>Scheduled <span class="count">${future.length}</span></summary><ul>${future
+        .map(u => `<li class="up ${u.kind}"><button data-jump="${u.date}" title="View the map on this date"><time>${fmtDate(u.date)}</time><span class="up-kind">${u.kind === 'start' ? 'starts' : u.kind === 'end' ? 'ends' : 'rate'}</span><span class="up-title">${u.label.replace(/^(Starts|Ends|[\d.]+%): /, '')}</span></button></li>`)
+        .join('')}</ul></details>`
+    : '';
+
+  const money = (a: TariffAction) => {
+    if (!a.tradeUsd) return '';
+    const duty = a.dutyUsd ? ` · <b>${fmtUsd(a.dutyUsd)}</b> est. duty/yr at ${a.rate}%` : '';
+    return `<p class="money"><b>${fmtUsd(a.tradeUsd)}</b> of imports covered (${a.tradeYear})${duty}<span class="dim"> — UN Comtrade; a ceiling before exemptions and trade diversion</span></p>`;
+  };
+
   const items = actions
     .map(
       a => `<li class="item" data-id="${a.id}">
@@ -48,6 +71,7 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
         <div class="item-title">${a.title}</div>
         <div class="item-meta">${a.legalBasis} · ${a.hsLabel ?? (a.hs.includes('ALL') ? 'all goods' : 'HS ' + a.hs.join(', '))} · since ${fmtDate(a.effective)}${lifecycle(a)}</div>
         <details class="item-more"><summary>details</summary>
+          ${money(a)}
           ${a.rateNote ? `<p>${a.rateNote}</p>` : ''}
           ${a.rateHistory?.length ? `<p class="history">${a.rateHistory.map(h => `<span><b>${h.rate}%</b> from ${fmtDate(h.from)}${h.note ? ` <i>${h.note}</i>` : ''}</span>`).join('')}</p>` : ''}
           ${a.exemptions ? `<p><b>Exemptions:</b> ${a.exemptions}</p>` : ''}
@@ -58,7 +82,8 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
     )
     .join('');
 
-  el.innerHTML = `${head}<ul class="feed-list">${items || '<li class="empty">Nothing in force on this date.</li>'}</ul>`;
+  el.innerHTML = `${head}${upcomingHtml}<ul class="feed-list">${items || '<li class="empty">Nothing in force on this date.</li>'}</ul>`;
+  el.querySelectorAll<HTMLButtonElement>('[data-jump]').forEach(b => b.addEventListener('click', () => cb.onJump(b.dataset.jump!)));
 
   el.querySelector('[data-back]')?.addEventListener('click', () => cb.onFocus(null));
   el.querySelectorAll<HTMLButtonElement>('[data-sort]').forEach(b => b.addEventListener('click', () => cb.onSort(b.dataset.sort as SortKey)));

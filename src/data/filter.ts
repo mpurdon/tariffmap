@@ -1,6 +1,7 @@
 import type {Dataset} from './load';
 import type {Arc, TariffAction} from './types';
 import {headlineRate, isActiveOn, rateOn} from './rate';
+import {coveredValue, unionCodes} from './coverage';
 
 /** An arc with its state resolved for a given date + focus. */
 export interface LiveArc extends Arc {
@@ -10,6 +11,10 @@ export interface LiveArc extends Arc {
   peak: number;
   /** True when the headline comes from product-specific measures only. */
   productOnly: boolean;
+  /** Annual imports covered by the active measures, USD (undefined when no trade data). */
+  tradeUsd?: number;
+  /** Σ rate × covered imports across active measures — an annual duty ceiling, USD. */
+  dutyUsd?: number;
   active: TariffAction[];
 }
 
@@ -44,7 +49,13 @@ export function liveArcs(ds: Dataset, view: ViewState): LiveArc[] {
     const peak = headlineRate(active, view.date);
     const rate = broad.length ? headlineRate(broad, view.date) : peak;
     if (rate <= 0 && peak <= 0) continue;
-    out.push({...arc, rate: rate || peak, peak, productOnly: !broad.length, active});
+    let tradeUsd: number | undefined;
+    let dutyUsd: number | undefined;
+    if (arc.trade) {
+      tradeUsd = coveredValue(arc.trade.byCode, unionCodes(active));
+      dutyUsd = active.reduce((sum, a) => sum + coveredValue(arc.trade!.byCode, a.hs) * (rateOn(a, view.date) ?? 0) / 100, 0);
+    }
+    out.push({...arc, rate: rate || peak, peak, productOnly: !broad.length, tradeUsd, dutyUsd, active});
   }
   return out;
 }
