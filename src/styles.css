@@ -32,11 +32,12 @@ a { color: var(--accent); }
 .brand-mark { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
 .brand-name { font-family: var(--mono); font-weight: 500; letter-spacing: 0.18em; font-size: 13px; }
 .brand-name b { font-weight: 700; color: var(--accent); }
-.freshness { font-family: var(--mono); font-size: 11px; color: var(--ink-2); display: flex; align-items: center; gap: 8px; }
+.freshness { font-family: var(--mono); font-size: 11px; color: var(--ink-2); display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0; }
 .pulse { width: 7px; height: 7px; border-radius: 50%; background: #19c37d; box-shadow: 0 0 8px #19c37d; animation: pulse 2s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .spacer { flex: 1; }
-.mode-badge { font: 500 11px var(--mono); color: rgb(232 170 60); background: rgb(201 133 0 / 0.12); border: 1px solid rgb(201 133 0 / 0.4); border-radius: 6px; padding: 4px 9px; letter-spacing: 0.02em; }
+/* The badge is the only thing allowed to give: it truncates before the freshness line wraps. */
+.mode-badge { font: 500 11px var(--mono); color: rgb(232 170 60); background: rgb(201 133 0 / 0.12); border: 1px solid rgb(201 133 0 / 0.4); border-radius: 6px; padding: 4px 9px; letter-spacing: 0.02em; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .toggle { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--ink-2); cursor: pointer; user-select: none; }
 .toggle input { accent-color: var(--accent); }
 .zen-btn { background: rgb(255 255 255 / 0.06); border: 1px solid var(--panel-border); color: var(--ink-2); font: 500 11px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; cursor: pointer; }
@@ -69,7 +70,9 @@ body.feed-collapsed .feed-toggle svg { transform: scaleX(-1); }
   background: var(--panel); border: 1px solid var(--panel-border); border-radius: 10px;
   backdrop-filter: blur(10px); overflow: hidden auto; scrollbar-width: thin; scrollbar-color: #2a3452 transparent;
   transition: transform 0.25s ease;
+  display: flex; flex-direction: column;
 }
+.feed > * { flex-shrink: 0; }
 .feed-head { position: sticky; top: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 16px 10px; background: linear-gradient(var(--panel) 80%, transparent); z-index: 1; }
 .feed-head .sort { flex-basis: 100%; display: flex; gap: 4px; align-items: center; }
 .feed-head .direction { margin-left: auto; display: inline-flex; border: 1px solid var(--panel-border); border-radius: 6px; overflow: hidden; }
@@ -129,9 +132,14 @@ body.feed-collapsed .feed-toggle svg { transform: scaleX(-1); }
 .money { font-size: 12px; }
 .money b { font-family: var(--mono); color: var(--ink); }
 
-/* Footer (inside the feed) */
-.site-footer { margin: 4px 8px 10px; padding: 12px 10px 4px; border-top: 1px solid var(--panel-border); font-size: 11px; line-height: 1.45; color: var(--ink-3); }
+/* Footer (inside the feed): pinned to the panel's bottom edge, over the list when it scrolls */
+.site-footer {
+  position: sticky; bottom: 0; margin: auto 8px 0; padding: 12px 10px 10px;
+  border-top: 1px solid var(--panel-border); background: rgb(14 19 34 / 0.97);
+  font-size: 11px; line-height: 1.45; color: var(--ink-3);
+}
 .site-footer p { margin: 0 0 6px; }
+.site-footer p:last-child { margin-bottom: 0; }
 .site-footer a { color: var(--ink-2); text-decoration: none; border-bottom: 1px solid rgb(154 166 196 / 0.3); }
 .site-footer a:hover { color: var(--ink); border-color: var(--ink); }
 

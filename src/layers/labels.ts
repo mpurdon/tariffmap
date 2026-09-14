@@ -27,8 +27,8 @@ export function visibleLabels(nodes: NodeDatum[], viewport: Viewport | undefined
   const out: NodeDatum[] = [];
   for (const d of ranked) {
     const [x, y] = viewport.project([d.lon, d.lat]);
-    const w = d.name.length * 6.6 + 8, h = 14;
-    const box = {x0: x - w / 2, x1: x + w / 2, y0: y - 13 - h, y1: y - 13 + 4};
+    const w = d.name.length * 7.4 + 8, h = 16;
+    const box = {x0: x - w / 2, x1: x + w / 2, y0: y - 14 - h, y1: y - 14 + 4};
     if (placed.some(p => box.x0 < p.x1 && box.x1 > p.x0 && box.y0 < p.y1 && box.y1 > p.y0)) continue;
     placed.push(box);
     out.push(d);
@@ -68,16 +68,19 @@ export function nodeLayers(nodes: NodeDatum[], labels: NodeDatum[], zoom: number
       data: labels,
       getPosition: d => [d.lon, d.lat],
       getText: d => d.name.toUpperCase(),
-      getSize: 10.5,
+      getSize: 12,
       sizeUnits: 'pixels',
-      getColor: [196, 204, 224, 220],
-      getPixelOffset: [0, -13],
+      getColor: [226, 232, 246, 255],
+      getPixelOffset: [0, -14],
       fontFamily: '"IBM Plex Mono", "SF Mono", Menlo, monospace',
-      fontWeight: 500,
+      fontWeight: 600,
       characterSet: 'auto',
-      outlineWidth: 2,
-      outlineColor: [9, 13, 26, 230],
-      fontSettings: {sdf: true},
+      outlineWidth: 4,
+      outlineColor: [9, 13, 26, 255],
+      // Oversized SDF atlas so glyphs stay smooth at 12px instead of ragged.
+      fontSettings: {sdf: true, fontSize: 128, buffer: 12, radius: 16, cutoff: 0.22, smoothing: 0.06},
+      // Arcs are raised above the map; skip the depth test so labels always sit on top of them.
+      parameters: {depthCompare: 'always'},
       pickable: false
     })
   ];

@@ -224,7 +224,6 @@ function setFeedCollapsed(collapsed: boolean) {
   const btn = $('feedToggle');
   btn.setAttribute('aria-expanded', String(!collapsed));
   btn.title = collapsed ? 'Expand panel' : 'Collapse panel';
-  ($('panelToggle') as HTMLInputElement).checked = !collapsed;
   try { localStorage.setItem('feedCollapsed', String(collapsed)); } catch { /* private mode */ }
 }
 
@@ -354,8 +353,6 @@ async function main() {
   $('zenToggle').addEventListener('click', () => setZen(true));
   $('zenExit').addEventListener('click', () => setZen(false));
   $('feedToggle').addEventListener('click', () => setFeedCollapsed(!document.body.classList.contains('feed-collapsed')));
-  const panelToggle = $('panelToggle') as HTMLInputElement;
-  panelToggle.addEventListener('change', () => setFeedCollapsed(!panelToggle.checked));
   $('zenCredit').querySelector('[data-year]')!.textContent = String(new Date().getUTCFullYear());
   window.addEventListener('resize', () => { if (isZen() && mode === 'map') setCamera({minZoom: Math.max(fitZoom(), 0.5)}); });
   try { if (localStorage.getItem('feedCollapsed') === 'true') setFeedCollapsed(true); } catch { /* ignore */ }
