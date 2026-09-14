@@ -125,7 +125,7 @@ body.feed-collapsed .feed-toggle span { transform: rotate(135deg); margin-left: 
 
 /* Legend */
 .legend {
-  position: fixed; left: 14px; top: 64px; z-index: 4; width: 210px;
+  position: fixed; left: 14px; top: 64px; z-index: 4; width: 210px; user-select: none; -webkit-user-select: none;
   background: var(--panel); border: 1px solid var(--panel-border); border-radius: 10px; padding: 12px 14px;
   backdrop-filter: blur(10px); font-size: 12px;
 }
@@ -151,6 +151,7 @@ body.feed-collapsed .feed-toggle span { transform: rotate(135deg); margin-left: 
 .timeline.playing .play::before { left: 12px; top: 11px; width: 4px; height: 14px; border: 0; border-left: 4px solid var(--ink); border-right: 4px solid var(--ink); }
 .timeline .delay { flex: none; background: rgb(255 255 255 / 0.06); color: var(--ink-2); border: 1px solid var(--panel-border); border-radius: 6px; font: 11px var(--mono); padding: 4px 6px; }
 
+.timeline { user-select: none; -webkit-user-select: none; }
 .timeline .track { flex: 1; position: relative; height: 62px; margin: 0 8px; cursor: pointer; outline: none; touch-action: none; }
 .timeline .track:focus-visible .thumb { box-shadow: 0 0 0 4px rgb(57 135 229 / 0.6), 0 0 12px var(--accent); }
 .timeline .heads { position: absolute; left: 0; right: 0; top: 0; height: 14px; }
