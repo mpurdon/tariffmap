@@ -25,17 +25,19 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      # Scheduled runs refresh UN Comtrade; push builds reuse the committed cache.
+      # Scheduled runs refresh UN Comtrade / StatCan / Census; push builds reuse the committed caches.
       - name: Build data
+        env:
+          CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then npm run build:data; else npm run build:data -- --offline; fi
-      - name: Commit refreshed trade cache
+      - name: Commit refreshed trade caches
         if: github.event_name == 'schedule'
         run: |
           git config user.name "tariffmap-bot"
           git config user.email "bot@tariffmap.org"
-          git add data/cache/comtrade
-          git diff --cached --quiet || git commit -m "chore: refresh Comtrade cache" && git push
+          git add data/cache
+          git diff --cached --quiet || git commit -m "chore: refresh trade data caches" && git push
       - run: npx vite build
       - name: Deploy to Cloudflare
         run: npx wrangler deploy

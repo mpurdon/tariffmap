@@ -1,7 +1,7 @@
 import type {Dataset} from './load';
-import type {Arc, TariffAction} from './types';
+import type {Arc, RegionalArc, TariffAction} from './types';
 import {headlineRate, isActiveOn, rateOn} from './rate';
-import {coveredValue, unionCodes} from './coverage';
+import {coveredValue, regionalCodes, unionCodes} from './coverage';
 import {coversAllGoods} from './types';
 
 /** An arc with its state resolved for a given date + focus. */
@@ -33,6 +33,33 @@ export interface ViewState {
 }
 
 export type SortKey = 'date' | 'rate' | 'value';
+
+/** A regional arc resolved for the viewed date. */
+export interface LiveRegionalArc extends RegionalArc {
+  rate: number;
+  tradeUsd: number;
+  dutyUsd: number;
+  active: TariffAction[];
+}
+
+/** Ignore regions where the exposed trade is negligible, so the fan stays readable. */
+const MIN_REGIONAL_USD = 25e6;
+
+export function liveRegionalArcs(ds: Dataset, view: ViewState): LiveRegionalArc[] {
+  const out: LiveRegionalArc[] = [];
+  for (const arc of ds.regional) {
+    if (view.hidden.has(arc.imposer)) continue;
+    if (!involves({imposer: arc.imposer, targets: [arc.target]}, view.focus)) continue;
+    const active = arc.actionIds.map(id => ds.actionsById.get(id)!).filter(a => isActiveOn(a, view.date));
+    if (!active.length) continue;
+    const codesOf = (a: TariffAction) => regionalCodes(a, arc.source);
+    const tradeUsd = coveredValue(arc.byCode, unionCodes(active, codesOf));
+    if (tradeUsd < MIN_REGIONAL_USD) continue;
+    const dutyUsd = active.reduce((sum, a) => sum + coveredValue(arc.byCode, codesOf(a)) * (rateOn(a, view.date) ?? 0) / 100, 0);
+    out.push({...arc, rate: headlineRate(active, view.date), tradeUsd, dutyUsd, active});
+  }
+  return out;
+}
 
 export function today(): string {
   return new Date().toISOString().slice(0, 10);

@@ -36,6 +36,7 @@ a { color: var(--accent); }
 .pulse { width: 7px; height: 7px; border-radius: 50%; background: #19c37d; box-shadow: 0 0 8px #19c37d; animation: pulse 2s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .spacer { flex: 1; }
+.mode-badge { font: 500 11px var(--mono); color: rgb(232 170 60); background: rgb(201 133 0 / 0.12); border: 1px solid rgb(201 133 0 / 0.4); border-radius: 6px; padding: 4px 9px; letter-spacing: 0.02em; }
 .toggle { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--ink-2); cursor: pointer; user-select: none; }
 .toggle input { accent-color: var(--accent); }
 .zen-btn { background: rgb(255 255 255 / 0.06); border: 1px solid var(--panel-border); color: var(--ink-2); font: 500 11px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; cursor: pointer; }

@@ -2,6 +2,8 @@ node_modules/
 dist/
 data/cache/*
 !data/cache/comtrade/
+!data/cache/statcan/
+!data/cache/census/
 public/data/
 .wrangler/
 .env

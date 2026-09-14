@@ -3,7 +3,11 @@ import type {Viewport} from '@deck.gl/core';
 import type {Endpoint} from '../data/types';
 import {imposerColor, NEUTRAL_COLOR, withAlpha} from '../data/palette';
 
-export interface NodeDatum extends Endpoint {
+export interface NodeDatum extends Pick<Endpoint, 'iso3' | 'name' | 'lon' | 'lat'> {
+  /** Anchor place name (capital for countries and regions). */
+  capital: string;
+  /** Region id when this node is a state/province. */
+  region?: string;
   /** Total headline-rate weight, used for glow size. */
   weight: number;
   imposes: boolean;

@@ -1,10 +1,10 @@
 import {Deck, MapView, _GlobeView as GlobeView, LinearInterpolator, type PickingInfo} from '@deck.gl/core';
 import {ArcLayer} from '@deck.gl/layers';
 import {loadDataset, type Dataset} from './data/load';
-import {liveArcs, liveActions, today, type ViewState, type LiveArc} from './data/filter';
+import {liveArcs, liveRegionalArcs, liveActions, today, type ViewState, type LiveArc, type LiveRegionalArc} from './data/filter';
 import {imposerColor, rgbCss, withAlpha} from './data/palette';
 import {FlowArcLayer} from './layers/arcs';
-import {countriesLayer, oceanLayer, COLORS} from './layers/basemap';
+import {countriesLayer, admin1Layer, oceanLayer, COLORS} from './layers/basemap';
 import {nodeLayers, visibleLabels, type NodeDatum} from './layers/labels';
 import {showTooltip, hideTooltip} from './ui/tooltip';
 import {renderLegend} from './ui/legend';
@@ -46,8 +46,14 @@ let deck: Deck<MapView | GlobeView>;
 let upcoming: Upcoming[] = [];
 let playTimer: number | null = null;
 
+/** Zoom at which country arcs give way to province/state arcs where regional data exists. */
+const REGIONAL_ZOOM = 3;
+const ADMIN1_ZOOM = 2.4;
+const isRegional = () => camera.zoom >= REGIONAL_ZOOM;
+
 // Derived on every state change (not every frame).
 let arcs: LiveArc[] = [];
+let rarcs: LiveRegionalArc[] = [];
 let nodes: NodeDatum[] = [];
 let labels: NodeDatum[] = [];
 let involved = new Set<string>();
@@ -71,6 +77,7 @@ const renderTimelineBar = () => renderTimeline($('timeline'), timeline, timeline
 /* ---------- derived state ---------- */
 function recompute() {
   arcs = liveArcs(ds, state);
+  rarcs = liveRegionalArcs(ds, state);
   involved = new Set(arcs.flatMap(a => [a.imposer, a.target]));
 
   const weights = new Map<string, {w: number; imposes: boolean}>();
@@ -80,8 +87,13 @@ function recompute() {
     const t = weights.get(a.target) ?? {w: 0, imposes: false};
     t.w += a.rate; weights.set(a.target, t);
   }
-  nodes = ds.entities.filter(e => weights.has(e.iso3)).map(e => ({...e, ...weights.get(e.iso3)!, weight: weights.get(e.iso3)!.w}));
+  const countryNodes: NodeDatum[] = ds.entities.filter(e => weights.has(e.iso3)).map(e => ({...e, ...weights.get(e.iso3)!, weight: weights.get(e.iso3)!.w}));
+  const regionWeight = new Map<string, number>();
+  for (const a of rarcs) regionWeight.set(a.region, (regionWeight.get(a.region) ?? 0) + a.rate);
+  const regionNodes: NodeDatum[] = ds.regions.filter(x => regionWeight.has(x.id)).map(x => ({iso3: x.iso3, name: x.name, capital: x.anchor, lon: x.lon, lat: x.lat, region: x.id, weight: regionWeight.get(x.id)!, imposes: false}));
+  nodes = [...countryNodes, ...regionNodes];
   relabel();
+  $('modeBadge').hidden = !isRegional() || !rarcs.length;
 
   renderLegend($('legend'), ds, state.hidden, toggleImposer);
   renderTimelineBar();
@@ -93,11 +105,13 @@ function recompute() {
   });
 }
 
-/** Label culling depends only on the camera and the node set. */
+/** Label culling depends only on the camera and the node set (regions only exist zoomed in). */
 function relabel() {
   let viewport;
   try { viewport = deck?.isInitialized ? deck.getViewports()[0] : undefined; } catch { viewport = undefined; }
-  labels = visibleLabels(nodes, viewport, camera.zoom);
+  const shown = isRegional() ? nodes : nodes.filter(n => !n.region);
+  labels = visibleLabels(shown, viewport, camera.zoom);
+  $('modeBadge').hidden = !isRegional() || !rarcs.length;
 }
 
 /* ---------- actions ---------- */
@@ -146,13 +160,22 @@ function setFocus(iso3: string | null) {
   if (mode === 'globe' && state.focus) flyTo(state.focus);
 }
 
+/** Move the camera programmatically (deck only reports user-driven changes through onViewStateChange). */
+function setCamera(next: Partial<CameraState>, transitionMs = 0) {
+  camera = {...camera, ...next};
+  deck.setProps({
+    initialViewState: transitionMs
+      ? {...camera, transitionDuration: transitionMs, transitionInterpolator: new LinearInterpolator(['longitude', 'latitude', 'zoom'])}
+      : {...camera}
+  });
+  relabel();
+  render();
+}
+
 /** Rotate the globe so the focused country faces the viewer. */
 function flyTo(iso3: string) {
   const e = ds.entityByIso.get(iso3);
-  if (!e) return;
-  deck.setProps({
-    initialViewState: {...camera, longitude: e.lon, latitude: e.lat, transitionDuration: 900, transitionInterpolator: new LinearInterpolator(['longitude', 'latitude'])}
-  });
+  if (e) setCamera({longitude: e.lon, latitude: e.lat}, 900);
 }
 
 function setZen(on: boolean) {
@@ -173,49 +196,66 @@ function setFeedCollapsed(collapsed: boolean) {
 /* ---------- layers ---------- */
 function layers() {
   const m = VIEW_MODES[mode];
-  const dim = (a: LiveArc) => (!state.highlight || a.actionIds.includes(state.highlight) ? 1 : 0.12);
-  const color = (a: LiveArc, alpha: number) => withAlpha(imposerColor(a.imposer), Math.round(alpha * 255 * dim(a)));
+  const dim = (a: {actionIds: string[]}) => (!state.highlight || a.actionIds.includes(state.highlight) ? 1 : 0.12);
+  const color = (a: {imposer: string; actionIds: string[]}, alpha: number) => withAlpha(imposerColor(a.imposer), Math.round(alpha * 255 * dim(a)));
   // Width encodes dollars of imports covered (log scale: $100M → 1px, $10B → ~3px, $300B → 5px);
   // pairs without trade data fall back to rate.
-  const width = (a: LiveArc) =>
+  const width = (a: {tradeUsd?: number; rate: number}) =>
     a.tradeUsd !== undefined ? 0.7 + Math.max(0, Math.min(4.3, Math.log10(Math.max(a.tradeUsd, 1e7) / 1e8) * 1.25)) : 1 + Math.min(3, a.rate / 25);
   const trig = [state.highlight];
-  const arcCommon = {
-    data: arcs,
-    ...m.arc,
-    getSourcePosition: (a: LiveArc) => a.from,
-    getTargetPosition: (a: LiveArc) => a.to,
-    widthUnits: 'pixels' as const,
-    updateTriggers: {getSourceColor: trig, getTargetColor: trig}
+
+  // Zoomed in, pairs with regional data are drawn to provinces/states instead of the capital.
+  const regional = isRegional();
+  const regionalPairs = new Set(regional ? rarcs.map(a => `${a.imposer}>${a.target}`) : []);
+  const countryArcs = arcs.filter(a => !regionalPairs.has(a.id));
+  const shownRegional = regional ? rarcs : [];
+  const regionsInvolved = new Set(shownRegional.map(a => a.region));
+  const shownNodes = regional ? nodes : nodes.filter(n => !n.region);
+
+  type AnyArc = LiveArc | LiveRegionalArc;
+  const arcPair = (id: string, data: AnyArc[]) => {
+    const common = {
+      ...m.arc,
+      data,
+      getSourcePosition: (a: AnyArc) => a.from,
+      getTargetPosition: (a: AnyArc) => a.to,
+      widthUnits: 'pixels' as const,
+      updateTriggers: {getSourceColor: trig, getTargetColor: trig}
+    };
+    return [
+      new ArcLayer<AnyArc>({
+        ...common,
+        id: `base-${id}`,
+        getSourceColor: a => color(a, 0.16),
+        getTargetColor: a => color(a, 0.16),
+        getWidth: width,
+        pickable: true,
+        parameters: {cullMode: 'none'}
+      }),
+      new FlowArcLayer<AnyArc>({
+        ...common,
+        id: `flow-${id}`,
+        getSourceColor: a => color(a, 0.95),
+        getTargetColor: a => color(a, 0.95),
+        getWidth: a => width(a) + 0.8,
+        getPhase: a => hash(a.id),
+        getDensity: a => 1 + Math.min(3, Math.floor(a.rate / 25)),
+        getSpeed: 0.22,
+        tail: 0.3,
+        clock,
+        pickable: false,
+        parameters: {cullMode: 'none', blendColorOperation: 'add', blendColorSrcFactor: 'src-alpha', blendColorDstFactor: 'one', blendAlphaOperation: 'add', blendAlphaSrcFactor: 'one', blendAlphaDstFactor: 'one'}
+      })
+    ];
   };
 
   return [
     m.ocean ? oceanLayer() : null,
     countriesLayer(ds, {involved, focus: state.focus, wrapLongitude: m.wrapLongitude, onClick: setFocus}),
-    new ArcLayer<LiveArc>({
-      ...arcCommon,
-      id: 'base-arcs',
-      getSourceColor: a => color(a, 0.16),
-      getTargetColor: a => color(a, 0.16),
-      getWidth: width,
-      pickable: true,
-      parameters: {cullMode: 'none'}
-    }),
-    new FlowArcLayer<LiveArc>({
-      ...arcCommon,
-      id: 'flow-arcs',
-      getSourceColor: a => color(a, 0.95),
-      getTargetColor: a => color(a, 0.95),
-      getWidth: a => width(a) + 0.8,
-      getPhase: a => hash(a.id),
-      getDensity: a => 1 + Math.min(3, Math.floor(a.rate / 25)),
-      getSpeed: 0.22,
-      tail: 0.3,
-      clock,
-      pickable: false,
-      parameters: {cullMode: 'none', blendColorOperation: 'add', blendColorSrcFactor: 'src-alpha', blendColorDstFactor: 'one', blendAlphaOperation: 'add', blendAlphaSrcFactor: 'one', blendAlphaDstFactor: 'one'}
-    }),
-    ...nodeLayers(nodes, labels, camera.zoom)
+    camera.zoom >= ADMIN1_ZOOM ? admin1Layer(ds, {involved: regionsInvolved, emphasis: Math.min(1, (camera.zoom - ADMIN1_ZOOM) / (REGIONAL_ZOOM - ADMIN1_ZOOM))}) : null,
+    ...arcPair('arcs', countryArcs),
+    ...arcPair('rarcs', shownRegional),
+    ...nodeLayers(shownNodes, labels, camera.zoom)
   ];
 }
 
@@ -240,7 +280,7 @@ function makeDeck() {
     getCursor: ({isHovering}) => (isHovering ? 'pointer' : 'grab'),
     onLoad: () => { relabel(); render(); }
   });
-  if (import.meta.env.DEV) (window as unknown as {__deck: unknown}).__deck = deck;
+  if (import.meta.env.DEV) Object.assign(window, {__deck: deck, __setCamera: setCamera});
 }
 
 /* ---------- boot ---------- */
