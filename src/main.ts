@@ -181,7 +181,22 @@ function flyTo(iso3: string) {
   const e = ds.entityByIso.get(iso3);
   if (!e) return;
   const uprightLat = Math.max(-30, Math.min(30, e.lat * 0.5));
-  setCamera({longitude: e.lon, latitude: uprightLat}, 900);
+  setCamera({longitude: e.lon, latitude: uprightLat, zoom: continentZoom(iso3)}, 900);
+}
+
+/** A zoom that frames the country's continent: wide countries ~2.9, small ones ~3.2. */
+function continentZoom(iso3: string): number {
+  const nums = new Set(ds.entities.filter(x => (iso3 === 'EUN' ? x.eu : x.iso3 === iso3)).map(x => x.num));
+  let minLon = 180, maxLon = -180, minLat = 90, maxLat = -90;
+  const visit = (c: unknown) => {
+    if (typeof (c as number[])[0] === 'number') {
+      const [lon, lat] = c as [number, number];
+      minLon = Math.min(minLon, lon); maxLon = Math.max(maxLon, lon); minLat = Math.min(minLat, lat); maxLat = Math.max(maxLat, lat);
+    } else for (const child of c as unknown[]) visit(child);
+  };
+  for (const f of ds.countries.features) if (nums.has(String(f.id)) && f.geometry.type !== 'GeometryCollection') visit(f.geometry.coordinates);
+  const span = Math.max(1, Math.min(180, maxLon - minLon), (maxLat - minLat) * 1.4);
+  return Math.max(2.2, Math.min(3.2, Math.log2(360 / span) + 0.3));
 }
 
 /** Zoom at which the full 360° of the flat map exactly spans the viewport (no wrap, no gaps). */
