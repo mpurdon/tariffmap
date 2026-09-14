@@ -5,12 +5,16 @@
  *   meta.json          build provenance
  * `--offline` uses only the committed Comtrade cache.
  */
-import {readFileSync, writeFileSync, mkdirSync} from 'node:fs';
+import {readFileSync, writeFileSync, mkdirSync} from "node:fs";
+import "dotenv/config";
 import {resolve} from 'node:path';
 import {ALL, EU, targetsEveryone, tradeIso, type TariffAction, type Endpoint, type Arc, type Meta} from '../src/data/types';
 import {validateActions} from '../src/data/validate';
 import {coveredValue} from '../src/data/coverage';
 import {importTable} from './sources/comtrade';
+import {provinceExports, napcsFor, STATCAN_PARTNER} from './sources/statcan';
+import {stateExports, CENSUS_COUNTRY} from './sources/census';
+import type {Region, RegionalArc} from '../src/data/types';
 
 const ROOT = resolve(import.meta.dirname, '..');
 const OUT = resolve(ROOT, 'public/data');
@@ -85,15 +89,61 @@ for (const a of expanded) {
 }
 const withTrade = arcs.filter(a => a.trade).length;
 
+// ---- regional arcs: where in the target country the targeted goods come from
+// Canadian provinces: StatCan trailing-12-month domestic exports by NAPCS section (C$ → US$).
+// US states: Census annual exports by HS code (needs CENSUS_API_KEY).
+const CAD_USD = 0.73; // approximate 2025–26 average; provincial figures are indicative
+const regions: Region[] = JSON.parse(readFileSync(resolve(ROOT, 'public/geo/regions.json'), 'utf8')).regions;
+for (const a of expanded) a.napcs = napcsFor(a.hs);
+const regional: RegionalArc[] = [];
+const regionalByPair = new Map<string, RegionalArc[]>();
+for (const imposer of new Set(arcs.map(a => a.imposer))) {
+  const from = byIso.get(imposer)!;
+  const actsFor = (target: string) => expanded.filter(a => a.imposer === imposer && a.targets.includes(target));
+
+  // → Canadian provinces
+  const toCan = actsFor('CAN');
+  if (toCan.length && STATCAN_PARTNER[imposer]) {
+    const data = await provinceExports(STATCAN_PARTNER[imposer], OFFLINE);
+    if (data) {
+      for (const reg of regions.filter(x => x.iso3 === 'CAN')) {
+        const sections = data.cad[reg.statcan!] ?? {};
+        const byCode: Record<string, number> = {};
+        for (const [sec, cad] of Object.entries(sections)) byCode[`n${sec.padStart(2, '0')}`] = cad * CAD_USD;
+        byCode.TOTAL = Object.values(sections).reduce((s, v) => s + v, 0) * CAD_USD;
+        if (!byCode.TOTAL) continue;
+        regional.push({id: `${imposer}>${reg.id}`, imposer, target: 'CAN', region: reg.id, from: [from.lon, from.lat], to: [reg.lon, reg.lat], source: 'statcan', period: data.period, byCode, actionIds: toCan.map(x => x.id)});
+      }
+    }
+  }
+  // → US states
+  const toUsa = actsFor('USA');
+  if (toUsa.length && CENSUS_COUNTRY[imposer]) {
+    const headings = [...new Set(toUsa.flatMap(x => x.hs).filter(c => c.length === 4))];
+    const data = await stateExports(imposer, headings, TRADE_YEARS, OFFLINE);
+    if (data) {
+      for (const reg of regions.filter(x => x.iso3 === 'USA')) {
+        const codes = data.usd[reg.census!];
+        if (!codes) continue;
+        const byCode = {...codes, TOTAL: Object.entries(codes).filter(([c]) => c.length === 2).reduce((s, [, v]) => s + v, 0)};
+        if (!byCode.TOTAL) continue;
+        regional.push({id: `${imposer}>${reg.id}`, imposer, target: 'USA', region: reg.id, from: [from.lon, from.lat], to: [reg.lon, reg.lat], source: 'census', period: String(data.year), byCode, actionIds: toUsa.map(x => x.id)});
+      }
+    }
+  }
+}
+for (const ra of regional) (regionalByPair.get(`${ra.imposer}>${ra.target}`) ?? regionalByPair.set(`${ra.imposer}>${ra.target}`, []).get(`${ra.imposer}>${ra.target}`)!).push(ra);
+
 // ---- write
 mkdirSync(OUT, {recursive: true});
 const meta: Meta = {
   builtAt: new Date().toISOString(),
   actionsVerifiedThrough: actions.map(a => a.lastVerified).sort().at(-1)!,
   sources: {curated: 'data/curated/tariff-actions.json', trade: 'UN Comtrade (annual imports, reporter-side, USD)'},
-  counts: {actions: actions.length, arcs: arcs.length, arcsWithTrade: withTrade}
+  counts: {actions: actions.length, arcs: arcs.length, arcsWithTrade: withTrade, regionalArcs: regional.length, regionalPairs: regionalByPair.size}
 };
 writeFileSync(resolve(OUT, 'actions.json'), JSON.stringify(expanded));
 writeFileSync(resolve(OUT, 'arcs-country.json'), JSON.stringify(arcs));
+writeFileSync(resolve(OUT, 'arcs-regional.json'), JSON.stringify(regional));
 writeFileSync(resolve(OUT, 'meta.json'), JSON.stringify(meta, null, 2));
-console.log(`actions: ${actions.length}  pairs: ${arcs.length}  with trade: ${withTrade} (${missing} missing)  verified through: ${meta.actionsVerifiedThrough}`);
+console.log(`actions: ${actions.length}  pairs: ${arcs.length}  with trade: ${withTrade} (${missing} missing)  regional: ${regional.length} arcs over ${[...regionalByPair.keys()].join(', ') || 'none'}  verified through: ${meta.actionsVerifiedThrough}`);

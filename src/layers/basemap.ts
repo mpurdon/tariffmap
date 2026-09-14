@@ -23,6 +23,24 @@ export function oceanLayer() {
   });
 }
 
+/** State/province outlines, with a fill on regions that currently receive tariff arcs. */
+export function admin1Layer(ds: Dataset, opts: {involved: Set<string>; emphasis: number}) {
+  const key = [...opts.involved].sort().join(',');
+  return new GeoJsonLayer({
+    id: 'admin1',
+    data: ds.admin1,
+    stroked: true,
+    filled: true,
+    wrapLongitude: true,
+    lineWidthUnits: 'pixels',
+    getLineWidth: 0.5,
+    getLineColor: [78, 92, 130, Math.round(90 + 110 * opts.emphasis)],
+    getFillColor: (f: Feature) => (opts.involved.has(String(f.id)) ? [50, 64, 100, Math.round(140 * opts.emphasis)] : [0, 0, 0, 0]),
+    pickable: false,
+    updateTriggers: {getFillColor: [key, opts.emphasis], getLineColor: [opts.emphasis]}
+  });
+}
+
 export interface CountriesOpts {
   /** ISO3s (EU collapsed) that impose or receive something on the current view. */
   involved: Set<string>;

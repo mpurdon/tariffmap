@@ -29,7 +29,12 @@
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.16",
+    "@types/topojson-server": "^3.0.4",
+    "@types/topojson-simplify": "^3.0.3",
     "@types/topojson-specification": "^1.0.5",
+    "dotenv": "^17.4.2",
+    "topojson-server": "^3.0.1",
+    "topojson-simplify": "^3.0.3",
     "tsx": "^4.23.13",
     "wrangler": "^4.131.1"
   }

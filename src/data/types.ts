@@ -73,6 +73,8 @@ export interface TariffAction {
   dutyUsd?: number;
   /** Data year(s) behind the trade figures, e.g. "2025" or "2024–2025". */
   tradeYear?: string;
+  /** NAPCS sections (StatCan) the HS scope maps onto; filled in by the build. */
+  napcs?: number[];
 }
 
 /** Endpoint for arcs: a national capital or a sub-national region centroid. */
@@ -102,9 +104,38 @@ export interface Arc {
   trade?: {year: number; byCode: Record<string, number>};
 }
 
+/** A sub-national region (US state or Canadian province) with its arc anchor. */
+export interface Region {
+  id: string;
+  iso3: Iso3;
+  name: string;
+  anchor: string;
+  lon: number;
+  lat: number;
+  census?: string;
+  statcan?: number;
+}
+
+/**
+ * Imposer → region exports of the targeted goods. `byCode` is keyed by HS code (Census) or
+ * `n<section>` NAPCS section (StatCan) plus TOTAL, so measures can be unioned like country arcs.
+ */
+export interface RegionalArc {
+  id: string;
+  imposer: Iso3;
+  target: Iso3;
+  region: string;
+  from: [number, number];
+  to: [number, number];
+  source: 'census' | 'statcan';
+  period: string;
+  byCode: Record<string, number>;
+  actionIds: string[];
+}
+
 export interface Meta {
   builtAt: string;
   actionsVerifiedThrough: string;
   sources: Record<string, string>;
-  counts: {actions: number; arcs: number; arcsWithTrade?: number};
+  counts: {actions: number; arcs: number; arcsWithTrade?: number; regionalArcs?: number; regionalPairs?: number};
 }
