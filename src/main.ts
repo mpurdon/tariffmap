@@ -247,15 +247,22 @@ function layers() {
   const shownNodes = regional ? nodes : nodes.filter(n => !n.region);
 
   type AnyArc = LiveArc | LiveRegionalArc;
-  // On the flat map an arc must take the short way round: a target more than
-  // half a world east is really a short hop west across the antimeridian, so
-  // it is drawn to the target's copy in the neighbouring world (the repeated
-  // map shows every copy). The globe needs none of this.
+  // On the flat map every target exists in each repeated world copy, so an arc
+  // could bow east or west. Picking the geographically shorter way splits a
+  // bundle at the source's antipode (US→Thailand east, US→Vietnam west). Instead
+  // both ends are taken from the world copy centred on the view, so the arc
+  // joins the two points the viewer is actually looking at: with one world on
+  // screen no arc leaves the edges, and a bundle to one region always takes the
+  // same side. The globe needs none of this.
+  const fold = (lon: number) => ((((lon + 180) % 360) + 360) % 360) - 180;
   const nearestCopy = (from: [number, number], to: [number, number]): [number, number] => {
     if (!m.wrapLongitude) return to;
-    const d = to[0] - from[0];
-    return d > 180 ? [to[0] - 360, to[1]] : d < -180 ? [to[0] + 360, to[1]] : to;
+    const c = camera.longitude;
+    return [from[0] + fold(to[0] - c) - fold(from[0] - c), to[1]];
   };
+  // Coarse enough that panning doesn't rebuild the arcs every frame; a flip only
+  // happens when a midpoint crosses the far side of the world anyway.
+  const copyTrigger = m.wrapLongitude ? Math.round(camera.longitude / 5) : 0;
   const arcPair = (id: string, data: AnyArc[]) => {
     const common = {
       ...m.arc,
@@ -263,7 +270,7 @@ function layers() {
       getSourcePosition: (a: AnyArc) => a.from,
       getTargetPosition: (a: AnyArc) => nearestCopy(a.from, a.to),
       widthUnits: 'pixels' as const,
-      updateTriggers: {getSourceColor: trig, getTargetColor: trig, getTargetPosition: [m.wrapLongitude]}
+      updateTriggers: {getSourceColor: trig, getTargetColor: trig, getTargetPosition: [copyTrigger]}
     };
     return [
       new ArcLayer<AnyArc>({
