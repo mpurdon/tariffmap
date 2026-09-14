@@ -172,10 +172,16 @@ function setCamera(next: Partial<CameraState>, transitionMs = 0) {
   render();
 }
 
-/** Rotate the globe so the focused country faces the viewer. */
+/**
+ * Rotate the globe so the focused country faces the viewer with the earth upright:
+ * the view latitude is pulled toward the equator so the poles stay at the top/bottom
+ * rather than tipping toward the camera, while the country stays well inside the disc.
+ */
 function flyTo(iso3: string) {
   const e = ds.entityByIso.get(iso3);
-  if (e) setCamera({longitude: e.lon, latitude: e.lat}, 900);
+  if (!e) return;
+  const uprightLat = Math.max(-30, Math.min(30, e.lat * 0.5));
+  setCamera({longitude: e.lon, latitude: uprightLat}, 900);
 }
 
 /** Zoom at which the full 360° of the flat map exactly spans the viewport (no wrap, no gaps). */
