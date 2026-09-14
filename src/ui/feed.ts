@@ -51,7 +51,7 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
 
   const future = upcoming.filter(u => u.date > date && involves(ds.actionsById.get(u.id)!, focus));
   const upcomingHtml = future.length
-    ? `<details class="upcoming" open><summary>Scheduled <span class="count">${future.length}</span></summary><ul>${future
+    ? `<details class="upcoming"><summary>Scheduled <span class="count">${future.length}</span></summary><ul>${future
         .map(u => `<li class="up ${u.kind}"><button data-jump="${u.date}" title="View the map on this date"><time>${fmtDate(u.date)}</time><span class="up-kind">${u.kind === 'start' ? 'starts' : u.kind === 'end' ? 'ends' : `${u.rate}%`}</span><span class="up-title">${u.title}</span></button></li>`)
         .join('')}</ul></details>`
     : '';

@@ -1,4 +1,4 @@
-import {Deck, MapView, _GlobeView as GlobeView, LinearInterpolator, type PickingInfo} from '@deck.gl/core';
+import {Deck, MapView, _GlobeView as GlobeView, LinearInterpolator, FlyToInterpolator, type PickingInfo} from '@deck.gl/core';
 import {ArcLayer} from '@deck.gl/layers';
 import {loadDataset, type Dataset} from './data/load';
 import {liveArcs, liveRegionalArcs, liveActions, today, type ViewState, type LiveArc, type LiveRegionalArc} from './data/filter';
@@ -19,8 +19,9 @@ import './styles.css';
 type CameraState = {longitude: number; latitude: number; zoom: number; [k: string]: unknown};
 const VIEW_MODES = {
   map: {
-    makeView: () => new MapView({id: 'map', repeat: true}),
-    camera: {longitude: 12, latitude: 24, zoom: 1.3, minZoom: 0.8, maxZoom: 9, pitch: 0, bearing: 0} as CameraState,
+    // No world repeat: one copy of every arc, and zen mode fits the whole map to the viewport.
+    makeView: () => new MapView({id: 'map', repeat: false}),
+    camera: {longitude: 12, latitude: 24, zoom: 1.3, minZoom: 1, maxZoom: 9, pitch: 0, bearing: 0} as CameraState,
     ocean: false,
     wrapLongitude: true,
     // Flat arcs bow sideways in the screen plane; reciprocal pairs bow to opposite sides.
@@ -163,10 +164,9 @@ function setFocus(iso3: string | null) {
 /** Move the camera programmatically (deck only reports user-driven changes through onViewStateChange). */
 function setCamera(next: Partial<CameraState>, transitionMs = 0) {
   camera = {...camera, ...next};
+  const interpolator = mode === 'map' ? new FlyToInterpolator({speed: 2}) : new LinearInterpolator(['longitude', 'latitude', 'zoom']);
   deck.setProps({
-    initialViewState: transitionMs
-      ? {...camera, transitionDuration: transitionMs, transitionInterpolator: new LinearInterpolator(['longitude', 'latitude', 'zoom'])}
-      : {...camera}
+    initialViewState: transitionMs ? {...camera, transitionDuration: transitionMs, transitionInterpolator: interpolator} : {...camera}
   });
   relabel();
   render();
@@ -178,10 +178,21 @@ function flyTo(iso3: string) {
   if (e) setCamera({longitude: e.lon, latitude: e.lat}, 900);
 }
 
+/** Zoom at which the full 360° of the flat map exactly spans the viewport (no wrap, no gaps). */
+const fitZoom = () => Math.log2(window.innerWidth / 512);
+
 function setZen(on: boolean) {
   document.body.classList.toggle('zen', on);
   ($('zenExit') as HTMLButtonElement).hidden = !on;
+  ($('zenCredit') as HTMLDivElement).hidden = !on;
   hideTooltip();
+  if (on && mode === 'map') {
+    // Centre the world and stop the user zooming out past a single, unwrapped copy.
+    const z = Math.max(fitZoom(), 0.5);
+    setCamera({longitude: 10, latitude: 18, zoom: z, minZoom: z}, 600);
+  } else if (!on && mode === 'map') {
+    setCamera({minZoom: VIEW_MODES.map.camera.minZoom as number});
+  }
 }
 const isZen = () => document.body.classList.contains('zen');
 
@@ -190,6 +201,7 @@ function setFeedCollapsed(collapsed: boolean) {
   const btn = $('feedToggle');
   btn.setAttribute('aria-expanded', String(!collapsed));
   btn.title = collapsed ? 'Expand panel' : 'Collapse panel';
+  ($('panelToggle') as HTMLInputElement).checked = !collapsed;
   try { localStorage.setItem('feedCollapsed', String(collapsed)); } catch { /* private mode */ }
 }
 
@@ -310,6 +322,10 @@ async function main() {
   $('zenToggle').addEventListener('click', () => setZen(true));
   $('zenExit').addEventListener('click', () => setZen(false));
   $('feedToggle').addEventListener('click', () => setFeedCollapsed(!document.body.classList.contains('feed-collapsed')));
+  const panelToggle = $('panelToggle') as HTMLInputElement;
+  panelToggle.addEventListener('change', () => setFeedCollapsed(!panelToggle.checked));
+  $('zenCredit').querySelector('[data-year]')!.textContent = String(new Date().getUTCFullYear());
+  window.addEventListener('resize', () => { if (isZen() && mode === 'map') setCamera({minZoom: Math.max(fitZoom(), 0.5)}); });
   try { if (localStorage.getItem('feedCollapsed') === 'true') setFeedCollapsed(true); } catch { /* ignore */ }
 
   window.addEventListener('keydown', e => {
