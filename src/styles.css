@@ -50,9 +50,9 @@ body.zen #topbar, body.zen .feed, body.zen .feed-toggle, body.zen .legend, body.
 
 /* Feed drawer toggle: a clear amber tab on the panel's edge, chevron centred */
 .feed-toggle {
-  position: fixed; top: 50%; right: calc(var(--feed-inset) - 14px); transform: translate(50%, -50%); z-index: 5;
+  position: fixed; top: 50%; right: calc(var(--feed-inset) - 14px); transform: translate(0, -50%); z-index: 5;
   display: flex; align-items: center; justify-content: center;
-  width: 30px; height: 84px; border-radius: 9px; border: 1px solid rgb(232 170 60 / 0.55);
+  width: 36px; height: 84px; border-radius: 9px 0 0 9px; border: 1px solid rgb(232 170 60 / 0.55); border-right: 0;
   background: rgb(201 133 0 / 0.55); color: #fff3dc; backdrop-filter: blur(6px);
   box-shadow: 0 0 0 3px rgb(9 13 26 / 0.8);
   cursor: pointer; padding: 0; transition: right 0.25s ease, background 0.15s ease, color 0.15s ease;
@@ -60,7 +60,7 @@ body.zen #topbar, body.zen .feed, body.zen .feed-toggle, body.zen .legend, body.
 .feed-toggle:hover { background: rgb(228 150 30 / 0.85); color: #fff; }
 .feed-toggle svg { display: block; transition: transform 0.25s; }
 body.feed-collapsed .feed { transform: translateX(calc(100% + 14px)); }
-body.feed-collapsed .feed-toggle { right: 0; transform: translate(0, -50%); border-radius: 9px 0 0 9px; width: 36px; }
+body.feed-collapsed .feed-toggle { right: 0; }
 body.feed-collapsed .feed-toggle svg { transform: scaleX(-1); }
 
 /* Feed */
