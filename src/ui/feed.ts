@@ -3,7 +3,7 @@ import {entityName} from '../data/load';
 import {hsLabelOf, type TariffAction} from '../data/types';
 import {flag} from './flag';
 import {fmtDate, fmtRate, moneyHtml} from './format';
-import {involves, type SortKey, type ViewState} from '../data/filter';
+import {involves, type Direction, type SortKey, type ViewState} from '../data/filter';
 import {endDate, rateOn} from '../data/rate';
 import type {Upcoming} from '../data/timeline';
 
@@ -12,7 +12,14 @@ export interface FeedCallbacks {
   onFocus: (iso3: string | null) => void;
   onSort: (key: SortKey) => void;
   onJump: (date: string) => void;
+  onDirection: (d: Direction) => void;
 }
+
+const DIRECTIONS: {key: Direction; label: string; title: string}[] = [
+  {key: 'in', label: 'In', title: 'Tariffs imposed on the focused country'},
+  {key: 'both', label: 'Both', title: 'Everything involving the focused country'},
+  {key: 'out', label: 'Out', title: 'Tariffs the focused country imposes'}
+];
 
 const SORTS: {key: SortKey; label: string; title: string}[] = [
   {key: 'date', label: 'Newest', title: 'Most recently in force first'},
@@ -34,7 +41,7 @@ function lifecycle(a: TariffAction, date: string): string {
 }
 
 export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[], view: ViewState, upcoming: Upcoming[], cb: FeedCallbacks) {
-  const {focus, date, sort} = view;
+  const {focus, date, sort, direction} = view;
   const name = (iso: string) => entityName(ds, iso);
   const targetsLabel = (a: TariffAction) =>
     a.targets.length > 4
@@ -44,12 +51,14 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
   const hasValue = actions.some(a => a.tradeUsd);
   const sortBar = `<div class="sort" role="group" aria-label="Sort">${SORTS.map(
     s => `<button data-sort="${s.key}" class="${s.key === sort ? 'on' : ''}" title="${s.title}"${s.key === 'value' && !hasValue ? ' disabled' : ''}>${s.label}</button>`
-  ).join('')}</div>`;
+  ).join('')}<div class="direction${focus ? '' : ' off'}" role="group" aria-label="Direction" title="${focus ? 'Direction relative to ' + name(focus) : 'Click a country to filter by direction'}">${DIRECTIONS.map(
+    d => `<button data-dir="${d.key}" class="${d.key === direction ? 'on' : ''}" title="${d.title}"${focus ? '' : ' disabled'}>${d.label}</button>`
+  ).join('')}</div></div>`;
   const head = focus
     ? `<div class="feed-head"><button class="back" data-back>←</button>${flag(ds, focus, {size: 'lg'})}<h2>${name(focus)}</h2><span class="count">${actions.length} in force</span>${sortBar}</div>`
     : `<div class="feed-head"><h2>Tariffs in force</h2><span class="count">${actions.length}</span>${sortBar}</div>`;
 
-  const future = upcoming.filter(u => u.date > date && involves(ds.actionsById.get(u.id)!, focus));
+  const future = upcoming.filter(u => u.date > date && involves(ds.actionsById.get(u.id)!, focus, direction));
   const upcomingHtml = future.length
     ? `<details class="upcoming"><summary>Scheduled <span class="count">${future.length}</span></summary><ul>${future
         .map(u => `<li class="up ${u.kind}"><button data-jump="${u.date}" title="View the map on this date"><time>${fmtDate(u.date)}</time><span class="up-kind">${u.kind === 'start' ? 'starts' : u.kind === 'end' ? 'ends' : `${u.rate}%`}</span><span class="up-title">${u.title}</span></button></li>`)
@@ -80,6 +89,7 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
   el.innerHTML = `${head}${upcomingHtml}<ul class="feed-list">${items || '<li class="empty">Nothing in force on this date.</li>'}</ul>${FOOTER}`;
   el.querySelector('[data-back]')?.addEventListener('click', () => cb.onFocus(null));
   el.querySelectorAll<HTMLButtonElement>('[data-sort]').forEach(b => b.addEventListener('click', () => cb.onSort(b.dataset.sort as SortKey)));
+  el.querySelectorAll<HTMLButtonElement>('[data-dir]').forEach(b => b.addEventListener('click', () => cb.onDirection(b.dataset.dir as Direction)));
   el.querySelectorAll<HTMLButtonElement>('[data-jump]').forEach(b => b.addEventListener('click', () => cb.onJump(b.dataset.jump!)));
   el.querySelectorAll<HTMLLIElement>('.item').forEach(li => {
     li.addEventListener('mouseenter', () => cb.onHover(li.dataset.id!));
