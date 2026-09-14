@@ -248,14 +248,23 @@ function layers() {
   const shownNodes = regional ? nodes : nodes.filter(n => !n.region);
 
   type AnyArc = LiveArc | LiveRegionalArc;
+  // On the flat map an arc must take the short way round: a target more than
+  // half a world east is really a short hop west across the antimeridian, so
+  // it is drawn to the target's copy in the neighbouring world (the repeated
+  // map shows every copy). The globe needs none of this.
+  const nearestCopy = (from: [number, number], to: [number, number]): [number, number] => {
+    if (!m.wrapLongitude) return to;
+    const d = to[0] - from[0];
+    return d > 180 ? [to[0] - 360, to[1]] : d < -180 ? [to[0] + 360, to[1]] : to;
+  };
   const arcPair = (id: string, data: AnyArc[]) => {
     const common = {
       ...m.arc,
       data,
       getSourcePosition: (a: AnyArc) => a.from,
-      getTargetPosition: (a: AnyArc) => a.to,
+      getTargetPosition: (a: AnyArc) => nearestCopy(a.from, a.to),
       widthUnits: 'pixels' as const,
-      updateTriggers: {getSourceColor: trig, getTargetColor: trig}
+      updateTriggers: {getSourceColor: trig, getTargetColor: trig, getTargetPosition: [m.wrapLongitude]}
     };
     return [
       new ArcLayer<AnyArc>({
