@@ -30,9 +30,12 @@ export interface ViewState {
   hidden: Set<string>;
   /** Feed ordering. */
   sort: SortKey;
+  /** With a focused country: measures it faces (in), imposes (out), or both. */
+  direction: Direction;
 }
 
 export type SortKey = 'date' | 'rate' | 'value';
+export type Direction = 'in' | 'both' | 'out';
 
 /** A regional arc resolved for the viewed date. */
 export interface LiveRegionalArc extends RegionalArc {
@@ -49,7 +52,7 @@ export function liveRegionalArcs(ds: Dataset, view: ViewState): LiveRegionalArc[
   const out: LiveRegionalArc[] = [];
   for (const arc of ds.regional) {
     if (view.hidden.has(arc.imposer)) continue;
-    if (!involves({imposer: arc.imposer, targets: [arc.target]}, view.focus)) continue;
+    if (!involves({imposer: arc.imposer, targets: [arc.target]}, view.focus, view.direction)) continue;
     const active = arc.actionIds.map(id => ds.actionsById.get(id)!).filter(a => isActiveOn(a, view.date));
     if (!active.length) continue;
     const codesOf = (a: TariffAction) => regionalCodes(a, arc.source);
@@ -66,15 +69,19 @@ export function today(): string {
 }
 
 /** Does the focused country impose or receive this measure? (No focus = everything.) */
-export const involves = (a: Pick<TariffAction, 'imposer' | 'targets'>, focus: string | null) =>
-  !focus || a.imposer === focus || a.targets.includes(focus);
+export const involves = (a: Pick<TariffAction, 'imposer' | 'targets'>, focus: string | null, direction: Direction = 'both') => {
+  if (!focus) return true;
+  const out = a.imposer === focus;
+  const inbound = a.targets.includes(focus);
+  return direction === 'out' ? out : direction === 'in' ? inbound : out || inbound;
+};
 
 /** Resolve every arc's headline rate on the given date; drop arcs with nothing in force. */
 export function liveArcs(ds: Dataset, view: ViewState): LiveArc[] {
   const out: LiveArc[] = [];
   for (const arc of ds.arcs) {
     if (view.hidden.has(arc.imposer)) continue;
-    if (!involves({imposer: arc.imposer, targets: [arc.target]}, view.focus)) continue;
+    if (!involves({imposer: arc.imposer, targets: [arc.target]}, view.focus, view.direction)) continue;
     const active = arc.actionIds.map(id => ds.actionsById.get(id)!).filter(a => isActiveOn(a, view.date));
     if (!active.length) continue;
     const broad = active.filter(coversAllGoods);
@@ -99,6 +106,6 @@ export function liveActions(ds: Dataset, view: ViewState): TariffAction[] {
   const byValue = (a: TariffAction, b: TariffAction) => (b.tradeUsd ?? -1) - (a.tradeUsd ?? -1) || byRate(a, b);
   const cmp = view.sort === 'rate' ? byRate : view.sort === 'value' ? byValue : byDate;
   return ds.actions
-    .filter(a => isActiveOn(a, view.date) && !view.hidden.has(a.imposer) && involves(a, view.focus))
+    .filter(a => isActiveOn(a, view.date) && !view.hidden.has(a.imposer) && involves(a, view.focus, view.direction))
     .sort(cmp);
 }

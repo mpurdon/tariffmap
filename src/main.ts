@@ -38,7 +38,7 @@ const VIEW_MODES = {
 type ModeName = keyof typeof VIEW_MODES;
 
 /* ---------- state ---------- */
-const state: ViewState = {date: today(), focus: null, highlight: null, hidden: new Set(), sort: 'date'};
+const state: ViewState = {date: today(), focus: null, highlight: null, hidden: new Set(), sort: 'date', direction: 'both'};
 const timeline: TimelineState = {steps: [], index: 0, playing: false, delayMs: 1000};
 let mode: ModeName = 'map';
 let camera: CameraState = {...VIEW_MODES.map.camera};
@@ -102,7 +102,8 @@ function recompute() {
     onHover: id => { state.highlight = id; render(); },
     onFocus: setFocus,
     onSort: key => { state.sort = key; recompute(); render(); },
-    onJump: date => { const i = timeline.steps.findIndex(s => s.date === date); if (i >= 0) setStep(i); }
+    onJump: date => { const i = timeline.steps.findIndex(s => s.date === date); if (i >= 0) setStep(i); },
+    onDirection: d => { state.direction = d; recompute(); render(); }
   });
 }
 

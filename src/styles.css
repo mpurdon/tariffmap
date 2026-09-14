@@ -71,7 +71,12 @@ body.feed-collapsed .feed-toggle svg { transform: scaleX(-1); }
   transition: transform 0.25s ease;
 }
 .feed-head { position: sticky; top: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 16px 10px; background: linear-gradient(var(--panel) 80%, transparent); z-index: 1; }
-.feed-head .sort { flex-basis: 100%; display: flex; gap: 4px; }
+.feed-head .sort { flex-basis: 100%; display: flex; gap: 4px; align-items: center; }
+.feed-head .direction { margin-left: auto; display: inline-flex; border: 1px solid var(--panel-border); border-radius: 6px; overflow: hidden; }
+.feed-head .direction button { border-radius: 0; border: 0; background: none; padding: 4px 8px; }
+.feed-head .direction button + button { border-left: 1px solid var(--panel-border); }
+.feed-head .direction button.on { background: rgb(57 135 229 / 0.25); color: var(--ink); }
+.feed-head .direction.off { opacity: 0.4; }
 .feed-head .sort button { font: 500 10.5px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); background: rgb(255 255 255 / 0.04); border: 1px solid transparent; border-radius: 6px; padding: 4px 9px; cursor: pointer; }
 .feed-head .sort button:hover:not(:disabled) { color: var(--ink-2); }
 .feed-head .sort button.on { color: var(--ink); border-color: var(--panel-border); background: rgb(255 255 255 / 0.08); }
