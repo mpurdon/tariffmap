@@ -19,9 +19,10 @@ import './styles.css';
 type CameraState = {longitude: number; latitude: number; zoom: number; [k: string]: unknown};
 const VIEW_MODES = {
   map: {
-    // No world repeat: one copy of every arc, and zen mode fits the whole map to the viewport.
-    makeView: () => new MapView({id: 'map', repeat: false}),
-    camera: {longitude: 12, latitude: 24, zoom: 1.3, minZoom: 1, maxZoom: 9, pitch: 0, bearing: 0} as CameraState,
+    // The map wraps: panning past an edge slides the far side in instead of snapping back.
+    // The zoom floor keeps a single world on screen at rest (zen fits it exactly).
+    makeView: () => new MapView({id: 'map', repeat: true}),
+    camera: {longitude: 12, latitude: 24, zoom: 1.3, minZoom: 1.2, maxZoom: 9, pitch: 0, bearing: 0} as CameraState,
     ocean: false,
     wrapLongitude: true,
     // Flat arcs bow sideways in the screen plane; reciprocal pairs bow to opposite sides.
