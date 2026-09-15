@@ -203,6 +203,14 @@ function continentZoom(iso3: string): number {
 
 /** Zoom at which the full 360° of the flat map exactly spans the viewport (no wrap, no gaps). */
 const fitZoom = () => Math.log2(window.innerWidth / 512);
+/**
+ * Flat-map zoom floor: never show more than one copy of the world at rest, or a
+ * wide screen sees a second Asia with arcs arriving from off the far edge. Zen
+ * fits the world exactly; the normal view also keeps its own minimum.
+ */
+const mapMinZoom = () => Math.max(fitZoom(), isZen() ? 0.5 : (VIEW_MODES.map.camera.minZoom as number));
+
+const isZen = () => document.body.classList.contains('zen');
 
 function setZen(on: boolean) {
   document.body.classList.toggle('zen', on);
@@ -210,14 +218,14 @@ function setZen(on: boolean) {
   ($('zenCredit') as HTMLDivElement).hidden = !on;
   hideTooltip();
   if (on && mode === 'map') {
-    // Centre the world and stop the user zooming out past a single, unwrapped copy.
-    const z = Math.max(fitZoom(), 0.5);
+    // Centre the world at exactly one copy.
+    const z = mapMinZoom();
     setCamera({longitude: 10, latitude: 18, zoom: z, minZoom: z}, 600);
   } else if (!on && mode === 'map') {
-    setCamera({minZoom: VIEW_MODES.map.camera.minZoom as number});
+    const z = mapMinZoom();
+    setCamera({minZoom: z, zoom: Math.max(camera.zoom, z)});
   }
 }
-const isZen = () => document.body.classList.contains('zen');
 
 function setFeedCollapsed(collapsed: boolean) {
   document.body.classList.toggle('feed-collapsed', collapsed);
@@ -316,10 +324,14 @@ function render() {
 function makeDeck() {
   const m = VIEW_MODES[mode];
   camera = {...m.camera};
+  if (mode === 'map') {
+    const z = mapMinZoom();
+    camera = {...camera, minZoom: z, zoom: Math.max(camera.zoom as number, z)};
+  }
   deck = new Deck({
     parent: $('map') as HTMLDivElement,
     views: m.makeView(),
-    initialViewState: m.camera,
+    initialViewState: camera,
     controller: {inertia: 250},
     layers: [],
     _animate: motion,
@@ -361,7 +373,11 @@ async function main() {
   $('zenExit').addEventListener('click', () => setZen(false));
   $('feedToggle').addEventListener('click', () => setFeedCollapsed(!document.body.classList.contains('feed-collapsed')));
   $('zenCredit').querySelector('[data-year]')!.textContent = String(new Date().getUTCFullYear());
-  window.addEventListener('resize', () => { if (isZen() && mode === 'map') setCamera({minZoom: Math.max(fitZoom(), 0.5)}); });
+  window.addEventListener('resize', () => {
+    if (mode !== 'map') return;
+    const z = mapMinZoom();
+    setCamera({minZoom: z, zoom: Math.max(camera.zoom, z)});
+  });
   try { if (localStorage.getItem('feedCollapsed') === 'true') setFeedCollapsed(true); } catch { /* ignore */ }
 
   window.addEventListener('keydown', e => {
