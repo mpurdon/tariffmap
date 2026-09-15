@@ -1,6 +1,8 @@
 :root {
   --bg: #090d1a;
   --panel: rgb(14 19 34 / 0.88);
+  /* Same ink as --panel, opaque enough to sit over scrolling content. */
+  --panel-solid: rgb(14 19 34 / 0.96);
   --panel-border: rgb(88 104 140 / 0.28);
   --ink: #e6eaf5;
   --ink-2: #9aa6c4;
@@ -72,7 +74,6 @@ body.feed-collapsed .feed-toggle svg { transform: scaleX(-1); }
   transition: transform 0.25s ease;
   display: flex; flex-direction: column;
 }
-.feed > * { flex-shrink: 0; }
 .feed-head { position: sticky; top: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 16px 10px; background: linear-gradient(var(--panel) 80%, transparent); z-index: 1; }
 .feed-head .sort { flex-basis: 100%; display: flex; gap: 4px; align-items: center; }
 .feed-head .direction { margin-left: auto; display: inline-flex; border: 1px solid var(--panel-border); border-radius: 6px; overflow: hidden; }
@@ -135,7 +136,7 @@ body.feed-collapsed .feed-toggle svg { transform: scaleX(-1); }
 /* Footer (inside the feed): pinned to the panel's bottom edge, over the list when it scrolls */
 .site-footer {
   position: sticky; bottom: 0; margin: auto 8px 0; padding: 12px 10px 10px;
-  border-top: 1px solid var(--panel-border); background: rgb(14 19 34 / 0.97);
+  border-top: 1px solid var(--panel-border); background: var(--panel-solid);
   font-size: 11px; line-height: 1.45; color: var(--ink-3);
 }
 .site-footer p { margin: 0 0 6px; }
@@ -205,7 +206,7 @@ body.feed-collapsed .feed-toggle svg { transform: scaleX(-1); }
 /* Tooltip */
 .tooltip {
   position: fixed; top: 0; left: 0; z-index: 10; max-width: 340px; pointer-events: none;
-  background: rgb(14 19 34 / 0.96); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px 12px;
+  background: var(--panel-solid); border: 1px solid var(--panel-border); border-radius: 8px; padding: 10px 12px;
   font-size: 12.5px; box-shadow: 0 8px 30px rgb(0 0 0 / 0.5);
 }
 .tt-head { display: flex; align-items: center; gap: 8px; font-weight: 600; }
@@ -226,6 +227,6 @@ body.feed-collapsed .feed-toggle svg { transform: scaleX(-1); }
   .timeline .asof, .timeline .delay, .timeline .credit { display: none; }
   .timeline .tick.month b { font-size: 8px; }
   .controls { margin-right: 0; gap: 10px; }
-  .freshness { display: none; }
+  .freshness, .mode-badge { display: none; }
   .feed-toggle { display: none; }
 }

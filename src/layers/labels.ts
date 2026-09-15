@@ -2,6 +2,15 @@ import {ScatterplotLayer, TextLayer} from '@deck.gl/layers';
 import type {Viewport} from '@deck.gl/core';
 import type {Endpoint} from '../data/types';
 import {imposerColor, NEUTRAL_COLOR, withAlpha} from '../data/palette';
+import {COLORS} from './basemap';
+
+/** Label metrics shared by the culling boxes and the TextLayer so they can't drift apart. */
+const LABEL_PX = 12;
+/** Pixels the label centre sits above its node. */
+const LABEL_LIFT = 14;
+/** Monospace advance width, in ems. */
+const LABEL_ADVANCE = 0.62;
+const LABEL_PAD = 4;
 
 export interface NodeDatum extends Pick<Endpoint, 'iso3' | 'name' | 'lon' | 'lat'> {
   /** Anchor place name (capital for countries and regions). */
@@ -27,8 +36,8 @@ export function visibleLabels(nodes: NodeDatum[], viewport: Viewport | undefined
   const out: NodeDatum[] = [];
   for (const d of ranked) {
     const [x, y] = viewport.project([d.lon, d.lat]);
-    const w = d.name.length * 7.4 + 8, h = 16;
-    const box = {x0: x - w / 2, x1: x + w / 2, y0: y - 14 - h, y1: y - 14 + 4};
+    const w = d.name.length * LABEL_PX * LABEL_ADVANCE + 2 * LABEL_PAD, cy = y - LABEL_LIFT;
+    const box = {x0: x - w / 2, x1: x + w / 2, y0: cy - LABEL_PX / 2 - LABEL_PAD, y1: cy + LABEL_PX / 2 + LABEL_PAD};
     if (placed.some(p => box.x0 < p.x1 && box.x1 > p.x0 && box.y0 < p.y1 && box.y1 > p.y0)) continue;
     placed.push(box);
     out.push(d);
@@ -68,15 +77,15 @@ export function nodeLayers(nodes: NodeDatum[], labels: NodeDatum[], zoom: number
       data: labels,
       getPosition: d => [d.lon, d.lat],
       getText: d => d.name.toUpperCase(),
-      getSize: 12,
+      getSize: LABEL_PX,
       sizeUnits: 'pixels',
       getColor: [226, 232, 246, 255],
-      getPixelOffset: [0, -14],
+      getPixelOffset: [0, -LABEL_LIFT],
       fontFamily: '"IBM Plex Mono", "SF Mono", Menlo, monospace',
       fontWeight: 600,
       characterSet: 'auto',
       outlineWidth: 4,
-      outlineColor: [9, 13, 26, 255],
+      outlineColor: COLORS.ocean,
       // Oversized SDF atlas so glyphs stay smooth at 12px instead of ragged.
       fontSettings: {sdf: true, fontSize: 128, buffer: 12, radius: 16, cutoff: 0.22, smoothing: 0.06},
       // Arcs are raised above the map; skip the depth test so labels always sit on top of them.

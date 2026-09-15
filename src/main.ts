@@ -20,7 +20,7 @@ type CameraState = {longitude: number; latitude: number; zoom: number; [k: strin
 const VIEW_MODES = {
   map: {
     // The map wraps: panning past an edge slides the far side in instead of snapping back.
-    // The zoom floor keeps a single world on screen at rest (zen fits it exactly).
+    // minZoom is the absolute floor; mapMinZoom() raises it to fit one world.
     makeView: () => new MapView({id: 'map', repeat: true}),
     camera: {longitude: 12, latitude: 24, zoom: 1.3, minZoom: 1.2, maxZoom: 9, pitch: 0, bearing: 0} as CameraState,
     ocean: false,
@@ -203,28 +203,29 @@ function continentZoom(iso3: string): number {
 
 /** Zoom at which the full 360° of the flat map exactly spans the viewport (no wrap, no gaps). */
 const fitZoom = () => Math.log2(window.innerWidth / 512);
+const isZen = () => document.body.classList.contains('zen');
 /**
  * Flat-map zoom floor: never show more than one copy of the world at rest, or a
  * wide screen sees a second Asia with arcs arriving from off the far edge. Zen
  * fits the world exactly; the normal view also keeps its own minimum.
  */
 const mapMinZoom = () => Math.max(fitZoom(), isZen() ? 0.5 : (VIEW_MODES.map.camera.minZoom as number));
-
-const isZen = () => document.body.classList.contains('zen');
+/** Camera patch that applies the floor and lifts the current zoom up to it. */
+const zoomFloor = (): Partial<CameraState> => {
+  const z = mapMinZoom();
+  return {minZoom: z, zoom: Math.max(camera.zoom, z)};
+};
 
 function setZen(on: boolean) {
   document.body.classList.toggle('zen', on);
   ($('zenExit') as HTMLButtonElement).hidden = !on;
   ($('zenCredit') as HTMLDivElement).hidden = !on;
   hideTooltip();
-  if (on && mode === 'map') {
-    // Centre the world at exactly one copy.
-    const z = mapMinZoom();
-    setCamera({longitude: 10, latitude: 18, zoom: z, minZoom: z}, 600);
-  } else if (!on && mode === 'map') {
-    const z = mapMinZoom();
-    setCamera({minZoom: z, zoom: Math.max(camera.zoom, z)});
-  }
+  if (mode !== 'map') return;
+  // Zen centres the world at exactly one copy; leaving it just re-applies the floor.
+  const z = mapMinZoom();
+  if (on) setCamera({longitude: 10, latitude: 18, zoom: z, minZoom: z}, 600);
+  else setCamera(zoomFloor());
 }
 
 function setFeedCollapsed(collapsed: boolean) {
@@ -262,23 +263,20 @@ function layers() {
   // joins the two points the viewer is actually looking at: with one world on
   // screen no arc leaves the edges, and a bundle to one region always takes the
   // same side. The globe needs none of this.
-  const fold = (lon: number) => ((((lon + 180) % 360) + 360) % 360) - 180;
-  const nearestCopy = (from: [number, number], to: [number, number]): [number, number] => {
-    if (!m.wrapLongitude) return to;
-    const c = camera.longitude;
-    return [from[0] + fold(to[0] - c) - fold(from[0] - c), to[1]];
-  };
-  // Coarse enough that panning doesn't rebuild the arcs every frame; a flip only
-  // happens when a midpoint crosses the far side of the world anyway.
-  const copyTrigger = m.wrapLongitude ? Math.round(camera.longitude / 5) : 0;
+  // Which world copy (…, -1, 0, 1, …) holds the point the view-centred fold picks.
+  const copyOf = (lon: number) => Math.round((lon - camera.longitude) / 360);
+  // Worlds to shift the target by so both ends sit in the same copy.
+  const copyShift = (a: AnyArc) => (m.wrapLongitude ? copyOf(a.from[0]) - copyOf(a.to[0]) : 0);
   const arcPair = (id: string, data: AnyArc[]) => {
+    // Only rebuild target positions when some arc actually changes copy, not on every pan.
+    const copyKey = data.map(copyShift).join('');
     const common = {
       ...m.arc,
       data,
       getSourcePosition: (a: AnyArc) => a.from,
-      getTargetPosition: (a: AnyArc) => nearestCopy(a.from, a.to),
+      getTargetPosition: (a: AnyArc): [number, number] => [a.to[0] + 360 * copyShift(a), a.to[1]],
       widthUnits: 'pixels' as const,
-      updateTriggers: {getSourceColor: trig, getTargetColor: trig, getTargetPosition: [copyTrigger]}
+      updateTriggers: {getSourceColor: trig, getTargetColor: trig, getTargetPosition: [copyKey]}
     };
     return [
       new ArcLayer<AnyArc>({
@@ -324,10 +322,7 @@ function render() {
 function makeDeck() {
   const m = VIEW_MODES[mode];
   camera = {...m.camera};
-  if (mode === 'map') {
-    const z = mapMinZoom();
-    camera = {...camera, minZoom: z, zoom: Math.max(camera.zoom as number, z)};
-  }
+  if (mode === 'map') camera = {...camera, ...zoomFloor()};
   deck = new Deck({
     parent: $('map') as HTMLDivElement,
     views: m.makeView(),
@@ -373,10 +368,15 @@ async function main() {
   $('zenExit').addEventListener('click', () => setZen(false));
   $('feedToggle').addEventListener('click', () => setFeedCollapsed(!document.body.classList.contains('feed-collapsed')));
   $('zenCredit').querySelector('[data-year]')!.textContent = String(new Date().getUTCFullYear());
+  // Deck resizes its own canvas; we only need to act when the floor moves the camera.
+  let resizeRaf = 0;
   window.addEventListener('resize', () => {
-    if (mode !== 'map') return;
-    const z = mapMinZoom();
-    setCamera({minZoom: z, zoom: Math.max(camera.zoom, z)});
+    cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(() => {
+      if (mode !== 'map') return;
+      const patch = zoomFloor();
+      if (patch.minZoom !== camera.minZoom || patch.zoom !== camera.zoom) setCamera(patch);
+    });
   });
   try { if (localStorage.getItem('feedCollapsed') === 'true') setFeedCollapsed(true); } catch { /* ignore */ }
 
