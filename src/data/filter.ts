@@ -1,6 +1,6 @@
 import type {Dataset} from './load';
 import type {Arc, RegionalArc, TariffAction} from './types';
-import {headlineRate, isActiveOn, rateOn} from './rate';
+import {headlineRate, isActiveOn, isBan, rateOn} from './rate';
 import {coveredValue, regionalCodes, unionCodes} from './coverage';
 import {coversAllGoods} from './types';
 
@@ -12,6 +12,8 @@ export interface LiveArc extends Arc {
   peak: number;
   /** True when the headline comes from product-specific measures only. */
   productOnly: boolean;
+  /** Some goods on this pair are banned outright, not just taxed. */
+  ban: boolean;
   /** Annual imports covered by the active measures, USD (undefined when no trade data). */
   tradeUsd?: number;
   /** Σ rate × covered imports across active measures — an annual duty ceiling, USD. */
@@ -40,6 +42,7 @@ export type Direction = 'in' | 'both' | 'out';
 /** A regional arc resolved for the viewed date. */
 export interface LiveRegionalArc extends RegionalArc {
   rate: number;
+  ban: boolean;
   tradeUsd: number;
   dutyUsd: number;
   active: TariffAction[];
@@ -59,7 +62,7 @@ export function liveRegionalArcs(ds: Dataset, view: ViewState): LiveRegionalArc[
     const tradeUsd = coveredValue(arc.byCode, unionCodes(active, codesOf));
     if (tradeUsd < MIN_REGIONAL_USD) continue;
     const dutyUsd = active.reduce((sum, a) => sum + coveredValue(arc.byCode, codesOf(a)) * (rateOn(a, view.date) ?? 0) / 100, 0);
-    out.push({...arc, rate: headlineRate(active, view.date), tradeUsd, dutyUsd, active});
+    out.push({...arc, rate: headlineRate(active, view.date), ban: active.some(isBan), tradeUsd, dutyUsd, active});
   }
   return out;
 }
@@ -86,7 +89,9 @@ export function liveArcs(ds: Dataset, view: ViewState): LiveArc[] {
     if (!active.length) continue;
     const broad = active.filter(coversAllGoods);
     const peak = headlineRate(active, view.date);
-    if (peak <= 0) continue;
+    const ban = active.some(isBan);
+    // A ban has no ad valorem rate, but the pair still belongs on the map.
+    if (peak <= 0 && !ban) continue;
     const rate = (broad.length && headlineRate(broad, view.date)) || peak;
     let tradeUsd: number | undefined;
     let dutyUsd: number | undefined;
@@ -94,7 +99,7 @@ export function liveArcs(ds: Dataset, view: ViewState): LiveArc[] {
       tradeUsd = coveredValue(arc.trade.byCode, unionCodes(active));
       dutyUsd = active.reduce((sum, a) => sum + coveredValue(arc.trade!.byCode, a.hs) * (rateOn(a, view.date) ?? 0) / 100, 0);
     }
-    out.push({...arc, rate, peak, productOnly: !broad.length, tradeUsd, dutyUsd, active});
+    out.push({...arc, rate, peak, productOnly: !broad.length, ban, tradeUsd, dutyUsd, active});
   }
   return out;
 }

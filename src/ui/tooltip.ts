@@ -5,7 +5,8 @@ import type {NodeDatum} from '../layers/labels';
 import {entityName, type Dataset} from '../data/load';
 import {flag} from './flag';
 import {fmtDate, fmtRate, fmtUsd, moneyHtml} from './format';
-import {rateOn} from '../data/rate';
+import {isBan, rateOn} from '../data/rate';
+import {hsLabelOf} from '../data/types';
 
 const el = document.getElementById('tooltip')!;
 let shown: unknown = null;
@@ -19,10 +20,16 @@ const MAX_ROWS = 6;
 /** Measures sorted by rate, capped so the tooltip stays on screen. */
 function measureRows(active: LiveArc['active'], date: string, detail: (x: LiveArc['active'][number]) => string): string {
   const sorted = active.slice().sort((x, y) => (rateOn(y, date) ?? 0) - (rateOn(x, date) ?? 0));
-  const rows = sorted.slice(0, MAX_ROWS).map(x => `<li><b>${fmtRate(rateOn(x, date), x.rateNote)}</b> ${x.title}${detail(x)}</li>`);
+  const rows = sorted.slice(0, MAX_ROWS).map(x => `<li${isBan(x) ? ' class="ban"' : ''}><b>${fmtRate(rateOn(x, date), x.rateNote)}</b> ${x.title}${detail(x)}</li>`);
   if (sorted.length > MAX_ROWS) rows.push(`<li class="dim">+ ${sorted.length - MAX_ROWS} more — see the panel</li>`);
   return rows.join('');
 }
+
+/** "Import ban on spirits, beer…" banner for pairs where some goods are banned outright. */
+const banLine = (active: LiveArc['active']) => {
+  const scope = active.filter(isBan).map(hsLabelOf).join('; ');
+  return `<div class="tt-ban">Import ban<span> on ${scope}</span></div>`;
+};
 
 const isArc = (o: unknown): o is LiveArc => typeof o === 'object' && o !== null && 'active' in o && !('region' in o);
 const isRegional = (o: unknown): o is LiveRegionalArc => typeof o === 'object' && o !== null && 'region' in o && 'active' in o;
@@ -33,7 +40,8 @@ function html(info: PickingInfo, ds: Dataset, date: string): string {
   if (isArc(o)) {
     const rows = measureRows(o.active, date, x => `<span class="dim"> · ${x.legalBasis} · since ${fmtDate(x.effective)}</span>`);
     return `<div class="tt-head">${flag(ds, o.imposer, {ring: true})} ${entityName(ds, o.imposer)} <span class="arrow">→</span> ${flag(ds, o.target)} ${entityName(ds, o.target)}</div>
-      <div class="tt-rate">${o.rate}%<span class="dim"> ${o.productOnly ? 'on targeted products' : 'on all goods'}${o.peak > o.rate ? ` · up to ${o.peak}% on some products` : ''}</span></div>
+      ${o.ban ? banLine(o.active) : ''}
+      ${o.rate > 0 ? `<div class="tt-rate">${o.rate}%<span class="dim"> ${o.productOnly ? 'on targeted products' : 'on all goods'}${o.peak > o.rate ? ` · up to ${o.peak}% on some products` : ''}</span></div>` : ''}
       ${o.tradeUsd !== undefined ? `<div class="tt-money">${moneyHtml(o.tradeUsd, o.dutyUsd)}<span class="dim"> · ${o.trade?.year} imports, UN Comtrade</span></div>` : ''}
       <ul class="tt-list">${rows}</ul>`;
   }
@@ -41,6 +49,7 @@ function html(info: PickingInfo, ds: Dataset, date: string): string {
     const reg = ds.regionById.get(o.region)!;
     const rows = measureRows(o.active, date, () => '');
     return `<div class="tt-head">${flag(ds, o.imposer, {ring: true})} ${entityName(ds, o.imposer)} <span class="arrow">→</span> ${flag(ds, o.target)} ${reg.name}</div>
+      ${o.ban ? banLine(o.active) : ''}
       <div class="tt-money"><b>${fmtUsd(o.tradeUsd)}</b> of ${reg.name}'s exports to ${entityName(ds, o.imposer)} hit${o.dutyUsd ? ` · <b>${fmtUsd(o.dutyUsd)}</b> est. duty/yr` : ''}<span class="dim"> · ${o.source === 'statcan' ? `StatCan, ${o.period}` : `Census, ${o.period}`}</span></div>
       <ul class="tt-list">${rows}</ul>`;
   }

@@ -57,20 +57,21 @@ export function nodeLayers(nodes: NodeDatum[], labels: NodeDatum[], zoom: number
       data: nodes,
       getPosition: d => [d.lon, d.lat],
       radiusUnits: 'pixels',
-      getRadius: d => (6 + Math.min(14, d.weight / 40)) * scale,
+      // Zoom scales radii through a uniform; per-node radii only change with the data.
+      radiusScale: scale,
+      getRadius: d => 6 + Math.min(14, d.weight / 40),
       getFillColor: d => withAlpha(nodeRgb(d), 40),
-      pickable: false,
-      updateTriggers: {getRadius: [zoom]}
+      pickable: false
     }),
     new ScatterplotLayer<NodeDatum>({
       id: 'node-core',
       data: nodes,
       getPosition: d => [d.lon, d.lat],
       radiusUnits: 'pixels',
-      getRadius: 2.2 * scale,
+      radiusScale: scale,
+      getRadius: 2.2,
       getFillColor: d => withAlpha(nodeRgb(d), 255),
-      pickable: true,
-      updateTriggers: {getRadius: [zoom]}
+      pickable: true
     }),
     new TextLayer<NodeDatum>({
       id: 'node-labels',

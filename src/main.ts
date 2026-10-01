@@ -4,6 +4,7 @@ import {loadDataset, type Dataset} from './data/load';
 import {liveArcs, liveRegionalArcs, liveActions, today, type ViewState, type LiveArc, type LiveRegionalArc} from './data/filter';
 import {imposerColor, rgbCss, withAlpha} from './data/palette';
 import {FlowArcLayer} from './layers/arcs';
+import {BanArcLayer, BanRingLayer, BAN_COLOR} from './layers/ban';
 import {countriesLayer, admin1Layer, oceanLayer, COLORS} from './layers/basemap';
 import {nodeLayers, visibleLabels, type NodeDatum} from './layers/labels';
 import {showTooltip, hideTooltip} from './ui/tooltip';
@@ -62,7 +63,8 @@ let involved = new Set<string>();
 
 /* ---------- animation clock: the comets read it on every draw; freezing holds it still ---------- */
 const t0 = performance.now();
-let motion = true;
+// Respect the OS reduced-motion setting; the Motion checkbox still overrides it.
+let motion = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let frozenAt = 0;
 const clock = () => (motion ? (performance.now() - t0) / 1000 : frozenAt);
 
@@ -267,17 +269,18 @@ function layers() {
   const copyOf = (lon: number) => Math.round((lon - camera.longitude) / 360);
   // Worlds to shift the target by so both ends sit in the same copy.
   const copyShift = (a: AnyArc) => (m.wrapLongitude ? copyOf(a.from[0]) - copyOf(a.to[0]) : 0);
+  const target = (a: AnyArc): [number, number] => [a.to[0] + 360 * copyShift(a), a.to[1]];
+  /** Shared arc geometry; target positions rebuild only when some arc changes copy, not on every pan. */
+  const arcGeometry = (data: AnyArc[]) => ({
+    ...m.arc,
+    data,
+    getSourcePosition: (a: AnyArc) => a.from,
+    getTargetPosition: target,
+    widthUnits: 'pixels' as const,
+    updateTriggers: {getSourceColor: trig, getTargetColor: trig, getTargetPosition: [data.map(copyShift).join('')]}
+  });
   const arcPair = (id: string, data: AnyArc[]) => {
-    // Only rebuild target positions when some arc actually changes copy, not on every pan.
-    const copyKey = data.map(copyShift).join('');
-    const common = {
-      ...m.arc,
-      data,
-      getSourcePosition: (a: AnyArc) => a.from,
-      getTargetPosition: (a: AnyArc): [number, number] => [a.to[0] + 360 * copyShift(a), a.to[1]],
-      widthUnits: 'pixels' as const,
-      updateTriggers: {getSourceColor: trig, getTargetColor: trig, getTargetPosition: [copyKey]}
-    };
+    const common = arcGeometry(data);
     return [
       new ArcLayer<AnyArc>({
         ...common,
@@ -305,12 +308,56 @@ function layers() {
     ];
   };
 
+  // Bans sit on top of the tariff comets on the same pair: a torn, throbbing red
+  // glow, hazard bars racing to the target, and shockwaves out of the country hit.
+  const bans = [...countryArcs, ...shownRegional].filter(a => a.ban);
+  // Bans draw over the comets on the same pair; on the globe the depth test must stay so they don't show through the earth.
+  const overlay = mode === 'map' ? {depthCompare: 'always' as const} : {};
+  const banColor = (a: AnyArc, alpha: number) => withAlpha(BAN_COLOR, Math.round(alpha * 255 * dim(a)));
+  const banLayers = bans.length
+    ? [
+        new BanArcLayer<AnyArc>({
+          ...arcGeometry(bans),
+          id: 'ban-glow',
+          getSourceColor: a => banColor(a, 0.8),
+          getTargetColor: a => banColor(a, 1),
+          getWidth: a => width(a) * 3 + 10,
+          clock,
+          // Normal blending: added onto the blue land, red turns magenta.
+          parameters: {cullMode: 'none', ...overlay}
+        }),
+        new BanArcLayer<AnyArc>({
+          ...arcGeometry(bans),
+          id: 'ban-bars',
+          getSourceColor: a => banColor(a, 1),
+          getTargetColor: a => banColor(a, 1),
+          getWidth: a => width(a) + 2,
+          stripes: 34,
+          clock,
+          parameters: {cullMode: 'none', ...overlay}
+        }),
+        new BanRingLayer<AnyArc>({
+          id: 'ban-rings',
+          data: bans,
+          getPosition: target,
+          radiusUnits: 'pixels',
+          getRadius: 34,
+          getFillColor: a => banColor(a, 1),
+          clock,
+          pickable: false,
+          parameters: {...overlay, blendColorOperation: 'add', blendColorSrcFactor: 'src-alpha', blendColorDstFactor: 'one'},
+          updateTriggers: {getFillColor: trig, getPosition: [bans.map(copyShift).join('')]}
+        })
+      ]
+    : [];
+
   return [
     m.ocean ? oceanLayer() : null,
     countriesLayer(ds, {involved, focus: state.focus, wrapLongitude: m.wrapLongitude, onClick: setFocus}),
-    camera.zoom >= ADMIN1_ZOOM ? admin1Layer(ds, {involved: regionsInvolved, emphasis: Math.min(1, (camera.zoom - ADMIN1_ZOOM) / (REGIONAL_ZOOM - ADMIN1_ZOOM))}) : null,
+    admin1Layer(ds, {involved: regionsInvolved, visible: camera.zoom >= ADMIN1_ZOOM, emphasis: Math.max(0, Math.min(1, (camera.zoom - ADMIN1_ZOOM) / (REGIONAL_ZOOM - ADMIN1_ZOOM)))}),
     ...arcPair('arcs', countryArcs),
     ...arcPair('rarcs', shownRegional),
+    ...banLayers,
     ...nodeLayers(shownNodes, labels, camera.zoom)
   ];
 }
@@ -319,14 +366,33 @@ function render() {
   deck.setProps({layers: layers()});
 }
 
+/** The camera a mode starts from (the flat map also lifts it to the zoom floor). */
+function modeCamera(): CameraState {
+  const c = {...VIEW_MODES[mode].camera};
+  return mode === 'map' ? {...c, ...zoomFloor()} : c;
+}
+
+/**
+ * Switch map ↔ globe on the existing Deck. Recreating the Deck instead leaks its
+ * WebGL context and ~14 MB of heap per toggle (finalize() does not free them).
+ */
+function setMode(next: ModeName) {
+  mode = next;
+  camera = modeCamera();
+  hideTooltip();
+  deck.setProps({views: VIEW_MODES[mode].makeView(), initialViewState: camera});
+  relabel();
+  render();
+}
+
 function makeDeck() {
-  const m = VIEW_MODES[mode];
-  camera = {...m.camera};
-  if (mode === 'map') camera = {...camera, ...zoomFloor()};
+  camera = modeCamera();
   deck = new Deck({
     parent: $('map') as HTMLDivElement,
-    views: m.makeView(),
+    views: VIEW_MODES[mode].makeView(),
     initialViewState: camera,
+    // Phones report DPR 3; the additive comet blend is fill-rate bound and 2× is indistinguishable.
+    useDevicePixels: Math.min(window.devicePixelRatio || 1, 2),
     controller: {inertia: 250},
     layers: [],
     _animate: motion,
@@ -354,11 +420,7 @@ async function main() {
 
   const viewToggle = $('viewToggle') as HTMLInputElement;
   viewToggle.addEventListener('change', () => {
-    mode = viewToggle.checked ? 'globe' : 'map';
-    hideTooltip();
-    deck.finalize();
-    makeDeck();
-    render();
+    setMode(viewToggle.checked ? 'globe' : 'map');
   });
   const motionToggle = $('motionToggle') as HTMLInputElement;
   motionToggle.checked = motion;

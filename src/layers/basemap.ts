@@ -24,11 +24,13 @@ export function oceanLayer() {
 }
 
 /** State/province outlines, with a fill on regions that currently receive tariff arcs. */
-export function admin1Layer(ds: Dataset, opts: {involved: Set<string>; emphasis: number}) {
+export function admin1Layer(ds: Dataset, opts: {involved: Set<string>; emphasis: number; visible: boolean}) {
   const key = [...opts.involved].sort().join(',');
   return new GeoJsonLayer({
     id: 'admin1',
     data: ds.admin1,
+    // Hidden rather than removed when zoomed out, so crossing the threshold doesn't re-tessellate.
+    visible: opts.visible,
     stroked: true,
     filled: true,
     wrapLongitude: true,
@@ -59,7 +61,8 @@ export function countriesLayer(ds: Dataset, opts: CountriesOpts) {
   const euFocus = opts.focus === EU;
   const involvedKey = [...opts.involved].sort().join(',');
   return new GeoJsonLayer({
-    id: 'countries',
+    // wrapLongitude is baked in at tessellation, so each mode gets its own layer.
+    id: opts.wrapLongitude ? 'countries-flat' : 'countries-globe',
     data: ds.countries,
     stroked: true,
     filled: true,

@@ -1,3 +1,5 @@
+import {BAN_NOTE} from '../data/rate';
+
 const utcDate = (iso: string) => new Date(iso + 'T00:00:00Z');
 const enUS = (iso: string, opts: Intl.DateTimeFormatOptions) => utcDate(iso).toLocaleDateString('en-US', {...opts, timeZone: 'UTC'});
 
@@ -5,7 +7,7 @@ export const fmtDate = (iso: string) => enUS(iso, {month: 'short', day: 'numeric
 export const fmtMonth = (iso: string) => enUS(iso, {month: 'long', year: 'numeric'});
 
 export function fmtRate(rate: number | null, note?: string): string {
-  if (rate === null) return note && /ban/i.test(note) ? 'BAN' : note ? 'n/a' : '—';
+  if (rate === null) return note && BAN_NOTE.test(note) ? 'BAN' : note ? 'n/a' : '—';
   return `${rate}%`;
 }
 

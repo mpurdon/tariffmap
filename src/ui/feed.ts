@@ -4,7 +4,7 @@ import {hsLabelOf, type TariffAction} from '../data/types';
 import {flag} from './flag';
 import {fmtDate, fmtRate, moneyHtml} from './format';
 import {involves, type Direction, type SortKey, type ViewState} from '../data/filter';
-import {endDate, rateOn} from '../data/rate';
+import {endDate, isBan, rateOn} from '../data/rate';
 import type {Upcoming} from '../data/timeline';
 
 export interface FeedCallbacks {
@@ -67,7 +67,7 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
 
   const items = actions
     .map(
-      a => `<li class="item" data-id="${a.id}">
+      a => `<li class="item${isBan(a) ? ' ban' : ''}" data-id="${a.id}">
         <div class="item-top">
           <span class="pair">${flag(ds, a.imposer, {ring: true})} <b>${name(a.imposer)}</b> <span class="arrow">→</span> ${targetsLabel(a)}</span>
           <span class="rate">${fmtRate(rateOn(a, date), a.rateNote)}${a.tradeUsd ? `<small>${moneyHtml(a.tradeUsd, undefined).replace(/ of imports covered/, '')}</small>` : ''}</span>

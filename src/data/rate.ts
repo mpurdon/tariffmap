@@ -1,5 +1,9 @@
 import type {TariffAction} from './types';
 
+/** Bans carry `rate: null` and say so in their rateNote. */
+export const BAN_NOTE = /\bban/i;
+export const isBan = (a: Pick<TariffAction, 'rate' | 'rateNote'>) => a.rate === null && BAN_NOTE.test(a.rateNote ?? '');
+
 /** The date a measure stops applying, or null while it is open-ended. */
 export function endDate(a: TariffAction): string | null {
   return a.expires ?? null;
