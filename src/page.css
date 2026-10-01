@@ -44,11 +44,47 @@ li { margin: 6px 0; }
 pre { background: rgb(14 19 34 / 0.9); border: 1px solid var(--panel-border); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font: 12.5px/1.6 var(--mono); }
 pre code { background: none; padding: 0; color: var(--ink-2); }
 
-.status { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 10px; padding: 16px 18px 6px; }
-.status h2 { border: 0; padding: 0; margin-bottom: 10px; color: var(--amber); }
-.status dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px 24px; margin: 0; }
-.status dt { font: 500 10.5px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
-.status dd { margin: 2px 0 0; color: var(--ink); font-family: var(--mono); font-size: 13.5px; }
+.status {
+  display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px;
+  background: var(--panel); border: 1px solid var(--panel-border); border-radius: 12px; padding: 20px 22px;
+}
+.status-hero { align-self: center; }
+.status-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.status h2 { border: 0; padding: 0; margin: 0; color: var(--ink-3); font-size: 11px; cursor: help; }
+.status-big { margin: 14px 0 2px; font-size: 22px; line-height: 1.2; color: var(--ink-2); letter-spacing: -0.01em; }
+.status-big b { color: var(--ink); font-weight: 600; }
+.status-sub { margin: 0; font: 12px var(--mono); color: var(--ink-3); }
+
+/* Chips: enumerated states. Grey by default; colour only when the data calls for it. */
+.chip { display: inline-flex; align-items: center; gap: 6px; font: 600 11px var(--mono); letter-spacing: 0.04em; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--panel-border); color: var(--ink-2); background: rgb(255 255 255 / 0.04); white-space: nowrap; }
+.chip::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.chip.ok { color: #19c37d; border-color: rgb(25 195 125 / 0.4); background: rgb(25 195 125 / 0.08); }
+.chip.warn { color: var(--amber); border-color: rgb(232 170 60 / 0.45); background: rgb(232 170 60 / 0.08); }
+.chip.info { color: #6aa8f0; border-color: rgb(57 135 229 / 0.45); background: rgb(57 135 229 / 0.1); }
+
+/* The weekly cycle: last check → next check, today marked on it. */
+.cycle { margin-top: 34px; --now: 0%; }
+.cycle-track { position: relative; height: 6px; border-radius: 3px; background: rgb(255 255 255 / 0.07); }
+.cycle-fill { position: absolute; inset: 0 auto 0 0; width: var(--now); border-radius: 3px; background: linear-gradient(90deg, rgb(25 195 125 / 0.25), rgb(25 195 125 / 0.7)); }
+.cycle-now { position: absolute; left: var(--now); top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--bg); border: 2px solid #19c37d; }
+.cycle-now span { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); font: 600 10px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+.cycle.stale .cycle-fill { background: linear-gradient(90deg, rgb(232 170 60 / 0.25), rgb(232 170 60 / 0.7)); }
+.cycle.stale .cycle-now { border-color: var(--amber); }
+.cycle-ends { display: flex; justify-content: space-between; margin-top: 8px; font: 11px var(--mono); color: var(--ink-3); }
+
+/* Receipt: labels hard left, values hard right, digits aligned by place. */
+.receipt { margin: 0; align-self: center; }
+.receipt div { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 9px 0; border-bottom: 1px solid rgb(88 104 140 / 0.16); }
+.receipt div:last-child { border-bottom: 0; }
+.receipt dt { font-size: 13px; color: var(--ink-3); cursor: help; text-decoration: underline dotted rgb(98 112 154 / 0.5); text-underline-offset: 3px; }
+.receipt dt:not([title]) { cursor: default; text-decoration: none; }
+.receipt dd { margin: 0; text-align: right; color: var(--ink); font-size: 13px; display: flex; align-items: center; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+.receipt dd.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.receipt dd a { font: 12px var(--mono); }
+
+@media (max-width: 640px) {
+  .status { grid-template-columns: 1fr; gap: 18px; padding: 18px; }
+}
 .note { font-size: 12px; color: var(--ink-3); }
 
 .flow { list-style: none; padding: 0; margin: 0; counter-reset: step; }

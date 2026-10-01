@@ -1,16 +1,11 @@
 import type {Meta} from '../data/types';
-import {today} from '../data/filter';
+import {isStale} from '../data/schedule';
 import {fmtDate} from './format';
-
-/** The curation run is weekly; past this many days the check is overdue and the dot turns amber. */
-const STALE_DAYS = 9;
-
-const daysSince = (iso: string) => Math.floor((Date.parse(today()) - Date.parse(iso)) / 86_400_000);
 
 export function renderFreshness(el: HTMLElement, meta: Meta) {
   // Older builds have no check record; the newest verification is the best they can say.
   const checked = meta.lastCheck?.checkedAt ?? meta.actionsVerifiedThrough;
-  const stale = daysSince(checked) > STALE_DAYS;
+  const stale = isStale(checked);
   el.innerHTML = `<span class="pulse${stale ? ' stale' : ''}"></span>Sources checked ${fmtDate(checked)}${stale ? ' <span class="overdue">· check overdue</span>' : ''} · <a class="how" href="/how-it-works">how it's updated</a>`;
   el.title = [
     'Every tariff on this map links to a primary source.',

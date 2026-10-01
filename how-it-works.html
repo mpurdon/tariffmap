@@ -27,16 +27,26 @@
         official statistics. This page documents each step exactly.
       </p>
 
-      <section class="status" aria-labelledby="status-h">
-        <h2 id="status-h">Live status</h2>
-        <dl id="status">
-          <div><dt>Sources last checked</dt><dd data-k="checked">…</dd></div>
-          <div><dt>Result of that check</dt><dd data-k="outcome">…</dd></div>
-          <div><dt>Most recent entry change</dt><dd data-k="verified">…</dd></div>
-          <div><dt>Measures tracked</dt><dd data-k="count">…</dd></div>
-          <div><dt>Site last built</dt><dd data-k="built">…</dd></div>
+      <section class="status" aria-labelledby="status-h" aria-live="polite">
+        <div class="status-hero">
+          <div class="status-top">
+            <h2 id="status-h" title="Read from /data/meta.json, the same file the map uses">Live status</h2>
+            <span class="chip" data-k="state">…</span>
+          </div>
+          <p class="status-big" data-k="ago">Checking…</p>
+          <p class="status-sub" data-k="when"></p>
+          <div class="cycle" data-k="cycle" hidden>
+            <div class="cycle-track"><div class="cycle-fill"></div><div class="cycle-now"><span>today</span></div></div>
+            <div class="cycle-ends"><span data-k="from"></span><span data-k="to"></span></div>
+          </div>
+        </div>
+        <dl class="receipt">
+          <div><dt title="What the last weekly check concluded">Last check result</dt><dd data-k="outcome">…</dd></div>
+          <div><dt title="Entries the check compared against their sources again">Entries re-verified</dt><dd class="num" data-k="reverified">…</dd></div>
+          <div><dt title="The newest date any entry was added, changed or re-verified">Latest entry change</dt><dd class="num" data-k="verified">…</dd></div>
+          <div><dt>Measures tracked</dt><dd class="num" data-k="count">…</dd></div>
+          <div><dt title="When this version of the site was built and deployed">Site built</dt><dd class="num" data-k="built">…</dd></div>
         </dl>
-        <p class="note">Read from <code>/data/meta.json</code>, the same file the map uses.</p>
       </section>
 
       <section aria-labelledby="cycle-h">

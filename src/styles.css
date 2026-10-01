@@ -57,7 +57,8 @@ a { color: var(--accent); }
 .toggle input { accent-color: var(--accent); }
 .comets { display: inline-flex; align-items: center; gap: 8px; font: 11px var(--mono); letter-spacing: 0.08em; color: var(--ink-2); user-select: none; }
 .comets input { width: 64px; accent-color: var(--accent); cursor: pointer; margin: 0; }
-.comets output { min-width: 6ch; color: var(--ink); }
+/* Fixed width (an inline <output> ignores min-width), so the slider doesn't shift between Less/Normal/More. */
+.comets output { display: inline-block; width: 6ch; color: var(--ink); }
 body.no-motion .comets { opacity: 0.45; }
 .zen-btn { background: rgb(255 255 255 / 0.06); border: 1px solid var(--panel-border); color: var(--ink-2); font: 500 11px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; padding: 4px 10px; border-radius: 6px; cursor: pointer; }
 .zen-btn:hover { color: var(--ink); }
