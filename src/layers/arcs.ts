@@ -17,16 +17,17 @@ uniform flowUniforms {
   float time;
   float tail;
   float headGlow;
+  float densityScale;
 } flow;
 `;
 
-type FlowProps = {time: number; tail: number; headGlow: number};
+type FlowProps = {time: number; tail: number; headGlow: number; densityScale: number};
 
 const flowUniforms = {
   name: 'flow',
   vs: uniformBlock,
   fs: uniformBlock,
-  uniformTypes: {time: 'f32', tail: 'f32', headGlow: 'f32'}
+  uniformTypes: {time: 'f32', tail: 'f32', headGlow: 'f32', densityScale: 'f32'}
 } as const satisfies ShaderModule<FlowProps>;
 
 export type FlowArcLayerProps<D = Arc> = ArcLayerProps<D> & {
@@ -36,6 +37,8 @@ export type FlowArcLayerProps<D = Arc> = ArcLayerProps<D> & {
   tail?: number;
   /** Extra brightness at the comet head. */
   headGlow?: number;
+  /** Multiplies every arc's comet count (uniform, so changing it rebuilds nothing). */
+  densityScale?: number;
   getPhase?: Accessor<D, number>;
   /** Comets per arc. */
   getDensity?: Accessor<D, number>;
@@ -50,6 +53,7 @@ export class FlowArcLayer<D = Arc> extends ArcLayer<D, FlowArcLayerProps<D>> {
     clock: {type: 'function', value: () => 0},
     tail: {type: 'number', value: 0.35},
     headGlow: {type: 'number', value: 1.6},
+    densityScale: {type: 'number', value: 1},
     getPhase: {type: 'accessor', value: 0},
     getDensity: {type: 'accessor', value: 2},
     getSpeed: {type: 'accessor', value: 0.25}
@@ -79,9 +83,11 @@ export class FlowArcLayer<D = Arc> extends ArcLayer<D, FlowArcLayerProps<D>> {
       `,
       'fs:DECKGL_FILTER_COLOR': /* glsl */ `
         // Distance (in comet-spacings) behind the nearest head, 0 = at the head.
+        // Fewer comets means wider gaps, not longer comets: the tail is scaled
+        // with the density so its length along the arc stays the same.
         float head = flow.time * vSpeed + vPhase;
-        float d = fract((head - geometry.uv.x) * vDensity);
-        float body = exp(-d / max(flow.tail, 0.01)) * (1.0 - smoothstep(0.85, 1.0, d));
+        float d = fract((head - geometry.uv.x) * vDensity * flow.densityScale);
+        float body = exp(-d / max(flow.tail * flow.densityScale, 0.01)) * (1.0 - smoothstep(0.85, 1.0, d));
         float glow = 1.0 + flow.headGlow * exp(-d * 40.0);
         color.rgb *= glow;
         color.a *= body;
@@ -101,8 +107,8 @@ export class FlowArcLayer<D = Arc> extends ArcLayer<D, FlowArcLayerProps<D>> {
   }
 
   override draw(params: any) {
-    const {clock, tail, headGlow} = this.props as Required<FlowArcLayerProps<D>>;
-    this.setShaderModuleProps({flow: {time: clock(), tail, headGlow}});
+    const {clock, tail, headGlow, densityScale} = this.props as Required<FlowArcLayerProps<D>>;
+    this.setShaderModuleProps({flow: {time: clock(), tail, headGlow, densityScale}});
     super.draw(params);
   }
 }

@@ -1,10 +1,8 @@
-import {ScatterplotLayer, TextLayer} from '@deck.gl/layers';
-import type {Viewport} from '@deck.gl/core';
+import {ScatterplotLayer} from '@deck.gl/layers';
 import type {Endpoint} from '../data/types';
 import {imposerColor, NEUTRAL_COLOR, withAlpha} from '../data/palette';
-import {COLORS} from './basemap';
 
-/** Label metrics shared by the culling boxes and the TextLayer so they can't drift apart. */
+/** Label metrics shared by the culling boxes and the DOM labels (styles.css .map-label) so they can't drift apart. */
 const LABEL_PX = 12;
 /** Pixels the label centre sits above its node. */
 const LABEL_LIFT = 14;
@@ -26,30 +24,37 @@ export interface NodeDatum extends Pick<Endpoint, 'iso3' | 'name' | 'lon' | 'lat
  * Greedy screen-space label culling: higher-priority labels (imposers, heavily
  * targeted countries) win; anything whose box overlaps a placed label is dropped.
  */
-let lastLabels: NodeDatum[] = [];
-export function visibleLabels(nodes: NodeDatum[], viewport: Viewport | undefined, zoom: number): NodeDatum[] {
-  if (!viewport) return nodes;
+/** Screen placement for labels: the view's size and where a node lands on it. */
+export interface LabelView {
+  width: number;
+  height: number;
+  project: (d: Pick<NodeDatum, 'lon' | 'lat'>) => number[];
+  /** False for points on the far side of the globe. */
+  facing: (d: Pick<NodeDatum, 'lon' | 'lat'>) => boolean;
+}
+
+export function visibleLabels(nodes: NodeDatum[], view: LabelView | undefined, zoom: number): NodeDatum[] {
+  if (!view) return [];
   const ranked = nodes
-    .filter(d => d.imposes || d.weight >= 25 || zoom > 2.6)
+    .filter(d => (d.imposes || d.weight >= 25 || zoom > 2.6) && view.facing(d))
     .sort((a, b) => (Number(b.imposes) - Number(a.imposes)) || b.weight - a.weight);
   const placed: {x0: number; x1: number; y0: number; y1: number}[] = [];
   const out: NodeDatum[] = [];
   for (const d of ranked) {
-    const [x, y] = viewport.project([d.lon, d.lat]);
+    const [x, y] = view.project(d);
+    if (x < -40 || y < -20 || x > view.width + 40 || y > view.height + 40) continue;
     const w = d.name.length * LABEL_PX * LABEL_ADVANCE + 2 * LABEL_PAD, cy = y - LABEL_LIFT;
     const box = {x0: x - w / 2, x1: x + w / 2, y0: cy - LABEL_PX / 2 - LABEL_PAD, y1: cy + LABEL_PX / 2 + LABEL_PAD};
     if (placed.some(p => box.x0 < p.x1 && box.x1 > p.x0 && box.y0 < p.y1 && box.y1 > p.y0)) continue;
     placed.push(box);
     out.push(d);
   }
-  // Same labels as last time → same array, so TextLayer sees no data change.
-  if (out.length === lastLabels.length && out.every((d, i) => d === lastLabels[i])) return lastLabels;
-  return (lastLabels = out);
+  return out;
 }
 
 const nodeRgb = (d: NodeDatum) => (d.imposes ? imposerColor(d.iso3) : NEUTRAL_COLOR);
 
-export function nodeLayers(nodes: NodeDatum[], labels: NodeDatum[], zoom: number) {
+export function nodeLayers(nodes: NodeDatum[], zoom: number) {
   const scale = Math.max(0.6, Math.min(1.6, zoom / 2.2));
   return [
     new ScatterplotLayer<NodeDatum>({
@@ -72,26 +77,38 @@ export function nodeLayers(nodes: NodeDatum[], labels: NodeDatum[], zoom: number
       getRadius: 2.2,
       getFillColor: d => withAlpha(nodeRgb(d), 255),
       pickable: true
-    }),
-    new TextLayer<NodeDatum>({
-      id: 'node-labels',
-      data: labels,
-      getPosition: d => [d.lon, d.lat],
-      getText: d => d.name.toUpperCase(),
-      getSize: LABEL_PX,
-      sizeUnits: 'pixels',
-      getColor: [226, 232, 246, 255],
-      getPixelOffset: [0, -LABEL_LIFT],
-      fontFamily: '"IBM Plex Mono", "SF Mono", Menlo, monospace',
-      fontWeight: 600,
-      characterSet: 'auto',
-      outlineWidth: 4,
-      outlineColor: COLORS.ocean,
-      // Oversized SDF atlas so glyphs stay smooth at 12px instead of ragged.
-      fontSettings: {sdf: true, fontSize: 128, buffer: 12, radius: 16, cutoff: 0.22, smoothing: 0.06},
-      // Arcs are raised above the map; skip the depth test so labels always sit on top of them.
-      parameters: {depthCompare: 'always'},
-      pickable: false
     })
   ];
+}
+
+/**
+ * Country/region names as HTML text over the canvas. WebGL SDF text is soft at
+ * 12px (no hinting, an outline stretched from a texture); the browser renders
+ * DOM text crisp at any pixel density. Nodes are reused by name, and only
+ * their transforms change as the camera moves.
+ */
+export class LabelOverlay {
+  private els = new Map<string, HTMLDivElement>();
+  constructor(private root: HTMLElement) {}
+
+  update(labels: NodeDatum[], view: LabelView | undefined) {
+    const seen = new Set<string>();
+    if (view) {
+      for (const d of labels) {
+        const key = d.region ?? d.iso3;
+        seen.add(key);
+        let el = this.els.get(key);
+        if (!el) {
+          el = document.createElement('div');
+          el.className = 'map-label';
+          el.textContent = d.name.toUpperCase();
+          this.root.appendChild(el);
+          this.els.set(key, el);
+        }
+        const [x, y] = view.project(d);
+        el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y - LABEL_LIFT)}px) translate(-50%, -50%)`;
+      }
+    }
+    for (const [key, el] of this.els) if (!seen.has(key)) { el.remove(); this.els.delete(key); }
+  }
 }

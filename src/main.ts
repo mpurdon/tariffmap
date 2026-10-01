@@ -1,4 +1,4 @@
-import {Deck, MapView, _GlobeView as GlobeView, LinearInterpolator, FlyToInterpolator, type PickingInfo} from '@deck.gl/core';
+import {Deck, MapView, _GlobeView as GlobeView, LinearInterpolator, FlyToInterpolator, type PickingInfo, type Viewport} from '@deck.gl/core';
 import {ArcLayer} from '@deck.gl/layers';
 import {loadDataset, type Dataset} from './data/load';
 import {liveArcs, liveRegionalArcs, liveActions, today, type ViewState, type LiveArc, type LiveRegionalArc} from './data/filter';
@@ -6,7 +6,7 @@ import {imposerColor, rgbCss, withAlpha} from './data/palette';
 import {FlowArcLayer} from './layers/arcs';
 import {BanArcLayer, BanRingLayer, BAN_COLOR} from './layers/ban';
 import {countriesLayer, admin1Layer, oceanLayer, COLORS} from './layers/basemap';
-import {nodeLayers, visibleLabels, type NodeDatum} from './layers/labels';
+import {nodeLayers, visibleLabels, LabelOverlay, type LabelView, type NodeDatum} from './layers/labels';
 import {showTooltip, hideTooltip} from './ui/tooltip';
 import {renderLegend} from './ui/legend';
 import {renderFreshness} from './ui/freshness';
@@ -60,6 +60,28 @@ let rarcs: LiveRegionalArc[] = [];
 let nodes: NodeDatum[] = [];
 let labels: NodeDatum[] = [];
 let involved = new Set<string>();
+
+/* ---------- comet density: Less / Normal / More, where More is one comet per 25 points of rate ---------- */
+const COMET_LEVELS = [
+  {label: 'Less', scale: 0.35},
+  {label: 'Normal', scale: 0.6},
+  {label: 'More', scale: 1}
+] as const;
+let cometLevel = 1;
+try {
+  const saved = localStorage.getItem('cometLevel');
+  if (saved !== null && Number(saved) in COMET_LEVELS) cometLevel = Number(saved);
+} catch { /* private mode */ }
+
+function setCometLevel(level: number) {
+  cometLevel = level;
+  const input = $('cometLevel') as HTMLInputElement;
+  input.value = String(level);
+  input.setAttribute('aria-valuetext', COMET_LEVELS[level].label);
+  $('cometLabel').textContent = COMET_LEVELS[level].label;
+  try { localStorage.setItem('cometLevel', String(level)); } catch { /* private mode */ }
+  render();
+}
 
 /* ---------- animation clock: the comets read it on every draw; freezing holds it still ---------- */
 const t0 = performance.now();
@@ -115,9 +137,36 @@ function relabel() {
   let viewport;
   try { viewport = deck?.isInitialized ? deck.getViewports()[0] : undefined; } catch { viewport = undefined; }
   const shown = isRegional() ? nodes : nodes.filter(n => !n.region);
-  labels = visibleLabels(shown, viewport, camera.zoom);
+  const view = viewport && labelView(viewport);
+  labels = visibleLabels(shown, view, viewport?.zoom ?? camera.zoom);
+  labelOverlay?.update(labels, view);
+  lastLabelKey = viewportKey(viewport);
   $('modeBadge').hidden = !isRegional() || !rarcs.length;
 }
+
+/** On the globe, only points on the near hemisphere (with a margin for the limb) get a label. */
+function labelView(viewport: Viewport): LabelView {
+  const {longitude: vLon, latitude: vLat} = viewport as unknown as {longitude: number; latitude: number};
+  const r = Math.PI / 180;
+  const globe = mode === 'globe';
+  return {
+    width: viewport.width,
+    height: viewport.height,
+    // The flat map repeats the world; label the copy nearest the view centre.
+    project: d => viewport.project([globe ? d.lon : d.lon - 360 * Math.round((d.lon - vLon) / 360), d.lat]),
+    // Globe: near hemisphere only, with a margin at the limb.
+    facing: d => !globe || Math.sin(d.lat * r) * Math.sin(vLat * r) + Math.cos(d.lat * r) * Math.cos(vLat * r) * Math.cos((d.lon - vLon) * r) > 0.15
+  };
+}
+
+let labelOverlay: LabelOverlay | undefined;
+let lastLabelKey = '';
+/** Identity of the view actually drawn (mid-transition too, unlike `camera`, which holds the destination). */
+const viewportKey = (v?: Viewport) => {
+  if (!v) return '';
+  const {longitude, latitude} = v as unknown as {longitude: number; latitude: number};
+  return `${v.id}|${longitude}|${latitude}|${v.zoom}|${v.width}x${v.height}`;
+};
 
 /* ---------- actions ---------- */
 function toggleImposer(iso3: string) {
@@ -153,6 +202,7 @@ function setDelay(ms: number) {
 function setMotion(on: boolean) {
   if (!on) frozenAt = clock();
   motion = on;
+  document.body.classList.toggle('no-motion', !on);
   deck.setProps({_animate: on});
   render();
 }
@@ -301,6 +351,7 @@ function layers() {
         getDensity: a => 1 + Math.min(3, Math.floor(a.rate / 25)),
         getSpeed: 0.22,
         tail: 0.3,
+        densityScale: COMET_LEVELS[cometLevel].scale,
         clock,
         pickable: false,
         parameters: {cullMode: 'none', blendColorOperation: 'add', blendColorSrcFactor: 'src-alpha', blendColorDstFactor: 'one', blendAlphaOperation: 'add', blendAlphaSrcFactor: 'one', blendAlphaDstFactor: 'one'}
@@ -358,7 +409,7 @@ function layers() {
     ...arcPair('arcs', countryArcs),
     ...arcPair('rarcs', shownRegional),
     ...banLayers,
-    ...nodeLayers(shownNodes, labels, camera.zoom)
+    ...nodeLayers(shownNodes, camera.zoom)
   ];
 }
 
@@ -391,8 +442,6 @@ function makeDeck() {
     parent: $('map') as HTMLDivElement,
     views: VIEW_MODES[mode].makeView(),
     initialViewState: camera,
-    // Phones report DPR 3; the additive comet blend is fill-rate bound and 2× is indistinguishable.
-    useDevicePixels: Math.min(window.devicePixelRatio || 1, 2),
     controller: {inertia: 250},
     layers: [],
     _animate: motion,
@@ -401,13 +450,16 @@ function makeDeck() {
     onHover: (info: PickingInfo) => showTooltip(info, ds, state.date),
     onClick: (info: PickingInfo) => { if (!info.object) setFocus(null); },
     getCursor: ({isHovering}) => (isHovering ? 'pointer' : 'grab'),
-    onLoad: () => { relabel(); render(); }
+    onLoad: () => { relabel(); render(); },
+    // Camera transitions (fly-to, zoom floor) move the view without a user event; keep labels pinned.
+    onAfterRender: () => { if (viewportKey(deck.getViewports()[0]) !== lastLabelKey) relabel(); }
   });
   if (import.meta.env.DEV) Object.assign(window, {__deck: deck, __setCamera: setCamera});
 }
 
 /* ---------- boot ---------- */
 async function main() {
+  labelOverlay = new LabelOverlay($('labels'));
   ds = await loadDataset();
   renderFreshness($('freshness'), ds.meta);
   const earliest = ds.actions.map(a => a.effective).sort()[0] ?? today();
@@ -422,8 +474,12 @@ async function main() {
   viewToggle.addEventListener('change', () => {
     setMode(viewToggle.checked ? 'globe' : 'map');
   });
+  const cometInput = $('cometLevel') as HTMLInputElement;
+  cometInput.addEventListener('input', () => setCometLevel(Number(cometInput.value)));
+  setCometLevel(cometLevel);
   const motionToggle = $('motionToggle') as HTMLInputElement;
   motionToggle.checked = motion;
+  document.body.classList.toggle('no-motion', !motion);
   motionToggle.addEventListener('change', () => setMotion(motionToggle.checked));
   $('map').addEventListener('mouseleave', hideTooltip);
   $('zenToggle').addEventListener('click', () => setZen(true));
