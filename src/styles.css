@@ -38,6 +38,8 @@ a { color: var(--accent); }
 .pulse { width: 7px; height: 7px; border-radius: 50%; background: #19c37d; box-shadow: 0 0 8px #19c37d; animation: pulse 2s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .pulse.stale { background: rgb(232 170 60); box-shadow: 0 0 8px rgb(232 170 60); }
+.freshness .how { color: var(--ink-2); text-decoration: none; border-bottom: 1px dotted var(--ink-3); }
+.freshness .how:hover { color: var(--ink); }
 .freshness .overdue { color: rgb(232 170 60); }
 .spacer { flex: 1; }
 /* The badge is the only thing allowed to give: it truncates before the freshness line wraps. */

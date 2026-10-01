@@ -29,7 +29,7 @@ const SORTS: {key: SortKey; label: string; title: string}[] = [
 
 const FOOTER = `<footer class="site-footer">
   <p><a href="https://tariffmap.org">tariffmap.org</a> · © ${new Date().getUTCFullYear()} <a href="https://matthewpurdon.me" rel="author">Matthew Purdon</a></p>
-  <p>Tariff measures are curated from primary sources and linked on every entry. Trade values are annual goods imports from <a href="https://comtradeplus.un.org" rel="noopener" target="_blank">UN Comtrade</a>; duty figures are ceilings, not revenue. Not trade or legal advice.</p>
+  <p>Tariff measures are curated from primary sources and linked on every entry. Trade values are annual goods imports from <a href="https://comtradeplus.un.org" rel="noopener" target="_blank">UN Comtrade</a>; duty figures are ceilings, not revenue. <a href="/how-it-works">How the data is updated</a>. Not trade or legal advice.</p>
 </footer>`;
 
 /** How the measure's lifecycle reads from the viewed date's point of view. */

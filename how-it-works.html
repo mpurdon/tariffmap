@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>How TariffMap is updated</title>
+    <meta name="description" content="The exact pipeline behind tariffmap.org: the curated dataset, the weekly source check, human review, trade-data refresh, and how every number on the map is computed." />
+    <link rel="canonical" href="https://tariffmap.org/how-it-works" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23090d1a'/%3E%3Cpath d='M6 22 Q16 4 26 22' stroke='%233987e5' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='26' cy='22' r='3' fill='%23e66767'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/src/page.css" />
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="/"><span class="brand-mark"></span><span class="brand-name">TARIFF<b>MAP</b></span></a>
+      <a class="back" href="/">← Back to the map</a>
+    </header>
+
+    <main>
+      <p class="eyebrow">Methodology</p>
+      <h1>How the tariff data is updated</h1>
+      <p class="lede">
+        Every measure on the map lives in one hand-curated JSON file in a
+        <a href="https://github.com/mpurdon/tariffmap">public repository</a>. A scheduled AI agent checks
+        the primary sources every week and proposes changes as pull requests; a person reviews and merges
+        them; merging rebuilds and redeploys the site. Trade values are refreshed separately from
+        official statistics. This page documents each step exactly.
+      </p>
+
+      <section class="status" aria-labelledby="status-h">
+        <h2 id="status-h">Live status</h2>
+        <dl id="status">
+          <div><dt>Sources last checked</dt><dd data-k="checked">…</dd></div>
+          <div><dt>Result of that check</dt><dd data-k="outcome">…</dd></div>
+          <div><dt>Most recent entry change</dt><dd data-k="verified">…</dd></div>
+          <div><dt>Measures tracked</dt><dd data-k="count">…</dd></div>
+          <div><dt>Site last built</dt><dd data-k="built">…</dd></div>
+        </dl>
+        <p class="note">Read from <code>/data/meta.json</code>, the same file the map uses.</p>
+      </section>
+
+      <section aria-labelledby="cycle-h">
+        <h2 id="cycle-h">The weekly cycle</h2>
+        <ol class="flow">
+          <li><span class="when">Mon 06:00 UTC</span><b>Trade data refresh.</b> A scheduled build re-queries UN Comtrade, Statistics Canada and the US Census, commits the refreshed caches and redeploys.</li>
+          <li><span class="when">Mon 12:00 UTC</span><b>Source check.</b> The curation agent sweeps the primary sources for anything that started, ended, changed rate or was formally announced since the last check.</li>
+          <li><span class="when">Same run</span><b>Two outputs.</b> Measure changes go into a pull request for review. Separately, the run records that the check happened, even when nothing changed.</li>
+          <li><span class="when">When reviewed</span><b>Human merge.</b> The maintainer reviews each proposed change against its cited source and merges, edits or rejects it.</li>
+          <li><span class="when">~1 minute later</span><b>Deploy.</b> Every push to <code>main</code> validates the dataset, rebuilds and deploys. Browsers pick up new data within the hour.</li>
+        </ol>
+      </section>
+
+      <section aria-labelledby="dataset-h">
+        <h2 id="dataset-h">1 · The dataset</h2>
+        <p>
+          The single source of truth is
+          <a href="https://github.com/mpurdon/tariffmap/blob/main/data/curated/tariff-actions.json"><code>data/curated/tariff-actions.json</code></a>.
+          Nothing reaches the map unless it is in this file. Each entry is one legal instrument (split by target group when the rate differs), for example:
+        </p>
+<pre><code>{
+  "id": "us-232-steel-alu-2025",
+  "imposer": "USA",                 // ISO3; EUN = European Union
+  "targets": ["ALL"],               // or a list of ISO3 codes
+  "except": ["GBR"],                // carve-outs covered by their own entry
+  "rate": 50,                       // headline ad valorem %, or null for bans
+  "rateHistory": [{"from": "2025-03-12", "rate": 25},
+                  {"from": "2025-06-04", "rate": 50}],
+  "stacksWith": ["…"],              // measures whose rates add on the same goods
+  "hs": ["72", "73", "76"],         // HS chapters/headings covered, or ["ALL"]
+  "legalBasis": "Section 232",
+  "effective": "2025-03-12",        // date the duty became payable
+  "expires": null,
+  "status": "active",               // active | suspended | revoked | announced
+  "sources": ["https://www.federalregister.gov/…"],
+  "lastVerified": "2026-09-13"
+}</code></pre>
+        <p>Rules the file follows:</p>
+        <ul>
+          <li><b>Every entry cites at least one source</b>, preferably the legal instrument itself: Federal Register proclamations, USTR notices, CBP CSMS messages, Finance Canada orders, the EU Official Journal, MOFCOM / State Council Tariff Commission announcements, Mexico's Diario Oficial.</li>
+          <li><b>History is never deleted.</b> An ended measure gets an <code>expires</code> date and <code>status: "revoked"</code>; a rate change is appended to <code>rateHistory</code>. That is what lets the timeline replay any past month.</li>
+          <li><b>Dates are when the duty became payable</b>, not when the order was signed.</li>
+          <li><b>Bans and non-ad-valorem measures</b> have <code>rate: null</code>, with the detail in <code>rateNote</code>; bans are drawn with their own red, strobing style.</li>
+        </ul>
+        <p>Every build runs a validator and refuses to deploy if any entry has an unknown country code, no sources, a rate outside 0–250%, a malformed date, a revoked status without an end date, a <code>rateHistory</code> that disagrees with <code>rate</code> or <code>effective</code>, a duplicate id, or a <code>stacksWith</code> pointing at a measure that does not exist.</p>
+      </section>
+
+      <section aria-labelledby="check-h">
+        <h2 id="check-h">2 · The weekly source check</h2>
+        <p>
+          The check is run by an AI agent (Anthropic's Claude) as a scheduled cloud job. It starts from a fresh clone of the repository and follows the written procedure in
+          <a href="https://github.com/mpurdon/tariffmap/blob/main/docs/CURATION.md"><code>docs/CURATION.md</code></a>,
+          which you can read in full. In outline:
+        </p>
+        <ol>
+          <li><b>Establish the window.</b> It reads the date of the previous completed check and the newest <code>lastVerified</code> in the dataset, and looks for developments since then.</li>
+          <li><b>Sweep the sources in a fixed order:</b> Federal Register (presidential proclamations, USTR and Commerce notices), USTR press releases, CBP CSMS messages, Finance Canada, European Commission trade news, MOFCOM / Tariff Commission, Mexico's Diario Oficial. Global Trade Alert and established trade-law trackers are used only to cross-check dates and carve-outs, never as the sole source.</li>
+          <li><b>Re-verify anything due.</b> Every entry with an effective date, expiry or scheduled rate change within ±14 days of the run is checked again to confirm it actually happened or was postponed.</li>
+          <li><b>Edit within strict limits.</b> The agent may change only the dataset file (and the country list, if a new trading partner appears). Each new or changed entry must cite a primary source and gets today's <code>lastVerified</code>. It may not touch code, workflows, build output or caches.</li>
+          <li><b>Validate.</b> It runs the same build and validator as production, offline, and must get zero errors.</li>
+        </ol>
+        <p>Scope is deliberate: tariffs, surtaxes, anti-dumping and countervailing duties, safeguard quotas with an over-quota rate, import bans, and formal suspensions or terminations of any of these, imposed by or on a mapped economy. Export controls, sanctions and entity lists are out of scope, as are proposals that have no legal instrument or effective date yet. The guiding rule is that <em>an omission is recoverable; a wrong rate on the live map is not.</em></p>
+      </section>
+
+      <section aria-labelledby="outputs-h">
+        <h2 id="outputs-h">3 · What a run produces</h2>
+        <div class="two">
+          <div class="card">
+            <h3>Proposed changes → pull request</h3>
+            <p>If any entry changed, the agent commits only the dataset to a <code>curation/YYYY-MM-DD</code> branch and opens a pull request. Its description has one row per change (measure, change, effective date, source link, and the agent's confidence), plus developments it saw and chose not to record, with reasons. These are <b>never</b> committed to the live site directly.</p>
+            <p><a href="https://github.com/mpurdon/tariffmap/pulls?q=is%3Apr+Curation">See every curation pull request →</a></p>
+          </div>
+          <div class="card">
+            <h3>The check itself → <code>last-check.json</code></h3>
+            <p>Every <em>completed</em> run, changes or not, writes <a href="https://github.com/mpurdon/tariffmap/blob/main/data/curated/last-check.json"><code>data/curated/last-check.json</code></a> (the date, the outcome, the pull request if any, and how many entries it re-verified) and commits that one file straight to <code>main</code>. It changes no measure; it is what moves the “Sources checked” date in the map's header.</p>
+          </div>
+        </div>
+        <p>A run only counts as completed if the agent could read the primary sources directly. If they were unreachable, it records nothing and reports which sites failed. The header's dot turns <span class="amber">amber</span> with “check overdue” when the last completed check is more than nine days old, so a broken or skipped run is visible on the site rather than hidden behind a stale date.</p>
+      </section>
+
+      <section aria-labelledby="review-h">
+        <h2 id="review-h">4 · Human review and deploy</h2>
+        <p>The maintainer reviews every curation pull request against its cited sources before merging. An agent-proposed rate, date or scope reaches the public map only through that merge.</p>
+        <p>Every push to <code>main</code>, whether a merged review, a check record or a code change, runs a GitHub Actions workflow:</p>
+<pre><code>npm ci                          # exact, locked dependencies
+npm run typecheck               # TypeScript, no emit
+npm run build:data -- --offline # validate + derive arcs from committed caches
+npx vite build                  # bundle the site
+npx wrangler deploy             # publish to Cloudflare</code></pre>
+        <p>The site is static files on Cloudflare's edge: there is no server or database behind it. The data files are cached for at most an hour, so a merged change is visible to everyone within about an hour of deploy.</p>
+      </section>
+
+      <section aria-labelledby="numbers-h">
+        <h2 id="numbers-h">5 · How the numbers on the map are computed</h2>
+        <h3>Who is taxing whom, on a given date</h3>
+        <ul>
+          <li><b>Targets.</b> <code>["ALL"]</code> expands to every mapped economy except the imposer and any listed carve-outs. EU member states trade as one entity, so they collapse into the European Union.</li>
+          <li><b>In force.</b> A measure applies on a date if it has taken effect, has not expired, and is not suspended. Its rate on that date is the latest <code>rateHistory</code> step on or before it.</li>
+          <li><b>Headline rate per arc.</b> All measures between one imposer and one target are combined. Each measure is added to the measures it explicitly stacks with, and the largest stack wins. If any economy-wide measure applies, the headline is the economy-wide stack, with product-specific peaks shown separately as “up to X% on some products”.</li>
+          <li><b>Timeline.</b> Years from the first measure up to two years ago, then months up to now, then one step per scheduled future change. Playback stops at “Now”.</li>
+        </ul>
+        <h3>How much trade is affected</h3>
+        <ul>
+          <li><b>Country level: UN Comtrade.</b> Annual goods imports, HS classification, as reported by the importing country in US dollars, for the most recent year with data (2025, else 2024, else 2023). The build queries each imposer's imports from all its partners for every HS code its measures cover, chunked to stay under the API's row limit, spaced and retried on errors, and caches every response.</li>
+          <li><b>Covered value.</b> For each arc, the imports under the HS codes the active measures cover. A heading inside a listed chapter is not double-counted, and an economy-wide measure covers total imports. Where a government publishes its own figure (for example, “C$27.6B of US goods”), that official figure is used instead.</li>
+          <li><b>Duty figure.</b> Covered imports × rate. This is a <em>ceiling</em>: it ignores exemptions, quotas and the trade the tariff itself diverts. It is not a revenue estimate.</li>
+          <li><b>Regional view</b> (zoomed in on North America): Canadian provinces use Statistics Canada table 12-10-0175-01, provincial domestic exports by product section, summed over the trailing 12 months and converted at an approximate C$0.73 per US$. US states use the Census Bureau's annual state exports by HS code. HS codes are mapped onto Statistics Canada's product sections approximately, and regions with under US$25M of exposed exports are left off to keep the map readable.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="limits-h">
+        <h2 id="limits-h">6 · Known limitations</h2>
+        <ul>
+          <li>Trade statistics lag by a year or more, so covered values describe the pre-tariff baseline, not current flows.</li>
+          <li>Headline rates simplify. Tiers, quotas and exemptions are in each entry's details, but the arc shows a single number.</li>
+          <li>The weekly check can miss things or misread them. That is why it proposes rather than publishes, and why every entry links to the document it rests on.</li>
+          <li>Between a policy change and the next completed check, the map can be up to a week behind.</li>
+        </ul>
+        <p>Spotted an error? <a href="https://github.com/mpurdon/tariffmap/issues/new">Open an issue</a> with a link to the source document.</p>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p><a href="/">tariffmap.org</a> · © <span data-year></span> <a href="https://matthewpurdon.me" rel="author">Matthew Purdon</a> · Not trade or legal advice.</p>
+    </footer>
+    <script type="module" src="/src/how.ts"></script>
+  </body>
+</html>
