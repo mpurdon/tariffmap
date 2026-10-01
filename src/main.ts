@@ -364,6 +364,8 @@ function layers() {
   const bans = [...countryArcs, ...shownRegional].filter(a => a.ban);
   // Bans draw over the comets on the same pair; on the globe the depth test must stay so they don't show through the earth.
   const overlay = mode === 'map' ? {depthCompare: 'always' as const} : {};
+  // Zoomed out the effect is small and quiet (a short arc is ~100px); it grows to full size by the regional zoom.
+  const banZoom = Math.max(0, Math.min(1, (camera.zoom - 1.2) / (REGIONAL_ZOOM - 1.2)));
   const banColor = (a: AnyArc, alpha: number) => withAlpha(BAN_COLOR, Math.round(alpha * 255 * dim(a)));
   const banLayers = bans.length
     ? [
@@ -372,7 +374,8 @@ function layers() {
           id: 'ban-glow',
           getSourceColor: a => banColor(a, 0.8),
           getTargetColor: a => banColor(a, 1),
-          getWidth: a => width(a) * 3 + 10,
+          getWidth: a => width(a) * 2 + 7,
+          widthScale: 0.45 + 0.55 * banZoom,
           clock,
           // Normal blending: added onto the blue land, red turns magenta.
           parameters: {cullMode: 'none', ...overlay}
@@ -382,8 +385,9 @@ function layers() {
           id: 'ban-bars',
           getSourceColor: a => banColor(a, 1),
           getTargetColor: a => banColor(a, 1),
-          getWidth: a => width(a) + 2,
-          stripes: 34,
+          getWidth: a => width(a) + 1,
+          widthScale: 0.8 + 0.2 * banZoom,
+          barPx: 14,
           clock,
           parameters: {cullMode: 'none', ...overlay}
         }),
@@ -392,8 +396,10 @@ function layers() {
           data: bans,
           getPosition: target,
           radiusUnits: 'pixels',
-          getRadius: 34,
+          getRadius: 1,
+          radiusScale: 14 + 22 * banZoom,
           getFillColor: a => banColor(a, 1),
+          opacity: 0.55 + 0.45 * banZoom,
           clock,
           pickable: false,
           parameters: {...overlay, blendColorOperation: 'add', blendColorSrcFactor: 'src-alpha', blendColorDstFactor: 'one'},
