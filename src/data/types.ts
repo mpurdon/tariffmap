@@ -133,9 +133,22 @@ export interface RegionalArc {
   actionIds: string[];
 }
 
+/** data/curated/last-check.json — written by every completed curation run, changes or not. */
+export interface LastCheck {
+  /** ISO date the sources were last checked against the dataset. */
+  checkedAt: string;
+  /** What the run concluded: nothing to change, a PR awaiting review, or a manual check. */
+  outcome: 'no-changes' | 'changes-proposed' | 'manual';
+  /** The curation PR, when the run proposed changes. */
+  pullRequest?: string | null;
+  /** Entries the run re-verified against their sources. */
+  reverified?: number;
+}
+
 export interface Meta {
   builtAt: string;
   actionsVerifiedThrough: string;
+  lastCheck?: LastCheck;
   sources: Record<string, string>;
   counts: {actions: number; arcs: number; arcsWithTrade?: number; regionalArcs?: number; regionalPairs?: number};
 }

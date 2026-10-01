@@ -1,4 +1,4 @@
-import {ALL, targetsEveryone, type Endpoint, type TariffAction} from './types';
+import {ALL, targetsEveryone, type Endpoint, type LastCheck, type TariffAction} from './types';
 
 export const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 export const RATE_RANGE: [number, number] = [0, 250];
@@ -33,5 +33,16 @@ export function validateActions(actions: TariffAction[], entities: Endpoint[]): 
     }
   }
   for (const a of actions) for (const s of a.stacksWith ?? []) if (!ids.has(s)) err(a, `stacksWith unknown ${s}`);
+  return errors;
+}
+
+const OUTCOMES: LastCheck['outcome'][] = ['no-changes', 'changes-proposed', 'manual'];
+
+/** Problems with data/curated/last-check.json. */
+export function validateLastCheck(c: LastCheck): string[] {
+  const errors: string[] = [];
+  if (!ISO_DATE.test(c.checkedAt)) errors.push(`last-check: bad checkedAt ${c.checkedAt}`);
+  if (!OUTCOMES.includes(c.outcome)) errors.push(`last-check: outcome must be one of ${OUTCOMES.join(', ')}`);
+  if (c.outcome === 'changes-proposed' && !c.pullRequest) errors.push('last-check: changes-proposed needs a pullRequest URL');
   return errors;
 }

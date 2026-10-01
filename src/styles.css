@@ -37,6 +37,8 @@ a { color: var(--accent); }
 .freshness { font-family: var(--mono); font-size: 11px; color: var(--ink-2); display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0; }
 .pulse { width: 7px; height: 7px; border-radius: 50%; background: #19c37d; box-shadow: 0 0 8px #19c37d; animation: pulse 2s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+.pulse.stale { background: rgb(232 170 60); box-shadow: 0 0 8px rgb(232 170 60); }
+.freshness .overdue { color: rgb(232 170 60); }
 .spacer { flex: 1; }
 /* The badge is the only thing allowed to give: it truncates before the freshness line wraps. */
 .mode-badge { font: 500 11px var(--mono); color: rgb(232 170 60); background: rgb(201 133 0 / 0.12); border: 1px solid rgb(201 133 0 / 0.4); border-radius: 6px; padding: 4px 9px; letter-spacing: 0.02em; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

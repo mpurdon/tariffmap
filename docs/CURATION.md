@@ -2,7 +2,8 @@
 
 These are the standing instructions for the scheduled agent that keeps
 `data/curated/tariff-actions.json` current. A human reviews every change it
-proposes; it never pushes to `main`.
+proposes; the only thing it pushes to `main` is the date of the check itself
+(step 7).
 
 ## Goal
 
@@ -64,12 +65,32 @@ narrow products under ~US$500M of trade, proposals with no legal instrument yet
      capital, lon/lat) rather than skipping the measure.
 5. Validate: `npm run build:data -- --offline` must print counts with no
    validation errors. Fix anything it rejects.
-6. If nothing changed, stop and report "no changes" — do not open an empty PR.
-7. Otherwise create a branch `curation/YYYY-MM-DD`, commit only the curated
-   files, push, and open a pull request titled `Curation: YYYY-MM-DD` whose body
-   has a table with one row per change: **Measure · Change · Effective · Source
-   link · Confidence (high/medium)**, followed by anything you were unsure about
-   and chose *not* to record. Mention the number of entries re-verified.
+6. If any entry changed, create a branch `curation/YYYY-MM-DD` from `main`,
+   commit only the curated files, push, and open a pull request titled
+   `Curation: YYYY-MM-DD` (use `gh pr create`, or the GitHub MCP
+   `create_pull_request` tool when `gh` is unavailable). The body has a table with
+   one row per change: **Measure · Change · Effective · Source link · Confidence
+   (high/medium)**, followed by anything you were unsure about and chose *not* to
+   record, and the number of entries re-verified. Never open an empty PR.
+7. **Record the check — every completed run, changes or not.** Switch back to
+   `main` and write `data/curated/last-check.json`:
+
+   ```json
+   {"checkedAt": "YYYY-MM-DD", "outcome": "no-changes", "pullRequest": null, "reverified": 12}
+   ```
+
+   `outcome` is `no-changes`, or `changes-proposed` with `pullRequest` set to the
+   PR's URL. Run `npm run build:data -- --offline` again, then commit **only that
+   file** directly to `main` (`chore: curation check YYYY-MM-DD (<outcome>)`) and
+   push. This is the one commit that skips review: it changes no measure, only
+   the "sources checked" date the site shows, which is what lets visitors see the
+   data is current even in weeks when nothing changed.
+
+   A run is *completed* only if you read the primary sources directly. If the
+   Federal Register and most of the other sources above were unreachable (network
+   blocked, outages), do **not** write `last-check.json` — the site turns the date
+   amber when a check is overdue, and that is the honest signal. Finish with a
+   report naming every host you could not reach.
 
 ## Style
 
@@ -79,4 +100,5 @@ narrow products under ~US$500M of trade, proposals with no legal instrument yet
   headline ad valorem number for the main covered goods.
 - Dates are ISO `YYYY-MM-DD`, the date the duty became payable, not the signing date.
 - Do not touch code, `public/data/`, caches, or files outside `data/curated/` and
-  `public/geo/capitals.json`.
+  `public/geo/capitals.json`. The only direct push to `main` is step 7's
+  `last-check.json`.

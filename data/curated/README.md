@@ -25,6 +25,14 @@ validates it and derives the arcs; nothing reaches the site that isn't in here.
 6. **`hs` drives the regional view.** List the HS chapters (2-digit) or headings
    (4/6-digit) the measure actually covers; `["ALL"]` for economy-wide measures.
 
+## `last-check.json`
+
+The date the weekly curation run last compared this file against its primary
+sources, written on every completed run whether or not anything changed (see
+`docs/CURATION.md`, step 7). The site shows it as "Sources checked …" and flags
+it as overdue after nine days. `lastVerified` on an entry still means a person
+or reviewed PR confirmed *that entry*; `checkedAt` means the sources were swept.
+
 ## Schema
 
 ```jsonc

@@ -5,11 +5,11 @@
  *   meta.json          build provenance
  * `--offline` uses only the committed Comtrade cache.
  */
-import {readFileSync, writeFileSync, mkdirSync} from "node:fs";
+import {existsSync, readFileSync, writeFileSync, mkdirSync} from "node:fs";
 import "dotenv/config";
 import {resolve} from 'node:path';
-import {ALL, EU, targetsEveryone, tradeIso, type TariffAction, type Endpoint, type Arc, type Meta} from '../src/data/types';
-import {validateActions} from '../src/data/validate';
+import {ALL, EU, targetsEveryone, tradeIso, type TariffAction, type Endpoint, type Arc, type Meta, type LastCheck} from '../src/data/types';
+import {validateActions, validateLastCheck} from '../src/data/validate';
 import {coveredValue} from '../src/data/coverage';
 import {importTable} from './sources/comtrade';
 import {provinceExports, napcsFor, STATCAN_PARTNER} from './sources/statcan';
@@ -27,7 +27,10 @@ const entities: Endpoint[] = geo.entities;
 const byIso = new Map(entities.map(e => [e.iso3, e]));
 const actions: TariffAction[] = curated.actions;
 
-const errors = validateActions(actions, entities);
+const lastCheckPath = resolve(ROOT, 'data/curated/last-check.json');
+const lastCheck: LastCheck | undefined = existsSync(lastCheckPath) ? JSON.parse(readFileSync(lastCheckPath, 'utf8')) : undefined;
+
+const errors = [...validateActions(actions, entities), ...(lastCheck ? validateLastCheck(lastCheck) : [])];
 if (errors.length) {
   console.error('Validation failed:\n  ' + errors.join('\n  '));
   process.exit(1);
@@ -139,6 +142,7 @@ mkdirSync(OUT, {recursive: true});
 const meta: Meta = {
   builtAt: new Date().toISOString(),
   actionsVerifiedThrough: actions.map(a => a.lastVerified).sort().at(-1)!,
+  lastCheck,
   sources: {curated: 'data/curated/tariff-actions.json', trade: 'UN Comtrade (annual imports, reporter-side, USD)'},
   counts: {actions: actions.length, arcs: arcs.length, arcsWithTrade: withTrade, regionalArcs: regional.length, regionalPairs: regionalByPair.size}
 };
@@ -146,4 +150,4 @@ writeFileSync(resolve(OUT, 'actions.json'), JSON.stringify(expanded));
 writeFileSync(resolve(OUT, 'arcs-country.json'), JSON.stringify(arcs));
 writeFileSync(resolve(OUT, 'arcs-regional.json'), JSON.stringify(regional));
 writeFileSync(resolve(OUT, 'meta.json'), JSON.stringify(meta, null, 2));
-console.log(`actions: ${actions.length}  pairs: ${arcs.length}  with trade: ${withTrade} (${missing} missing)  regional: ${regional.length} arcs over ${[...regionalByPair.keys()].join(', ') || 'none'}  verified through: ${meta.actionsVerifiedThrough}`);
+console.log(`actions: ${actions.length}  pairs: ${arcs.length}  with trade: ${withTrade} (${missing} missing)  regional: ${regional.length} arcs over ${[...regionalByPair.keys()].join(', ') || 'none'}  verified through: ${meta.actionsVerifiedThrough}  last checked: ${lastCheck?.checkedAt ?? 'never'}`);
