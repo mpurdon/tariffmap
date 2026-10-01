@@ -1,6 +1,6 @@
 {
-  "checkedAt": "2026-09-13",
-  "outcome": "manual",
-  "pullRequest": null,
-  "reverified": 64
+  "checkedAt": "2026-10-01",
+  "outcome": "changes-proposed",
+  "pullRequest": "https://github.com/mpurdon/tariffmap/pull/1",
+  "reverified": 9
 }
