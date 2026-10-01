@@ -63,9 +63,12 @@ const DOMESTIC_EXPORT = 2;
 /** Trailing-12-month domestic exports from every province to one partner, by NAPCS section. */
 export async function provinceExports(partnerMember: number, offline = false): Promise<ProvinceExports | null> {
   const file = resolve(CACHE, `12100175-partner${partnerMember}.json`);
+  // An expired cache is still better than nothing if the refresh fails.
+  let stale: ProvinceExports | null = null;
   if (existsSync(file)) {
     const c = JSON.parse(readFileSync(file, 'utf8')) as ProvinceExports & {fetchedAt: string};
     if ((Date.now() - Date.parse(c.fetchedAt)) / 86400000 < CACHE_TTL_DAYS || offline) return c;
+    stale = c;
   }
   if (offline) return null;
 
@@ -76,8 +79,8 @@ export async function provinceExports(partnerMember: number, offline = false): P
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     rows = await res.json();
   } catch (err) {
-    console.warn(`statcan: partner ${partnerMember} failed: ${(err as Error).message}`);
-    return null;
+    console.warn(`statcan: partner ${partnerMember} failed: ${(err as Error).message}${stale ? '; using the expired cache' : ''}`);
+    return stale;
   }
   const cad: ProvinceExports['cad'] = {};
   let first = '', last = '';

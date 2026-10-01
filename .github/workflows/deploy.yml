@@ -6,6 +6,8 @@ on:
   schedule:
     # Weekly refresh of trade data + rebuild, Mondays 06:00 UTC.
     - cron: "0 6 * * 1"
+  # Also started by the curation auto-merge workflow (pushes made with the
+  # workflow token do not trigger `push`).
   workflow_dispatch:
 
 concurrency:
@@ -25,19 +27,22 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      # Scheduled runs refresh UN Comtrade / StatCan / Census; push builds reuse the committed caches.
+      # Cache-first on every run: anything already in data/cache is reused, and only
+      # what is missing (new HS codes, new partners) or expired is fetched. Offline-only
+      # push builds used to leave arcs blank whenever a curation change added codes.
       - name: Build data
         env:
           CENSUS_API_KEY: ${{ secrets.CENSUS_API_KEY }}
-        run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then npm run build:data; else npm run build:data -- --offline; fi
+        run: npm run build:data
       - name: Commit refreshed trade caches
-        if: github.event_name == 'schedule'
         run: |
+          git add data/cache
+          if git diff --cached --quiet; then exit 0; fi
           git config user.name "tariffmap-bot"
           git config user.email "bot@tariffmap.org"
-          git add data/cache
-          git diff --cached --quiet || git commit -m "chore: refresh trade data caches" && git push
+          git commit -m "chore: refresh trade data caches"
+          git pull --rebase origin main
+          git push origin HEAD:main
       - run: npx vite build
       - name: Deploy to Cloudflare
         run: npx wrangler deploy

@@ -38,12 +38,16 @@ async function query(params: Record<string, string>, key: string): Promise<strin
  */
 export async function stateExports(country: string, headings: string[], years: number[], offline = false): Promise<StateExports | null> {
   const file = resolve(CACHE, `statehs-${country}-${headings.slice().sort().join('_') || 'hs2'}.json`);
+  // An expired cache is still better than nothing when there is no key or the refresh fails.
+  let stale: StateExports | null = null;
   if (existsSync(file)) {
     const c = JSON.parse(readFileSync(file, 'utf8')) as StateExports & {fetchedAt: string};
     if ((Date.now() - Date.parse(c.fetchedAt)) / 86400000 < CACHE_TTL_DAYS || offline) return c;
+    stale = c;
   }
   const key = process.env.CENSUS_API_KEY;
-  if (offline || !key) return null;
+  if (offline) return null;
+  if (!key) return stale;
 
   for (const year of years) {
     const hs2 = await query({get: 'STATE,E_COMMODITY,ALL_VAL_YR', COMM_LVL: 'HS2', CTY_CODE: CENSUS_COUNTRY[country], time: `${year}-12`}, key);
@@ -66,5 +70,5 @@ export async function stateExports(country: string, headings: string[], years: n
     writeFileSync(file, JSON.stringify({...out, fetchedAt: new Date().toISOString()}));
     return out;
   }
-  return null;
+  return stale;
 }
