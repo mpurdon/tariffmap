@@ -947,20 +947,23 @@
       ],
       "title": "Section 232 tariff on patented pharmaceuticals",
       "rate": 100,
-      "rateNote": "Tiered 0–100% by origin; 20% for companies with approved US onshoring plans; generics exempt",
+      "rateNote": "Tiered 0–100% by origin; 100% applied from 31 Jul 2026 to the companies named in Annex III of Proclamation 11020 and from 29 Sep 2026 to all other companies; 20% for companies with Commerce-approved US onshoring agreements; generics exempt",
       "hs": [
         "30"
       ],
       "hsLabel": "patented pharmaceuticals and ingredients",
-      "exemptions": "Generic drugs; companies building US plants (Annex II) until 2029",
+      "exemptions": "Generic pharmaceuticals, including unpatented animal health products; imports solely for clinical trials, research and development; companies building US plants (Annex II) until 2029; a zero rate for orphan drugs, nuclear medicines, plasma-derived therapies, fertility drugs, cell and gene therapies, antibody-drug conjugates, CBRN countermeasures and animal health products from 19 jurisdictions with framework agreements or meeting an urgent US health need",
       "legalBasis": "Section 232",
       "effective": "2026-07-31",
       "sources": [
+        "https://www.federalregister.gov/documents/2026/04/09/2026-06956/adjusting-imports-of-pharmaceuticals-and-pharmaceutical-ingredients-into-the-united-states",
+        "https://www.federalregister.gov/documents/2026/09/23/2026-19498/guidance-and-procedures-for-implementing-tariff-adjustments-for-specialty-pharmaceuticals-and",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-01",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "notes": "Proclamation 11020 of 2 Apr 2026 phased the 100% rate in two stages: Annex III companies on 31 Jul 2026, everyone else on 29 Sep 2026. BIS defined the zero-rated specialty categories and the eligible jurisdictions on 23 Sep 2026."
     },
     {
       "id": "us-232-pharma-deal",
@@ -982,9 +985,10 @@
       "legalBasis": "deal",
       "effective": "2026-07-31",
       "sources": [
+        "https://www.federalregister.gov/documents/2026/04/09/2026-06956/adjusting-imports-of-pharmaceuticals-and-pharmaceutical-ingredients-into-the-united-states",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-01",
       "expires": null,
       "status": "active"
     },
@@ -1052,7 +1056,7 @@
       ],
       "title": "Section 232 tariff and minimum import prices on polysilicon, wafers, cells and modules",
       "rate": 15,
-      "rateNote": "15% plus minimum import prices ($21/kg polysilicon, $0.38/W modules)",
+      "rateNote": "15% ad valorem on polysilicon ingots, wafers, cells and modules; raw polysilicon carries the minimum import price alone. Minimum import prices of $21/kg polysilicon, $100/kg ingots and wafers, $0.22/W cells and $0.38/W modules — an importer that cannot certify a first arm’s-length sale at or above the price owes the shortfall as a specific duty.",
       "hs": [
         "2804",
         "3818",
@@ -1063,10 +1067,14 @@
       "effective": "2026-12-04",
       "status": "announced",
       "sources": [
+        "https://www.federalregister.gov/documents/2026/08/11/2026-16400/adjusting-imports-of-polysilicon-and-its-derivatives-into-the-united-states",
+        "https://www.federalregister.gov/documents/2026/09/24/2026-19537/measures-to-restrict-stockpiling-of-polysilicon-and-polysilicon-derivatives-under-proclamation-11052",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
-      "expires": null
+      "lastVerified": "2026-10-01",
+      "expires": null,
+      "exemptions": "For EU, Japan, Korea, Taiwan, Switzerland and Liechtenstein the Section 232 duty plus the Column 1 rate is capped at 15% all-in; UK 10%",
+      "notes": "Proclamation 11052 of 6 Aug 2026, effective 4 Dec 2026. BIS restricted pre-effective-date stockpiling from 22 Sep to 3 Dec 2026, barring further entries by importers running substantially above their historic volumes."
     },
     {
       "id": "us-122-surcharge",
@@ -1127,7 +1135,7 @@
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
       "notes": "Replaced the Section 122 surcharge on expiry; applies in addition to existing Section 301 duties on China and Brazil.",
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-01",
       "expires": null,
       "status": "active"
     },
@@ -1152,7 +1160,7 @@
         "https://globaltradealert.org/blog/forced-labour-section-301-final-action",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-01",
       "expires": null,
       "status": "active"
     },
@@ -1178,7 +1186,7 @@
         "https://globaltradealert.org/blog/forced-labour-section-301-final-action",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-01",
       "expires": null,
       "status": "active"
     },
@@ -1222,7 +1230,7 @@
         "https://globaltradealert.org/blog/forced-labour-section-301-final-action",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-01",
       "expires": null,
       "status": "active"
     },
@@ -1257,7 +1265,7 @@
       ],
       "title": "Section 338 tariffs on Canadian dairy, alcoholic beverages and motor vehicles (50%)",
       "rate": 50,
-      "rateNote": "Three proclamations (11046–11048). Scope revised Sept 15, 2026 (cheese, hides, furs, boats, structural steel, aluminum profiles, fasteners, furniture, lighting added) and from that date the 50% stacks on top of Section 232",
+      "rateNote": "Three proclamations (11046–11048). Scope revised by Proclamations 11064–11065 effective 15 Sep 2026 (cheese, hides, furs, boats, structural steel, aluminum profiles, fasteners, furniture, lighting added; bulk whiskey and liqueurs, salt, cement, refined lead removed) and from that date the 50% stacks on top of Section 232, reaching up to 75% combined.",
       "hs": [
         "04",
         "22",
@@ -1275,12 +1283,14 @@
       "legalBasis": "Section 338",
       "effective": "2026-08-22",
       "sources": [
+        "https://www.federalregister.gov/documents/2026/09/14/2026-18838/modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-imposed-to-offset",
+        "https://www.federalregister.gov/documents/2026/09/14/2026-18839/modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-imposed-to-offset",
         "https://www.troutman.com/insights/from-duties-to-import-bans-president-trump-escalates-section-338-actions-against-canadian-goods/",
         "https://www.wiley.law/alert-President-Trump-Imposes-New-50-Tariffs-on-Certain-Canadian-Imports",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
       "notes": "Signed July 20, 2026; suspended Aug 19–22 during talks, which collapsed Aug 21. First use of Section 338 (Tariff Act of 1930) since the 1930s.",
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-01",
       "expires": null,
       "status": "active",
       "coveredTradeUsd": 28000000000.0,
@@ -1292,26 +1302,36 @@
       "targets": [
         "CAN"
       ],
-      "title": "Section 338 import bans on Canadian spirits, beer, wine, whey products and large motorcycles",
+      "title": "Section 338 import bans on Canadian alcoholic beverages, whey, molasses and large motorcycles",
       "rate": null,
-      "rateNote": "Import ban (goods already landed pay the 50% duty instead)",
+      "rateNote": "Import ban, not a duty. Goods imported but not yet entered for consumption on 29 Sep 2026 stay dutiable at the 50% rate of Proclamations 11046–11048. Bulk alcohol, passenger cars and dairy lines outside the banned whey headings remain enterable at 50%.",
       "hs": [
+        "2202",
         "2203",
         "2204",
+        "2205",
+        "2206",
+        "2207",
         "2208",
         "0404",
+        "1703",
         "8711"
       ],
-      "hsLabel": "alcoholic beverages, whey, motorcycles >800cc",
+      "hsLabel": "packaged beer, wine, cider, spirits, whey, molasses, non-alcoholic beer, motorcycles >800cc",
       "legalBasis": "Section 338",
       "effective": "2026-09-29",
-      "status": "announced",
+      "status": "active",
       "sources": [
+        "https://www.federalregister.gov/documents/2026/09/14/2026-18835/excluding-certain-canadian-products-from-importation-into-the-united-states-in-response-to-continued",
+        "https://www.federalregister.gov/documents/2026/09/14/2026-18836/excluding-certain-canadian-products-from-importation-into-the-united-states-in-response-to-continued",
+        "https://www.federalregister.gov/documents/2026/09/14/2026-18837/excluding-certain-canadian-products-from-importation-into-the-united-states-in-response-to-continued",
         "https://www.troutman.com/insights/from-duties-to-import-bans-president-trump-escalates-section-338-actions-against-canadian-goods/",
         "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-responds-to-canadas-retaliation/"
       ],
-      "lastVerified": "2026-09-13",
-      "expires": null
+      "lastVerified": "2026-10-01",
+      "expires": null,
+      "exemptions": "Bulk alcohol for US bottling or blending, motorcycles of 800cc or less, passenger vehicles and non-whey dairy stay dutiable at 50% rather than banned",
+      "notes": "Proclamations 11061 (alcoholic beverages), 11062 (dairy, molasses, non-alcoholic beer) and 11063 (motorcycles >800cc), signed 8 Sep 2026, published 14 Sep 2026. If a ban is invalidated in court the 50% Section 338 duty reapplies to the affected goods. First use of the Section 338 exclusion power."
     },
     {
       "id": "ca-counter-us-2025-03-04",
@@ -1803,6 +1823,33 @@
       "notes": "Published in the Diario Oficial on Dec 30, 2025. Applies at the MFN level, so it hits goods from countries without a trade agreement with Mexico.",
       "lastVerified": "2026-09-13",
       "status": "active"
+    },
+    {
+      "id": "eu-goes-safeguard-2026",
+      "imposer": "EUN",
+      "targets": [
+        "ALL"
+      ],
+      "title": "EU safeguard on grain-oriented electrical steel and transformer cores",
+      "rate": null,
+      "rateNote": "Specific duty equal to the shortfall between the import price and a price threshold, with tariff-rate quotas: thresholds of €2,800–3,400/tonne in quota depending on the GOES grade and €3,500/tonne out of quota. No duty is collected where the net free-at-Union-frontier price is at or above the threshold.",
+      "hs": [
+        "722511",
+        "722611",
+        "850490"
+      ],
+      "hsLabel": "grain-oriented electrical steel, transformer laminations and cores",
+      "exemptions": "EEA states (Norway, Iceland, Liechtenstein), Kenya and Ukraine excluded",
+      "legalBasis": "safeguard",
+      "effective": "2026-09-25",
+      "expires": "2027-02-26",
+      "status": "active",
+      "sources": [
+        "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202602133",
+        "https://policy.trade.ec.europa.eu/news/commission-imposes-provisional-safeguard-measures-imports-grain-oriented-electrical-steel-2026-09-18_en"
+      ],
+      "lastVerified": "2026-10-01",
+      "notes": "Commission Implementing Regulation (EU) 2026/2133 of 18 Sep 2026, a provisional measure under Regulations (EU) 2015/478 and 2015/755 running 155 calendar days from 25 Sep 2026. Quotas are first-come, first-served: China 30,693.68 t, Japan 23,103.61 t, Korea 4,789.93 t and 5,360.39 t for other eligible origins. The duty also reaches cores already incorporated in transformers under headings 8504 21 to 8504 34."
     }
   ]
 }
