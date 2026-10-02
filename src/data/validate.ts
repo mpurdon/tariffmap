@@ -5,6 +5,16 @@ export const RATE_RANGE: [number, number] = [0, 250];
 
 const plausibleRate = (r: number) => r >= RATE_RANGE[0] && r <= RATE_RANGE[1];
 
+/** Sources must be plain https links (no javascript:, data:, or relative URLs). */
+const HTTPS_URL = /^https:\/\/[^\s<>"']+$/i;
+/**
+ * Free text is rendered on the site; markup in it is either a mistake or an injection attempt.
+ * Comparisons like ">800cc" or "<5%" are fine; a tag opening, a javascript: URL or an
+ * inline event handler is not.
+ */
+const MARKUP = /<\s*[a-z!/?]|javascript:|\bon[a-z]+\s*=/i;
+const TEXT_FIELDS = ['title', 'rateNote', 'hsLabel', 'exemptions', 'notes', 'coveredTradeNote'] as const;
+
 /** Every problem with the curated actions; an empty list means the dataset is valid. */
 export function validateActions(actions: TariffAction[], entities: Endpoint[]): string[] {
   const known = new Set(entities.map(e => e.iso3));
@@ -20,6 +30,10 @@ export function validateActions(actions: TariffAction[], entities: Endpoint[]): 
     for (const x of a.except ?? []) if (!known.has(x)) err(a, `unknown except ${x}`);
     if (a.except && !targetsEveryone(a)) err(a, 'except only applies with targets ALL');
     if (!a.sources?.length) err(a, 'no sources');
+    for (const s of a.sources ?? []) if (!HTTPS_URL.test(s)) err(a, `source is not an https URL: ${s}`);
+    for (const f of TEXT_FIELDS) if (typeof a[f] === 'string' && MARKUP.test(a[f] as string)) err(a, `${f} contains markup`);
+    for (const h of a.rateHistory ?? []) if (h.note && MARKUP.test(h.note)) err(a, 'rateHistory note contains markup');
+    if (!/^[a-z0-9-]+$/.test(a.id)) err(a, 'id must be lowercase letters, digits and hyphens');
     if (a.rate !== null && !plausibleRate(a.rate)) err(a, `implausible rate ${a.rate}`);
     if (!ISO_DATE.test(a.effective)) err(a, 'bad effective date');
     if (!ISO_DATE.test(a.lastVerified)) err(a, 'bad lastVerified date');
@@ -44,5 +58,6 @@ export function validateLastCheck(c: LastCheck): string[] {
   if (!ISO_DATE.test(c.checkedAt)) errors.push(`last-check: bad checkedAt ${c.checkedAt}`);
   if (!OUTCOMES.includes(c.outcome)) errors.push(`last-check: outcome must be one of ${OUTCOMES.join(', ')}`);
   if (c.outcome === 'changes-proposed' && !c.pullRequest) errors.push('last-check: changes-proposed needs a pullRequest URL');
+  if (c.pullRequest && !/^https:\/\/github\.com\/[\w.-]+\/[\w.-]+\/pull\/\d+$/.test(c.pullRequest)) errors.push('last-check: pullRequest must be a GitHub pull request URL');
   return errors;
 }

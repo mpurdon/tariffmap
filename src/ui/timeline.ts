@@ -1,5 +1,6 @@
 import {nowIndex, type Step} from '../data/timeline';
 import {fmtDate, fmtMonth} from './format';
+import {esc} from './html';
 
 export interface TimelineState {
   steps: Step[];
@@ -57,7 +58,7 @@ export function renderTimeline(el: HTMLElement, st: TimelineState, cb: TimelineC
     const ticks = st.steps
       .map((s, i) => {
         const label = s.kind === 'year' ? (i % 2 === 0 ? s.label : '') : s.kind === 'month' ? MONTHS[Number(s.date.slice(5, 7)) - 1] : s.label;
-        const title = s.events ? ` title="${s.events.map(e => `${e.kind}: ${e.title}`).join('\n').replace(/"/g, '&quot;')}"` : '';
+        const title = s.events ? ` title="${esc(s.events.map(e => `${e.kind}: ${e.title}`).join('\n'))}"` : '';
         return `<span class="tick ${s.kind}" style="left:${pos[i] * 100}%" data-i="${i}"${title}><i></i><b>${label}</b></span>`;
       })
       .join('');

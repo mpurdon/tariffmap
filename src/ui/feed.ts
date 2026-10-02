@@ -2,6 +2,7 @@ import type {Dataset} from '../data/load';
 import {entityName} from '../data/load';
 import {hsLabelOf, type TariffAction} from '../data/types';
 import {flag} from './flag';
+import {esc, safeUrl} from './html';
 import {fmtDate, fmtRate, moneyHtml} from './format';
 import {involves, type Direction, type SortKey, type ViewState} from '../data/filter';
 import {endDate, isBan, rateOn} from '../data/rate';
@@ -36,13 +37,13 @@ const FOOTER = `<footer class="site-footer">
 function lifecycle(a: TariffAction, date: string): string {
   const end = endDate(a);
   if (end && end > date) return ` · until ${fmtDate(end)}`;
-  if (a.status !== 'active') return ` · <em>${a.status}</em>`;
+  if (a.status !== 'active') return ` · <em>${esc(a.status)}</em>`;
   return '';
 }
 
 export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[], view: ViewState, upcoming: Upcoming[], cb: FeedCallbacks) {
   const {focus, date, sort, direction} = view;
-  const name = (iso: string) => entityName(ds, iso);
+  const name = (iso: string) => esc(entityName(ds, iso));
   const targetsLabel = (a: TariffAction) =>
     a.targets.length > 4
       ? `<span class="flag-stack">${a.targets.slice(0, 4).map(t => flag(ds, t, {size: 'sm'})).join('')}</span> ${a.targets.length} countries`
@@ -61,26 +62,26 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
   const future = upcoming.filter(u => u.date > date && involves(ds.actionsById.get(u.id)!, focus, direction));
   const upcomingHtml = future.length
     ? `<details class="upcoming"><summary>Scheduled <span class="count">${future.length}</span></summary><ul>${future
-        .map(u => `<li class="up ${u.kind}"><button data-jump="${u.date}" title="View the map on this date"><time>${fmtDate(u.date)}</time><span class="up-kind">${u.kind === 'start' ? 'starts' : u.kind === 'end' ? 'ends' : `${u.rate}%`}</span><span class="up-title">${u.title}</span></button></li>`)
+        .map(u => `<li class="up ${u.kind}"><button data-jump="${esc(u.date)}" title="View the map on this date"><time>${fmtDate(u.date)}</time><span class="up-kind">${u.kind === 'start' ? 'starts' : u.kind === 'end' ? 'ends' : `${u.rate}%`}</span><span class="up-title">${esc(u.title)}</span></button></li>`)
         .join('')}</ul></details>`
     : '';
 
   const items = actions
     .map(
-      a => `<li class="item${isBan(a) ? ' ban' : ''}" data-id="${a.id}">
+      a => `<li class="item${isBan(a) ? ' ban' : ''}" data-id="${esc(a.id)}">
         <div class="item-top">
           <span class="pair">${flag(ds, a.imposer, {ring: true})} <b>${name(a.imposer)}</b> <span class="arrow">→</span> ${targetsLabel(a)}</span>
-          <span class="rate">${fmtRate(rateOn(a, date), a.rateNote)}${a.tradeUsd ? `<small>${moneyHtml(a.tradeUsd, undefined).replace(/ of imports covered/, '')}</small>` : ''}</span>
+          <span class="rate">${esc(fmtRate(rateOn(a, date), a.rateNote))}${a.tradeUsd ? `<small>${moneyHtml(a.tradeUsd, undefined).replace(/ of imports covered/, '')}</small>` : ''}</span>
         </div>
-        <div class="item-title">${a.title}</div>
-        <div class="item-meta">${a.legalBasis} · ${hsLabelOf(a)} · since ${fmtDate(a.effective)}${lifecycle(a, date)}</div>
+        <div class="item-title">${esc(a.title)}</div>
+        <div class="item-meta">${esc(a.legalBasis)} · ${esc(hsLabelOf(a))} · since ${fmtDate(a.effective)}${lifecycle(a, date)}</div>
         <details class="item-more"><summary>details</summary>
-          ${a.tradeUsd ? `<p class="money">${moneyHtml(a.tradeUsd, a.dutyUsd, a.rate)} (${a.tradeYear})<span class="dim"> — UN Comtrade; a ceiling before exemptions and trade diversion</span></p>` : ''}
-          ${a.rateNote ? `<p>${a.rateNote}</p>` : ''}
-          ${a.rateHistory?.length ? `<p class="history">${a.rateHistory.map(h => `<span><b>${h.rate}%</b> from ${fmtDate(h.from)}${h.note ? ` <i>${h.note}</i>` : ''}</span>`).join('')}</p>` : ''}
-          ${a.exemptions ? `<p><b>Exemptions:</b> ${a.exemptions}</p>` : ''}
-          ${a.notes ? `<p>${a.notes}</p>` : ''}
-          <p class="sources">${a.sources.map((s, i) => `<a href="${s}" target="_blank" rel="noopener">source ${i + 1}</a>`).join(' · ')} · verified ${fmtDate(a.lastVerified)}</p>
+          ${a.tradeUsd ? `<p class="money">${moneyHtml(a.tradeUsd, a.dutyUsd, a.rate)} (${esc(a.tradeYear)})<span class="dim"> — UN Comtrade; a ceiling before exemptions and trade diversion</span></p>` : ''}
+          ${a.rateNote ? `<p>${esc(a.rateNote)}</p>` : ''}
+          ${a.rateHistory?.length ? `<p class="history">${a.rateHistory.map(h => `<span><b>${h.rate}%</b> from ${fmtDate(h.from)}${h.note ? ` <i>${esc(h.note)}</i>` : ''}</span>`).join('')}</p>` : ''}
+          ${a.exemptions ? `<p><b>Exemptions:</b> ${esc(a.exemptions)}</p>` : ''}
+          ${a.notes ? `<p>${esc(a.notes)}</p>` : ''}
+          <p class="sources">${a.sources.map((s, i) => `<a href="${safeUrl(s)}" target="_blank" rel="noopener noreferrer">source ${i + 1}</a>`).join(' · ')} · verified ${fmtDate(a.lastVerified)}</p>
         </details>
       </li>`
     )

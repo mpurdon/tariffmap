@@ -11,6 +11,7 @@ import {showTooltip, hideTooltip} from './ui/tooltip';
 import {renderLegend} from './ui/legend';
 import {renderFreshness} from './ui/freshness';
 import {renderFeed} from './ui/feed';
+import {esc} from './ui/html';
 import {buildSteps, nowIndex, scheduledChanges, type Upcoming} from './data/timeline';
 import {renderTimeline, type TimelineState} from './ui/timeline';
 import 'flag-icons/css/flag-icons.min.css';
@@ -616,7 +617,7 @@ async function main() {
 
 main().catch(err => {
   console.error(err);
-  $('feed').innerHTML = `<div class="empty">Failed to load data: ${err.message}</div>`;
+  $('feed').innerHTML = `<div class="empty">Failed to load data: ${esc(err.message)}</div>`;
 });
 
 // A second Deck on the same canvas is worse than a reload.

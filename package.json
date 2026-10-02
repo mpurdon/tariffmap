@@ -18,9 +18,11 @@
   "type": "module",
   "private": "true",
   "dependencies": {
+    "@deck.gl/core": "^9.4.0",
+    "@deck.gl/layers": "^9.4.0",
+    "@luma.gl/shadertools": "^9.4.1",
     "@types/node": "^26.5.1",
     "@types/topojson-client": "^3.1.5",
-    "deck.gl": "^9.4.0",
     "flag-icons": "^7.5.0",
     "topojson-client": "^3.1.0",
     "typescript": "^7.0.2",

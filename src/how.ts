@@ -1,6 +1,7 @@
 import type {Meta} from './data/types';
 import {daysSince, isStale, nextCheck, STALE_DAYS} from './data/schedule';
 import {fmtDate} from './ui/format';
+import {esc} from './ui/html';
 
 document.querySelector('[data-year]')!.textContent = String(new Date().getUTCFullYear());
 
@@ -66,7 +67,7 @@ async function render(meta: Meta) {
   set('reverified', check?.reverified != null ? String(check.reverified) : '—');
   set('verified', fmtDate(meta.actionsVerifiedThrough));
   set('count', String(meta.counts.actions));
-  set('built', `${fmtDate(meta.builtAt.slice(0, 10))} · ${meta.builtAt.slice(11, 16)} UTC`);
+  set('built', `${fmtDate(meta.builtAt.slice(0, 10))} · ${esc(meta.builtAt.slice(11, 16))} UTC`);
 
   if (check?.outcome === 'changes-proposed' && pr) {
     const merged = await prMerged(pr);

@@ -4,6 +4,7 @@ import type {LiveArc, LiveRegionalArc} from '../data/filter';
 import type {NodeDatum} from '../layers/labels';
 import {entityName, type Dataset} from '../data/load';
 import {flag} from './flag';
+import {esc} from './html';
 import {fmtDate, fmtRate, fmtUsd, moneyHtml} from './format';
 import {isBan, rateOn} from '../data/rate';
 import {hsLabelOf} from '../data/types';
@@ -20,7 +21,7 @@ const MAX_ROWS = 6;
 /** Measures sorted by rate, capped so the tooltip stays on screen. */
 function measureRows(active: LiveArc['active'], date: string, detail: (x: LiveArc['active'][number]) => string): string {
   const sorted = active.slice().sort((x, y) => (rateOn(y, date) ?? 0) - (rateOn(x, date) ?? 0));
-  const rows = sorted.slice(0, MAX_ROWS).map(x => `<li${isBan(x) ? ' class="ban"' : ''}><b>${fmtRate(rateOn(x, date), x.rateNote)}</b> ${x.title}${detail(x)}</li>`);
+  const rows = sorted.slice(0, MAX_ROWS).map(x => `<li${isBan(x) ? ' class="ban"' : ''}><b>${esc(fmtRate(rateOn(x, date), x.rateNote))}</b> ${esc(x.title)}${detail(x)}</li>`);
   if (sorted.length > MAX_ROWS) rows.push(`<li class="dim">+ ${sorted.length - MAX_ROWS} more — see the panel</li>`);
   return rows.join('');
 }
@@ -33,7 +34,7 @@ function measureRows(active: LiveArc['active'], date: string, detail: (x: LiveAr
  */
 const banLine = (active: LiveArc['active'], targetName: string, regional: boolean) => {
   const bans = active.filter(isBan);
-  const scope = bans.map(hsLabelOf).join('; ');
+  const scope = esc(bans.map(hsLabelOf).join('; '));
   const usd = bans.reduce((sum, b) => sum + (b.tradeUsd ?? 0), 0);
   const value = usd
     ? `<span class="tt-ban-usd"><b>${fmtUsd(usd)}</b> of ${targetName}'s goods${regional ? ' nationally; provincial and state data can\'t isolate these products' : ''}</span>`
@@ -49,27 +50,29 @@ const isNode = (o: unknown): o is NodeDatum => typeof o === 'object' && o !== nu
 
 function html(info: PickingInfo, ds: Dataset, date: string): string {
   const o = info.object;
+  const name = (iso: string) => esc(entityName(ds, iso));
   if (isArc(o)) {
-    const rows = measureRows(o.active, date, x => `<span class="dim"> · ${x.legalBasis} · since ${fmtDate(x.effective)}</span>`);
-    return `<div class="tt-head">${flag(ds, o.imposer, {ring: true})} ${entityName(ds, o.imposer)} <span class="arrow">→</span> ${flag(ds, o.target)} ${entityName(ds, o.target)}</div>
-      ${o.ban ? banLine(o.active, entityName(ds, o.target), false) : ''}
+    const rows = measureRows(o.active, date, x => `<span class="dim"> · ${esc(x.legalBasis)} · since ${fmtDate(x.effective)}</span>`);
+    return `<div class="tt-head">${flag(ds, o.imposer, {ring: true})} ${name(o.imposer)} <span class="arrow">→</span> ${flag(ds, o.target)} ${name(o.target)}</div>
+      ${o.ban ? banLine(o.active, name(o.target), false) : ''}
       ${o.rate > 0 ? `<div class="tt-rate">${o.rate}%<span class="dim"> ${o.productOnly ? 'on targeted products' : 'on all goods'}${o.peak > o.rate ? ` · up to ${o.peak}% on some products` : ''}</span></div>` : ''}
       ${o.tradeUsd !== undefined ? `<div class="tt-money">${moneyHtml(o.tradeUsd, o.dutyUsd)}<span class="dim"> · ${measures(o.active.length)} · ${o.trade?.year} imports, UN Comtrade</span></div>` : ''}
       <ul class="tt-list">${rows}</ul>`;
   }
   if (isRegional(o)) {
     const reg = ds.regionById.get(o.region)!;
+    const regName = esc(reg.name);
     const rows = measureRows(o.active, date, () => '');
-    return `<div class="tt-head">${flag(ds, o.imposer, {ring: true})} ${entityName(ds, o.imposer)} <span class="arrow">→</span> ${flag(ds, o.target)} ${reg.name}</div>
-      ${o.ban ? banLine(o.active, entityName(ds, o.target), true) : ''}
-      <div class="tt-money"><b>${fmtUsd(o.tradeUsd)}</b> ${o.tradeUsd >= (o.byCode.TOTAL ?? Infinity) * 0.999 ? `— all of ${reg.name}'s exports to ${entityName(ds, o.imposer)}` : `of ${reg.name}'s exports to ${entityName(ds, o.imposer)}`}, covered by ${measures(o.active.length)}${o.dutyUsd ? ` · <b>${fmtUsd(o.dutyUsd)}</b> est. duty/yr` : ''}<span class="dim"> · ${o.source === 'statcan' ? `StatCan, ${o.period}` : `Census, ${o.period}`}</span></div>
+    return `<div class="tt-head">${flag(ds, o.imposer, {ring: true})} ${name(o.imposer)} <span class="arrow">→</span> ${flag(ds, o.target)} ${regName}</div>
+      ${o.ban ? banLine(o.active, name(o.target), true) : ''}
+      <div class="tt-money"><b>${fmtUsd(o.tradeUsd)}</b> ${o.tradeUsd >= (o.byCode.TOTAL ?? Infinity) * 0.999 ? `— all of ${regName}'s exports to ${name(o.imposer)}` : `of ${regName}'s exports to ${name(o.imposer)}`}, covered by ${measures(o.active.length)}${o.dutyUsd ? ` · <b>${fmtUsd(o.dutyUsd)}</b> est. duty/yr` : ''}<span class="dim"> · ${o.source === 'statcan' ? `StatCan, ${esc(o.period)}` : `Census, ${esc(o.period)}`}</span></div>
       <ul class="tt-list">${rows}</ul>`;
   }
-  if (isNode(o)) return `<div class="tt-head">${flag(ds, o.iso3)} ${o.name}<span class="dim"> · ${o.capital}</span></div><div class="dim">Click to focus</div>`;
+  if (isNode(o)) return `<div class="tt-head">${flag(ds, o.iso3)} ${esc(o.name)}<span class="dim"> · ${esc(o.capital)}</span></div><div class="dim">Click to focus</div>`;
   if (o && 'properties' in (o as Feature)) {
     const f = o as Feature;
     const ent = ds.entityByNum.get(String(f.id));
-    return `<div class="tt-head">${ent ? flag(ds, ent.iso3) + ' ' : ''}${ent?.name ?? (f.properties as {name: string}).name}</div><div class="dim">${ent ? 'Click to focus' : 'No tracked tariffs'}</div>`;
+    return `<div class="tt-head">${ent ? flag(ds, ent.iso3) + ' ' : ''}${esc(ent?.name ?? (f.properties as {name: string}).name)}</div><div class="dim">${ent ? 'Click to focus' : 'No tracked tariffs'}</div>`;
   }
   return '';
 }
