@@ -87,7 +87,7 @@ export function renderFeed(el: HTMLElement, ds: Dataset, actions: TariffAction[]
     )
     .join('');
 
-  el.innerHTML = `${head}${upcomingHtml}<ul class="feed-list">${items || '<li class="empty">Nothing in force on this date.</li>'}</ul>${FOOTER}`;
+  el.innerHTML = `<nav class="feed-nav" aria-label="Site"><a class="nav-strategy" href="/strategy">Why everyone loses</a><a href="/how-it-works">How it's updated</a></nav>${head}${upcomingHtml}<ul class="feed-list">${items || '<li class="empty">Nothing in force on this date.</li>'}</ul>${FOOTER}`;
   el.querySelector('[data-back]')?.addEventListener('click', () => cb.onFocus(null));
   el.querySelectorAll<HTMLButtonElement>('[data-sort]').forEach(b => b.addEventListener('click', () => cb.onSort(b.dataset.sort as SortKey)));
   el.querySelectorAll<HTMLButtonElement>('[data-dir]').forEach(b => b.addEventListener('click', () => cb.onDirection(b.dataset.dir as Direction)));

@@ -42,16 +42,25 @@ a { color: var(--accent); }
 .brand-mark { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
 .brand-name { font-family: var(--mono); font-weight: 500; letter-spacing: 0.18em; font-size: 13px; }
 .brand-name b { font-weight: 700; color: var(--accent); }
-.freshness { font-family: var(--mono); font-size: 11px; color: var(--ink-2); display: block; white-space: nowrap; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-.freshness .pulse { display: inline-block; margin-right: 8px; vertical-align: 1px; }
+/* Site nav: the two pages beyond the map, set apart from the data in the header as pills. */
+.sitenav, .feed-nav { display: flex; gap: 8px; flex: none; }
+.sitenav a, .feed-nav a {
+  font: 500 11px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; white-space: nowrap;
+  color: var(--ink); background: rgb(255 255 255 / 0.06); border: 1px solid var(--panel-border); border-radius: 999px; padding: 6px 12px;
+}
+.sitenav a:hover, .feed-nav a:hover { background: rgb(255 255 255 / 0.12); border-color: var(--ink-3); }
+.sitenav a.nav-strategy, .feed-nav a.nav-strategy { color: rgb(232 170 60); border-color: rgb(232 170 60 / 0.5); background: rgb(201 133 0 / 0.1); }
+.sitenav a.nav-strategy:hover, .feed-nav a.nav-strategy:hover { background: rgb(201 133 0 / 0.2); }
+.feed-nav { display: none; }
+.sitenav .nav-how { display: inline-flex; align-items: center; gap: 7px; }
+.sitenav .nav-how .pulse { width: 6px; height: 6px; }
+.sitenav .nav-how .when { color: var(--ink-3); text-transform: none; letter-spacing: 0.02em; }
+.sitenav .nav-how.stale .when { color: rgb(232 170 60); }
 .pulse { width: 7px; height: 7px; border-radius: 50%; background: #19c37d; box-shadow: 0 0 8px #19c37d; animation: pulse 2s infinite; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 .pulse.stale { background: rgb(232 170 60); box-shadow: 0 0 8px rgb(232 170 60); }
-.freshness .how { color: var(--ink-2); text-decoration: none; border-bottom: 1px dotted var(--ink-3); }
-.freshness .how:hover { color: var(--ink); }
-.freshness .overdue { color: rgb(232 170 60); }
 .spacer { flex: 1; }
-/* The badge and the freshness line give way (truncate) so the controls never run into the feed. */
+/* The badge gives way (truncates) so the controls never run into the feed. */
 .mode-badge { font: 500 11px var(--mono); color: rgb(232 170 60); background: rgb(201 133 0 / 0.12); border: 1px solid rgb(201 133 0 / 0.4); border-radius: 6px; padding: 4px 9px; letter-spacing: 0.02em; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .toggle { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; color: var(--ink-2); cursor: pointer; user-select: none; }
 .toggle input { accent-color: var(--accent); }
@@ -241,8 +250,6 @@ body.feed-collapsed .feed-toggle svg { transform: scaleX(-1); }
 .tt-ban .tt-ban-usd b { font-family: var(--mono); color: var(--ink); }
 .tt-list li.ban b { color: rgb(255 72 60); }
 .lg-ban { color: rgb(255 72 60); font-weight: 600; }
-.lg-more { display: block; margin-top: 8px; font-size: 11.5px; color: #6aa8f0; text-decoration: none; }
-.lg-more:hover { text-decoration: underline; }
 .tt-money { font-size: 12px; margin: -2px 0 6px; }
 .tt-money b { font-family: var(--mono); }
 .tt-list { margin: 0; padding: 0; list-style: none; }
@@ -250,6 +257,20 @@ body.feed-collapsed .feed-toggle svg { transform: scaleX(-1); }
 .tt-list b { font-family: var(--mono); }
 .dim { color: var(--ink-3); }
 
+/* Narrower desktops: shed the slider's word label first, then move the nav into the panel
+   (it returns to the header when the panel is collapsed and the room comes back). */
+@media (max-width: 1440px) {
+  .comets > span { display: none; }
+}
+@media (max-width: 1300px) {
+  body:not(.feed-collapsed) .sitenav { display: none; }
+  body:not(.feed-collapsed) .feed-nav { display: flex; padding: 10px 10px 2px; }
+  body:not(.feed-collapsed) .feed-nav a { flex: 1; text-align: center; }
+}
+/* Tablet widths with the side panel open: the wordmark and slider value go; the dot and position remain. */
+@media (max-width: 1000px) {
+  body:not(.feed-collapsed) .brand-name, body:not(.feed-collapsed) .comets output { display: none; }
+}
 @media (max-width: 760px) {
   :root { --feed-w: 100%; --feed-inset: 12px; }
   .feed { top: auto; left: 12px; right: 12px; bottom: 12px; height: 38vh; width: auto; }
@@ -258,7 +279,10 @@ body.feed-collapsed .feed-toggle svg { transform: scaleX(-1); }
   .timeline .asof, .timeline .delay, .timeline .credit { display: none; }
   .timeline .tick.month b { font-size: 8px; }
   .controls { margin-right: 0; gap: 8px; }
-  .freshness, .mode-badge { display: none; }
+  .mode-badge { display: none; }
+  .sitenav { display: none; }
+  .feed-nav { display: flex; padding: 10px 10px 2px; }
+  .feed-nav a { flex: 1; text-align: center; }
   .feed-toggle { display: none; }
   /* Phones: the slider alone; its position says less/normal/more. */
   .comets > span, .comets output { display: none; }

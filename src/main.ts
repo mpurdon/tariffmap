@@ -565,7 +565,7 @@ function makeDeck() {
 async function main() {
   labelOverlay = new LabelOverlay($('labels'));
   ds = await loadDataset();
-  renderFreshness($('freshness'), ds.meta);
+  renderFreshness($('howLink'), ds.meta);
   const earliest = ds.actions.map(a => a.effective).sort()[0] ?? today();
   upcoming = scheduledChanges(ds.actions, today());
   timeline.steps = buildSteps(earliest, today(), upcoming);
