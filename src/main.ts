@@ -203,6 +203,7 @@ function setMotion(on: boolean) {
   if (!on) frozenAt = clock();
   motion = on;
   document.body.classList.toggle('no-motion', !on);
+  armIdle();
   deck.setProps({_animate: on});
   render();
 }
@@ -213,6 +214,40 @@ function setFocus(iso3: string | null) {
   recompute();
   render();
   if (mode === 'globe' && state.focus) flyTo(state.focus);
+}
+
+/* ---------- idle spin: after a minute without input, the globe turns slowly until input resumes ---------- */
+const IDLE_MS = 60_000;
+/** One full turn every two minutes. */
+const SPIN_DEG_PER_S = 3;
+let idleTimer = 0;
+let spinRaf = 0;
+let spinLast = 0;
+
+function spinFrame(t: number) {
+  const dt = spinLast ? Math.min(0.1, (t - spinLast) / 1000) : 0;
+  spinLast = t;
+  setCamera({longitude: ((camera.longitude + SPIN_DEG_PER_S * dt + 540) % 360) - 180});
+  spinRaf = requestAnimationFrame(spinFrame);
+}
+
+function startSpin() {
+  // Motion off (or reduced motion) means nothing moves on its own, the globe included.
+  if (mode !== 'globe' || !motion || spinRaf) return;
+  spinLast = 0;
+  spinRaf = requestAnimationFrame(spinFrame);
+}
+
+function stopSpin() {
+  cancelAnimationFrame(spinRaf);
+  spinRaf = 0;
+}
+
+/** Any input stops the spin and restarts the idle countdown. */
+function armIdle() {
+  stopSpin();
+  clearTimeout(idleTimer);
+  idleTimer = window.setTimeout(startSpin, IDLE_MS);
 }
 
 /** Move the camera programmatically (deck only reports user-driven changes through onViewStateChange). */
@@ -438,6 +473,7 @@ function setMode(next: ModeName) {
   camera = modeCamera();
   hideTooltip();
   deck.setProps({views: VIEW_MODES[mode].makeView(), initialViewState: camera});
+  armIdle();
   relabel();
   render();
 }
@@ -460,7 +496,7 @@ function makeDeck() {
     // Camera transitions (fly-to, zoom floor) move the view without a user event; keep labels pinned.
     onAfterRender: () => { if (viewportKey(deck.getViewports()[0]) !== lastLabelKey) relabel(); }
   });
-  if (import.meta.env.DEV) Object.assign(window, {__deck: deck, __setCamera: setCamera});
+  if (import.meta.env.DEV) Object.assign(window, {__deck: deck, __setCamera: setCamera, __startSpin: startSpin});
 }
 
 /* ---------- boot ---------- */
@@ -503,6 +539,8 @@ async function main() {
     });
   });
   try { if (localStorage.getItem('feedCollapsed') === 'true') setFeedCollapsed(true); } catch { /* ignore */ }
+  for (const type of ['pointermove', 'pointerdown', 'wheel', 'keydown', 'touchstart'] as const) window.addEventListener(type, armIdle, {passive: true});
+  armIdle();
 
   window.addEventListener('keydown', e => {
     const tag = (e.target as HTMLElement).tagName;
