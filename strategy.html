@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>A prisoner's dilemma, played in tariffs — TariffMap</title>
+    <meta name="description" content="In a trade war, everyone's a prisoner. The game theory of tariffs, how each economy has actually responded, and a simulation of the strategies." />
+    <meta name="author" content="Matthew Purdon" />
+    <link rel="canonical" href="https://tariffmap.org/strategy" />
+    <meta property="og:title" content="A prisoner's dilemma, played in tariffs" />
+    <meta property="og:description" content="In a trade war, everyone's a prisoner. How each economy has answered the tariffs, and which strategies win a repeated trade war." />
+    <meta property="og:url" content="https://tariffmap.org/strategy" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="TariffMap" />
+    <meta property="og:image" content="https://tariffmap.org/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="A dark world map with glowing tariff arcs between countries, titled The trade war, mapped" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="A prisoner's dilemma, played in tariffs" />
+    <meta name="twitter:description" content="In a trade war, everyone's a prisoner. How each economy has answered the tariffs, and which strategies win a repeated trade war." />
+    <meta name="twitter:image" content="https://tariffmap.org/og-image.jpg" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23090d1a'/%3E%3Cpath d='M6 22 Q16 4 26 22' stroke='%233987e5' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='26' cy='22' r='3' fill='%23e66767'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="/src/page.css" />
+  </head>
+  <body>
+    <header class="top">
+      <a class="brand" href="/"><span class="brand-mark"></span><span class="brand-name">TARIFF<b>MAP</b></span></a>
+      <nav class="topnav"><a href="/how-it-works">How it's updated</a><a class="back" href="/">← Back to the map</a></nav>
+    </header>
+
+    <main>
+      <p class="eyebrow">Game theory</p>
+      <h1>A prisoner's dilemma, played in tariffs</h1>
+      <p class="lede">
+        In a trade war, everyone's a prisoner. Each government does better by taxing imports if its partner
+        doesn't hit back, and every government does worse when they all do it. That is the textbook
+        prisoner's dilemma, and the tariffs on the map are a long game of it. This page explains the
+        dilemma, shows how each economy has actually played, and lets you run the strategies against each other.
+      </p>
+
+      <section aria-labelledby="dilemma-h">
+        <h2 id="dilemma-h">1 · The dilemma</h2>
+        <p>Two countries each choose: keep trade open, or impose tariffs. Pick a move for each and see what it's worth to them.</p>
+        <div class="dilemma">
+          <div class="pickers">
+            <div class="picker" role="group" aria-label="Country A's move">
+              <span class="who a">Country A</span>
+              <button data-a="open" class="on">Keep trade open</button><button data-a="tariff">Impose tariffs</button>
+            </div>
+            <div class="picker" role="group" aria-label="Country B's move">
+              <span class="who b">Country B</span>
+              <button data-b="open" class="on">Keep trade open</button><button data-b="tariff">Impose tariffs</button>
+            </div>
+          </div>
+          <div class="matrix-wrap">
+            <table class="matrix" aria-describedby="outcome">
+              <thead><tr><th></th><th scope="col">B keeps trade open</th><th scope="col">B imposes tariffs</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">A keeps trade open</th><td data-cell="open-open"><b>3</b> · <b>3</b></td><td data-cell="open-tariff"><b>0</b> · <b>5</b></td></tr>
+                <tr><th scope="row">A imposes tariffs</th><td data-cell="tariff-open"><b>5</b> · <b>0</b></td><td data-cell="tariff-tariff"><b>1</b> · <b>1</b></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="outcome" id="outcome" aria-live="polite"></p>
+        </div>
+        <p class="note">Points are illustrative welfare for A · B, the standard values for this game. Only their order matters: a free ride (5) beats mutual openness (3), which beats a trade war (1), which beats being the only one hit (0).</p>
+        <p>
+          Why tariffs can pay at all: a large economy that taxes imports pushes some of the cost onto foreign
+          exporters, who cut their prices to keep the market. Harry Johnson showed in 1953 that such an
+          "optimum tariff" leaves the imposing country better off <em>if nobody retaliates</em>, and that
+          retaliation can leave both worse off than free trade. Whatever B does, A scores more by imposing
+          tariffs, and the same holds for B, so both impose them and land on 1 · 1, when 3 · 3 was there for the taking.
+        </p>
+        <p>
+          The way out is to repeat the game and make promises enforceable. Bagwell and Staiger read the GATT and
+          the WTO as exactly that: a rulebook that lets large economies commit to the 3 · 3 cell together. A
+          tariff war is what the game looks like when that commitment breaks down.
+        </p>
+      </section>
+
+      <section aria-labelledby="wild-h">
+        <h2 id="wild-h">2 · Strategies in the wild</h2>
+        <p>
+          How each economy has answered the tariffs aimed at it, classified by fixed rules from the measures on this
+          site. Only measures a government formally adopted as <b>countermeasures</b> count as retaliation; duties that
+          look retaliatory but are legally anti-dumping or safeguards are listed as context, not counted.
+        </p>
+        <div class="rules" id="rules"></div>
+        <h3>Answering the United States</h3>
+        <div class="cards" id="vs-usa"><p class="note">Loading…</p></div>
+        <div class="absorbers" id="absorbers"></div>
+        <h3>Other fronts</h3>
+        <div class="cards" id="other"></div>
+        <p class="note">Labels describe recorded actions, not intent, and change as measures are added or lifted. Every measure links to its primary source on the map.</p>
+      </section>
+
+      <section aria-labelledby="play-h">
+        <h2 id="play-h">3 · Play it out</h2>
+        <p>
+          The dilemma bites hardest when it repeats. In 1980 Robert Axelrod ran tournaments where strategies played each
+          other round after round. The winner was the simplest: <b>tit-for-tat</b>. Pick two strategies and watch a
+          40-round trade war. Then add <b>mistakes</b> (a measure misread as hostile, or imposed by accident) and watch
+          what happens to strategies that never forgive.
+        </p>
+        <div class="controls">
+          <label>Country A <select id="sa"></select></label>
+          <label>Country B <select id="sb"></select></label>
+          <label>Mistakes <select id="noise">
+            <option value="0">None</option><option value="0.05" selected>1 in 20 moves</option><option value="0.1">1 in 10 moves</option><option value="0.2">1 in 5 moves</option>
+          </select></label>
+        </div>
+        <figure class="fig">
+          <figcaption>Moves, round by round <span class="key"><i class="sw tariff"></i> tariff <i class="sw open"></i> open</span></figcaption>
+          <div class="strips" id="strips"></div>
+        </figure>
+        <figure class="fig">
+          <figcaption>Points so far</figcaption>
+          <div class="chart" id="scores"></div>
+        </figure>
+        <figure class="fig">
+          <figcaption>Full tournament: every strategy against every other, 30 runs each <span class="dim" id="t-noise"></span></figcaption>
+          <div class="chart" id="tourney"></div>
+          <details class="table-view"><summary>Show as a table</summary><div id="tourney-table"></div></details>
+        </figure>
+        <p class="note">A model, not a forecast. Real trade wars have more than two players, uneven stakes and elections; what transfers is the shape of the incentives.</p>
+      </section>
+
+      <section aria-labelledby="lessons-h">
+        <h2 id="lessons-h">4 · What the game teaches</h2>
+        <ul>
+          <li><b>Be nice.</b> Strategies that never tariff first win on average. Opening a trade war wins one round and loses the rest.</li>
+          <li><b>Retaliate.</b> Never retaliating invites exploitation. Canada's and China's same-week countermeasures are tit-for-tat in practice.</li>
+          <li><b>Forgive.</b> With mistakes, strict tit-for-tat locks into an echo of alternating retaliation. Strategies that let some hits go unanswered recover; the EU's suspended countermeasures and the many negotiated caps are forgiveness in practice.</li>
+          <li><b>Be clear.</b> Tit-for-tat works because it is easy to read. Announced, rule-based responses let the other side predict the cost of escalating.</li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="sources-h">
+        <h2 id="sources-h">Sources</h2>
+        <ul class="refs">
+          <li>Johnson, H. G. (1953). Optimum tariffs and retaliation. <i>Review of Economic Studies</i> 21(2), 142–153. <a href="https://doi.org/10.2307/2296006">doi:10.2307/2296006</a></li>
+          <li>Bagwell, K. &amp; Staiger, R. W. (1999). An economic theory of GATT. <i>American Economic Review</i> 89(1), 215–248. <a href="https://doi.org/10.1257/aer.89.1.215">doi:10.1257/aer.89.1.215</a></li>
+          <li>Axelrod, R. &amp; Hamilton, W. D. (1981). The evolution of cooperation. <i>Science</i> 211(4489), 1390–1396. <a href="https://doi.org/10.1126/science.7466396">doi:10.1126/science.7466396</a></li>
+          <li>Axelrod, R. (1984). <i>The Evolution of Cooperation</i>. Basic Books.</li>
+          <li>Amiti, M., Redding, S. J. &amp; Weinstein, D. E. (2019). The impact of the 2018 tariffs on prices and welfare. <i>Journal of Economic Perspectives</i> 33(4), 187–210. <a href="https://doi.org/10.1257/jep.33.4.187">doi:10.1257/jep.33.4.187</a></li>
+        </ul>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p><a href="/">tariffmap.org</a> · © <span data-year></span> <a href="https://matthewpurdon.me" rel="author">Matthew Purdon</a> · Not trade or legal advice.</p>
+    </footer>
+    <div class="tip" id="tip" hidden></div>
+    <script type="module" src="/src/strategy.ts"></script>
+  </body>
+</html>
