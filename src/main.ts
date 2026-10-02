@@ -1,4 +1,4 @@
-import {Deck, MapView, _GlobeView as GlobeView, LinearInterpolator, FlyToInterpolator, type PickingInfo, type Viewport} from '@deck.gl/core';
+import {Deck, MapView, _GlobeView as GlobeView, _GlobeViewport as GlobeViewport, LinearInterpolator, FlyToInterpolator, type PickingInfo, type Viewport} from '@deck.gl/core';
 import {ArcLayer} from '@deck.gl/layers';
 import {loadDataset, type Dataset} from './data/load';
 import {liveArcs, liveRegionalArcs, liveActions, today, type ViewState, type LiveArc, type LiveRegionalArc} from './data/filter';
@@ -216,26 +216,87 @@ function setFocus(iso3: string | null) {
   if (mode === 'globe' && state.focus) flyTo(state.focus);
 }
 
-/* ---------- idle spin: after a minute without input, the globe turns slowly until input resumes ---------- */
+/* ---------- idle spin: after a minute without input, the globe turns to face the sun and spins ---------- */
 const IDLE_MS = 60_000;
-/** One full turn every two minutes. */
+/** One full turn every two minutes once up to speed. */
 const SPIN_DEG_PER_S = 3;
+/** Seconds the spin takes to reach full speed. */
+const RAMP_S = 3;
 let idleTimer = 0;
 let spinRaf = 0;
-let spinLast = 0;
 
-function spinFrame(t: number) {
-  const dt = spinLast ? Math.min(0.1, (t - spinLast) / 1000) : 0;
-  spinLast = t;
-  setCamera({longitude: ((camera.longitude + SPIN_DEG_PER_S * dt + 540) % 360) - 180});
-  spinRaf = requestAnimationFrame(spinFrame);
+/**
+ * Where the sun is overhead right now: latitude is the solar declination, longitude
+ * is where it is solar noon. Rough (no equation of time, ~±4°), which is plenty for a view.
+ */
+function subsolarPoint(now = new Date()): {lon: number; lat: number} {
+  const dayOfYear = (Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - Date.UTC(now.getUTCFullYear(), 0, 0)) / 86_400_000;
+  const lat = -23.44 * Math.cos((2 * Math.PI / 365) * (dayOfYear + 10));
+  const hours = now.getUTCHours() + now.getUTCMinutes() / 60 + now.getUTCSeconds() / 3600;
+  const lon = ((12 - hours) * 15 + 540) % 360 - 180;
+  return {lon, lat};
 }
+
+/** On-screen radius of the globe's disc: the farthest a point projects from the centre, out towards the limb. */
+function discRadius(v: Viewport, longitude: number, latitude: number): number {
+  const [cx, cy] = v.project([longitude, latitude]);
+  let radius = 0;
+  for (let d = 60; d <= 90; d += 0.5) {
+    const [x, y] = v.project([longitude, latitude + d <= 90 ? latitude + d : latitude - d]);
+    radius = Math.max(radius, Math.hypot(x - cx, y - cy));
+  }
+  return radius;
+}
+
+/**
+ * Zoom at which the globe's disc fills the viewport height when centred on (lon, lat).
+ * GlobeView's perspective camera means the radius doesn't scale exactly with 2^zoom, so
+ * bisect on throwaway viewports rather than solve.
+ */
+function globeFillZoom(longitude: number, latitude: number): number {
+  const {width, height} = deck.getViewports()[0];
+  const target = (height * 0.94) / 2;
+  let lo = 0.5, hi = 6;
+  for (let i = 0; i < 20; i++) {
+    const mid = (lo + hi) / 2;
+    if (discRadius(new GlobeViewport({width, height, longitude, latitude, zoom: mid}), longitude, latitude) < target) lo = mid;
+    else hi = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+const wrapLon = (lon: number) => ((lon % 360) + 540) % 360 - 180;
+/** Ease-in-out cubic: slow start, slow finish. */
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 
 function startSpin() {
   // Motion off (or reduced motion) means nothing moves on its own, the globe included.
   if (mode !== 'globe' || !motion || spinRaf) return;
-  spinLast = 0;
-  spinRaf = requestAnimationFrame(spinFrame);
+  const from = {longitude: camera.longitude, latitude: camera.latitude, zoom: camera.zoom};
+  const sun = subsolarPoint();
+  const zoom = globeFillZoom(sun.lon, sun.lat);
+  // Pick the short way round to the sun once, so the blend can't flip direction mid-flight.
+  const toSun = wrapLon(sun.lon - from.longitude);
+  // The camera eases onto the sun-facing orbit while the spin ramps up: longer swings take longer.
+  const approachS = Math.min(7, 3 + Math.abs(toSun) / 45);
+  let t0 = 0;
+  const frame = (now: number) => {
+    t0 ||= now;
+    const t = (now - t0) / 1000;
+    // Distance travelled under a spin that ramps smoothly from 0 to full speed over RAMP_S.
+    const ramp = Math.min(t, RAMP_S);
+    const travelled = SPIN_DEG_PER_S * (ramp * ramp * ramp / (RAMP_S * RAMP_S) - ramp ** 4 / (2 * RAMP_S ** 3) + Math.max(0, t - RAMP_S));
+    // Blend from wherever the camera was onto the sun-facing orbit (the Earth turns eastward
+    // under the sun, so the view drifts west); after approachS it is the orbit alone.
+    const w = easeInOut(Math.min(1, t / approachS));
+    setCamera({
+      longitude: wrapLon(from.longitude + toSun * w - travelled),
+      latitude: from.latitude + (sun.lat - from.latitude) * w,
+      zoom: from.zoom + (zoom - from.zoom) * w
+    });
+    spinRaf = requestAnimationFrame(frame);
+  };
+  spinRaf = requestAnimationFrame(frame);
 }
 
 function stopSpin() {
