@@ -530,11 +530,13 @@
       "sources": [
         "https://www.whitehouse.gov/presidential-actions/2025/02/adjusting-imports-of-steel-into-the-united-states/",
         "https://www.whitehouse.gov/presidential-actions/2025/06/adjusting-imports-of-aluminum-and-steel-into-the-united-states/",
-        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
+        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/",
+        "https://www.govinfo.gov/content/pkg/FR-2026-10-14/html/2026-20938.htm"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-19",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "notes": "From 14 Oct 2026, Commerce guidance (91 FR 65162) defines \"U.S. content\" for USMCA-qualifying products of Canada and Mexico under clause (2)(d) of Proclamation 11032 as the value attributable to parts wholly obtained, entirely produced or substantially transformed in the United States, plus any steel melted and poured, or aluminum or copper smelted and cast, in the United States; the duty falls on the remaining value."
     },
     {
       "id": "us-232-steel-alu-gbr",
@@ -735,11 +737,13 @@
       "effective": "2025-08-01",
       "sources": [
         "https://www.whitehouse.gov/presidential-actions/2025/07/adjusting-imports-of-copper-into-the-united-states/",
-        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
+        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/",
+        "https://www.govinfo.gov/content/pkg/FR-2026-10-14/html/2026-20938.htm"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-19",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "notes": "From 14 Oct 2026, Commerce guidance (91 FR 65162) defines \"U.S. content\" for USMCA-qualifying products of Canada and Mexico under clause (2)(d) of Proclamation 11032 as the value attributable to parts wholly obtained, entirely produced or substantially transformed in the United States, plus any steel melted and poured, or aluminum or copper smelted and cast, in the United States; the duty falls on the remaining value."
     },
     {
       "id": "us-232-lumber",
@@ -792,7 +796,7 @@
         "https://www.wiley.law/alert-White-House-Imposes-Section-232-Tariffs-on-Imports-of-Timber-Lumber-and-their-Derivative-Products",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-19",
       "expires": null,
       "status": "active"
     },
@@ -1099,7 +1103,7 @@
         "https://www.skadden.com/insights/publications/2026/05/us-trade-court-strikes-down-section-122-tariffs"
       ],
       "notes": "Stop-gap after the IEEPA ruling; 150-day statutory limit. Replaced by the Section 301 forced-labor tariffs.",
-      "lastVerified": "2026-09-13"
+      "lastVerified": "2026-10-19"
     },
     {
       "id": "us-301-forced-labor-t1",
@@ -1334,6 +1338,30 @@
       "notes": "Proclamations 11061 (alcoholic beverages), 11062 (dairy, molasses, non-alcoholic beer) and 11063 (motorcycles >800cc), signed 8 Sep 2026, published 14 Sep 2026. If a ban is invalidated in court the 50% Section 338 duty reapplies to the affected goods. First use of the Section 338 exclusion power."
     },
     {
+      "id": "us-graham-act-rus",
+      "imposer": "USA",
+      "targets": [
+        "RUS"
+      ],
+      "title": "Graham Act 500% tariff on Russian goods, waived before it took effect",
+      "rate": null,
+      "rateNote": "A 500% ad valorem increase on all goods of the Russian Federation, set by section 2(a) of the executive order of 16 Oct 2026 and waived in full by section 4(a) of the same order, so no duty is payable. The order also provides a 100% increase on goods from the five largest importers of Russian crude oil and natural gas that knowingly make new purchases on or after 18 Oct 2026, and a 100% increase on goods from the top five facilitators of Russian oil-sanctions evasion; no country has been designated under either tier and the same waiver covers both.",
+      "hs": [
+        "ALL"
+      ],
+      "hsLabel": "all goods",
+      "exemptions": "Section 114 of the Graham Act; the waiver in section 4 of the implementing order suspends the duties entirely",
+      "legalBasis": "other",
+      "effective": "2026-10-18",
+      "expires": null,
+      "status": "suspended",
+      "sources": [
+        "https://www.whitehouse.gov/presidential-actions/2026/10/implementing-the-lindsey-o-graham-sanctioning-russia-and-iran-act-of-2026/"
+      ],
+      "lastVerified": "2026-10-19",
+      "notes": "Sections 112 and 113 of the Lindsey O. Graham Sanctioning Russia and Iran Act of 2026 (22 U.S.C. 10802 et seq.), signed 18 Sep 2026, required these duties within 30 days of enactment. The implementing order of 16 Oct 2026 imposed them and waived them in the same instrument under section 115(a) of the Act, two days before the 18 Oct trigger date, so nothing was ever collected. The waiver runs until the President or the Secretary of State determines further action is appropriate, so the duties can be revived without new legislation. The order expressly leaves the existing Russia national-emergency sanctions untouched. No headline rate is recorded because the dataset caps rate at 250; the 500% figure is in rateNote."
+    },
+    {
       "id": "ca-counter-us-2025-03-04",
       "imposer": "CAN",
       "targets": [
@@ -1370,9 +1398,9 @@
       "targets": [
         "USA"
       ],
-      "title": "Canadian 25% counter-tariff on US steel and aluminum",
-      "rate": 25,
-      "rateNote": "Part of a C$29.8B list; the consumer-goods portion was withdrawn Sept 1, 2025, steel and aluminum remain",
+      "title": "Canadian counter-tariff on US steel and aluminum (50% since September 2026)",
+      "rate": 50,
+      "rateNote": "Part of a C$29.8B list; the consumer-goods portion was withdrawn Sept 1, 2025, steel and aluminum remain. From 2026-09-08 the Order Amending the United States Surtax Order (Steel and Aluminum 2025), SOR/2026-187, charges 50% on 271 tariff lines across chapters 72, 73 and 76; 23 lines stay at 25% — kitchen, household and sanitary articles, stoves, radiators and springs under headings 7320 to 7324 and 7615. Goods in transit on 2026-09-08 keep the old rate.",
       "hs": [
         "72",
         "73",
@@ -1382,14 +1410,27 @@
       "legalBasis": "countermeasure",
       "effective": "2025-03-13",
       "sources": [
+        "https://gazette.gc.ca/rp-pr/p2/2026/2026-09-23/html/sor-dors187-eng.html",
         "https://www.canada.ca/en/department-finance/news/2025/08/canada-to-remove-counter-tariffs-on-cusma-compliant-goods.html",
         "https://www.blakes.com/insights/us-canada-tariffs-timeline-of-key-dates-and-documents/"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-19",
       "expires": null,
       "status": "active",
       "coveredTradeUsd": 11400000000.0,
-      "coveredTradeNote": "C$15.6B (~US$11B) of US steel and aluminum, per Finance Canada"
+      "coveredTradeNote": "C$15.6B (~US$11B) of US steel and aluminum, per Finance Canada",
+      "rateHistory": [
+        {
+          "from": "2025-03-13",
+          "rate": 25
+        },
+        {
+          "from": "2026-09-08",
+          "rate": 50,
+          "note": "SOR/2026-187 raised most lines to 50%"
+        }
+      ],
+      "notes": "United States Surtax Order (Steel and Aluminum 2025), SOR/2025-95, as amended by SOR/2026-187 (registered 4 Sep 2026), which came into force with the United States Surtax Order (2026) on 8 Sep 2026. The amendment was made alongside, but is separate from, the C$27.6B counter-tariff package recorded as ca-counter-us-2026-09-08."
     },
     {
       "id": "ca-counter-us-autos-2025",
@@ -1474,10 +1515,11 @@
       "effective": "2026-09-08",
       "sources": [
         "https://www.canada.ca/en/department-finance/news/2026/08/list-of-products-from-the-united-states-subject-to-counter-tariffs-effective-september-8-2026.html",
-        "https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-response-us-tariffs/complete-list-us-products-subject-to-counter-tariffs.html"
+        "https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-response-us-tariffs/complete-list-us-products-subject-to-counter-tariffs.html",
+        "https://gazette.gc.ca/rp-pr/p2/2026/2026-09-23/html/sor-dors186-eng.html"
       ],
       "notes": "'Dollar for dollar' response announced Aug 25, 2026 after US–Canada talks collapsed. The US answered with import bans effective Sept 29.",
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-19",
       "expires": null,
       "status": "active",
       "coveredTradeUsd": 20100000000.0,
@@ -1728,7 +1770,7 @@
       "sources": [
         "https://eur-lex.europa.eu/eli/reg_impl/2024/2754/oj"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-19",
       "status": "active"
     },
     {
