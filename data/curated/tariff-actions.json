@@ -888,21 +888,27 @@
         "GBR",
         "ARG"
       ],
-      "title": "Section 232 tariff on agricultural and industrial machinery",
+      "title": "Section 232 tariff on agricultural, HVAC and mobile industrial machinery",
       "rate": 25,
+      "rateNote": "25% on the full customs value of the steel and aluminum articles listed in Annex I-C to Proclamation 11032, which moved these agricultural, HVAC and mobile industrial machinery lines off the Annex I-B derivative list and onto a temporary four-tier schedule running 2026-06-08 to 2027-12-31. Lower tiers: 10% where the aluminum content was entirely smelted and cast, or the steel content entirely melted and poured, in the United States (at least 85% by weight); and for USMCA-qualifying goods of Canada and Mexico, 25% on the non-U.S. content only, subject to a 15% minimum effective duty. Where more than one tier applies, the lowest rate governs.",
       "hs": [
-        "84"
+        "8427",
+        "8429",
+        "8432",
+        "8433"
       ],
-      "hsLabel": "agricultural & industrial equipment",
+      "hsLabel": "agricultural & mobile industrial equipment",
       "legalBasis": "Section 232",
       "effective": "2026-06-08",
       "expires": "2027-12-31",
       "sources": [
-        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/",
-        "https://www.cov.com/news-and-insights/insights/2026/04/current-and-forthcoming-section-232-actions-by-the-trump-administration"
+        "https://www.govinfo.gov/content/pkg/FR-2026-06-04/html/2026-11314.htm",
+        "https://www.federalregister.gov/d/2026-11314",
+        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
-      "status": "active"
+      "lastVerified": "2026-11-02",
+      "status": "active",
+      "notes": "These rates sit inside the steel and aluminum Section 232 regime (Proclamations 9704 and 9705, as amended) rather than being a separate machinery action, so for Annex I-C goods they replace the Annex I-B derivative rate instead of stacking on us-232-steel-alu-2025. Annex I-C is reported to comprise 28 HTSUS lines spanning chapters 84 and 87. The annex is reproduced in the Federal Register only as scanned images, and hts.usitc.gov (proxy 403) and the CBP CSMS bulletin (content.govdelivery.com, DNS) were both unreachable from this environment, so the hs list here holds only the headings confirmed from summaries of CBP guidance and understates the measure: the HVAC lines and the chapter 87 lines are omitted. Worth checking against the Metals HTS attachment to CSMS #68855869. On 2028-01-01 the rates revert to the higher Proclamation 11021 levels rather than lapsing, so the 2027-12-31 expiry ends this schedule, not the duty. The separate Section 232 investigation into robotics and industrial machinery concluded with Proclamation 11077 of 2026-10-28, which imposes no duty and leaves these rates untouched."
     },
     {
       "id": "us-232-machinery-deal",
@@ -916,20 +922,27 @@
         "GBR",
         "ARG"
       ],
-      "title": "Section 232 machinery tariff on deal partners capped at 15%",
+      "title": "Section 232 machinery tariff capped at 15% for trade-deal partners",
       "rate": 15,
+      "rateNote": "Under clause (2)(b) of Proclamation 11032, products of Argentina, Ecuador, El Salvador, Guatemala, Japan, the Republic of Korea, Liechtenstein, Switzerland, Taiwan, the United Kingdom and EU member states pay their HTSUS Column 1 duty rate topped up by the additional Section 232 duty to a combined 15%; where the Column 1 rate is already 15% or more, the additional Section 232 duty is zero. The 15% is inclusive of the MFN duty, not additional to it. Runs 2026-06-08 to 2027-12-31.",
       "hs": [
-        "84"
+        "8427",
+        "8429",
+        "8432",
+        "8433"
       ],
-      "hsLabel": "agricultural & industrial equipment",
+      "hsLabel": "agricultural & mobile industrial equipment",
       "legalBasis": "deal",
       "effective": "2026-06-08",
       "expires": "2027-12-31",
       "sources": [
+        "https://www.govinfo.gov/content/pkg/FR-2026-06-04/html/2026-11314.htm",
+        "https://www.federalregister.gov/d/2026-11314",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
-      "status": "active"
+      "lastVerified": "2026-11-02",
+      "status": "active",
+      "notes": "Clause (2)(b) of Proclamation 11032 also extends this 15% cap to Ecuador, El Salvador, Guatemala and Liechtenstein, none of which is an entity in public/geo/capitals.json and so none appears in targets; adding four map entities for a rate cap alone seemed disproportionate and is left to the reviewer. The same scope caveat as us-232-machinery applies to hs. On 2028-01-01 the rates revert to Proclamation 11021 levels."
     },
     {
       "id": "us-232-pharma",
