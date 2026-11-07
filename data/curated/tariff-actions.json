@@ -51,11 +51,13 @@
       "effective": "2018-07-06",
       "sources": [
         "https://ustr.gov/issue-areas/enforcement/section-301-investigations/section-301-china/china-section-301-tariff-actions-and-exclusion-process",
-        "https://www.congress.gov/crs-product/IF12990"
+        "https://www.congress.gov/crs-product/IF12990",
+        "https://www.federalregister.gov/documents/2026/10/07/2026-20510/continuation-of-actions-chinas-acts-policies-and-practices-related-to-technology-transfer"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-12",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "notes": "The second statutory four-year review did not terminate either action: domestic industries asked for continuation, so the July 6, 2018 action, as modified, stayed in force past its July 6, 2026 sunset, subject to further modification (USTR notice of Oct 7, 2026)."
     },
     {
       "id": "us-ieepa-fentanyl-chn",
@@ -960,7 +962,7 @@
         "https://www.federalregister.gov/documents/2026/09/23/2026-19498/guidance-and-procedures-for-implementing-tariff-adjustments-for-specialty-pharmaceuticals-and",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-10-01",
+      "lastVerified": "2026-10-12",
       "expires": null,
       "status": "active",
       "notes": "Proclamation 11020 of 2 Apr 2026 phased the 100% rate in two stages: Annex III companies on 31 Jul 2026, everyone else on 29 Sep 2026. BIS defined the zero-rated specialty categories and the eligible jurisdictions on 23 Sep 2026."
@@ -988,7 +990,7 @@
         "https://www.federalregister.gov/documents/2026/04/09/2026-06956/adjusting-imports-of-pharmaceuticals-and-pharmaceutical-ingredients-into-the-united-states",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-10-01",
+      "lastVerified": "2026-10-12",
       "expires": null,
       "status": "active"
     },
@@ -1071,7 +1073,7 @@
         "https://www.federalregister.gov/documents/2026/09/24/2026-19537/measures-to-restrict-stockpiling-of-polysilicon-and-polysilicon-derivatives-under-proclamation-11052",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-10-01",
+      "lastVerified": "2026-10-12",
       "expires": null,
       "exemptions": "For EU, Japan, Korea, Taiwan, Switzerland and Liechtenstein the Section 232 duty plus the Column 1 rate is capped at 15% all-in; UK 10%",
       "notes": "Proclamation 11052 of 6 Aug 2026, effective 4 Dec 2026. BIS restricted pre-effective-date stockpiling from 22 Sep to 3 Dec 2026, barring further entries by importers running substantially above their historic volumes."
@@ -1290,7 +1292,7 @@
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
       "notes": "Signed July 20, 2026; suspended Aug 19–22 during talks, which collapsed Aug 21. First use of Section 338 (Tariff Act of 1930) since the 1930s.",
-      "lastVerified": "2026-10-01",
+      "lastVerified": "2026-10-12",
       "expires": null,
       "status": "active",
       "coveredTradeUsd": 28000000000.0,
@@ -1328,7 +1330,7 @@
         "https://www.troutman.com/insights/from-duties-to-import-bans-president-trump-escalates-section-338-actions-against-canadian-goods/",
         "https://www.whitehouse.gov/fact-sheets/2026/09/fact-sheet-president-donald-j-trump-responds-to-canadas-retaliation/"
       ],
-      "lastVerified": "2026-10-01",
+      "lastVerified": "2026-10-12",
       "expires": null,
       "exemptions": "Bulk alcohol for US bottling or blending, motorcycles of 800cc or less, passenger vehicles and non-whey dairy stay dutiable at 50% rather than banned",
       "notes": "Proclamations 11061 (alcoholic beverages), 11062 (dairy, molasses, non-alcoholic beer) and 11063 (motorcycles >800cc), signed 8 Sep 2026, published 14 Sep 2026. If a ban is invalidated in court the 50% Section 338 duty reapplies to the affected goods. First use of the Section 338 exclusion power."
@@ -1710,6 +1712,34 @@
       "status": "active"
     },
     {
+      "id": "cn-beef-safeguard-2026",
+      "imposer": "CHN",
+      "targets": [
+        "ALL"
+      ],
+      "title": "Chinese beef safeguard: 55% surcharge above country-specific quotas",
+      "rate": 55,
+      "rateNote": "Over-quota surcharge on top of the in-quota rate, which stays at the MFN duty (12% for most origins) plus any country-specific tariff. Total quota 2.69 Mt in 2026, rising to 2.74 Mt in 2027 and 2.80 Mt in 2028, allocated by average market share from July 2021 to June 2024; unused quota does not carry over. The surcharge starts for an origin on the third day after its quota fills. Brazil, on 1.106 Mt or 41% of the total, filled its quota on Sep 29, 2026, so Brazilian beef has paid the surcharge since Oct 1, 2026 — 67% all-in. No other origin had triggered it by Oct 12, 2026; Australia stood at 90% of its quota on Jun 1, 2026.",
+      "hs": [
+        "0201",
+        "0202"
+      ],
+      "hsLabel": "fresh, chilled and frozen beef",
+      "exemptions": "Developing countries and regions whose individual import share is 3% or less, where all such origins together account for 9% or less of imports",
+      "legalBasis": "safeguard",
+      "effective": "2026-01-01",
+      "expires": "2028-12-31",
+      "status": "active",
+      "sources": [
+        "https://www.mofcom.gov.cn/zcfb/blgg/art/2025/art_7afbe47abc3448819314533910577bd4.html",
+        "https://trb.mofcom.gov.cn/myjjdc/art/2026/art_50ba0b70b644489fa828f03dd72c15ab.html",
+        "https://globaltradealert.org/blog/GTA-Monthly-Roundup-December-2025",
+        "https://www.bloomberg.com/news/articles/2026-09-30/brazil-beef-hit-with-55-china-tariff-after-filling-export-quota"
+      ],
+      "lastVerified": "2026-10-12",
+      "notes": "MOFCOM Announcement No. 87 of 2025, the final determination of the safeguard investigation opened Dec 27, 2024, imposing country-specific tariff-rate quotas for three years from Jan 1, 2026 to Dec 31, 2028. Beijing refused Brazil’s request to borrow Uruguay’s unused quota. The MOFCOM texts could not be read from the curation environment (host blocked); rate, quota volumes and the Brazil trigger were confirmed against Global Trade Alert, USDA FAS GAIN reports CH2026-0001 and BR2026-0035, and Bloomberg."
+    },
+    {
       "id": "eu-ev-chn-2024",
       "imposer": "EUN",
       "targets": [
@@ -1777,7 +1807,7 @@
         "https://www.consilium.europa.eu/en/press/press-releases/2026/04/13/council-and-european-parliament-strike-deal-to-protect-eu-s-steel-industry-from-global-overcapacity/"
       ],
       "notes": "Regulation (EU) 2026/1384, replacing the steel safeguard that expired June 30, 2026.",
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-10-12",
       "expires": null,
       "status": "active"
     },
@@ -1848,7 +1878,7 @@
         "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=OJ:L_202602133",
         "https://policy.trade.ec.europa.eu/news/commission-imposes-provisional-safeguard-measures-imports-grain-oriented-electrical-steel-2026-09-18_en"
       ],
-      "lastVerified": "2026-10-01",
+      "lastVerified": "2026-10-12",
       "notes": "Commission Implementing Regulation (EU) 2026/2133 of 18 Sep 2026, a provisional measure under Regulations (EU) 2015/478 and 2015/755 running 155 calendar days from 25 Sep 2026. Quotas are first-come, first-served: China 30,693.68 t, Japan 23,103.61 t, Korea 4,789.93 t and 5,360.39 t for other eligible origins. The duty also reaches cores already incorporated in transformers under headings 8504 21 to 8504 34."
     }
   ]
