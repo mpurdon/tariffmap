@@ -958,12 +958,13 @@
       "sources": [
         "https://www.federalregister.gov/documents/2026/04/09/2026-06956/adjusting-imports-of-pharmaceuticals-and-pharmaceutical-ingredients-into-the-united-states",
         "https://www.federalregister.gov/documents/2026/09/23/2026-19498/guidance-and-procedures-for-implementing-tariff-adjustments-for-specialty-pharmaceuticals-and",
-        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
+        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/",
+        "https://www.federalregister.gov/documents/2026/11/06/2026-22725/agency-information-collection-activities-submission-to-the-office-of-management-and-budget-omb-for"
       ],
-      "lastVerified": "2026-10-01",
+      "lastVerified": "2026-11-09",
       "expires": null,
       "status": "active",
-      "notes": "Proclamation 11020 of 2 Apr 2026 phased the 100% rate in two stages: Annex III companies on 31 Jul 2026, everyone else on 29 Sep 2026. BIS defined the zero-rated specialty categories and the eligible jurisdictions on 23 Sep 2026."
+      "notes": "Proclamation 11020 of 2 Apr 2026 phased the 100% rate in two stages: Annex III companies on 31 Jul 2026, everyone else on 29 Sep 2026. BIS defined the zero-rated specialty categories and the eligible jurisdictions on 23 Sep 2026. Re-verified 9 Nov 2026: BIS sent the Section 232 specialty-pharmaceuticals collection to OMB on 6 Nov 2026, with the regime unchanged."
     },
     {
       "id": "us-232-pharma-deal",
@@ -1069,12 +1070,13 @@
       "sources": [
         "https://www.federalregister.gov/documents/2026/08/11/2026-16400/adjusting-imports-of-polysilicon-and-its-derivatives-into-the-united-states",
         "https://www.federalregister.gov/documents/2026/09/24/2026-19537/measures-to-restrict-stockpiling-of-polysilicon-and-polysilicon-derivatives-under-proclamation-11052",
-        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
+        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/",
+        "https://www.federalregister.gov/documents/2026/11/06/2026-22726/agency-information-collection-activities-submission-to-the-office-of-management-and-budget-omb-for"
       ],
-      "lastVerified": "2026-10-01",
+      "lastVerified": "2026-11-09",
       "expires": null,
       "exemptions": "For EU, Japan, Korea, Taiwan, Switzerland and Liechtenstein the Section 232 duty plus the Column 1 rate is capped at 15% all-in; UK 10%",
-      "notes": "Proclamation 11052 of 6 Aug 2026, effective 4 Dec 2026. BIS restricted pre-effective-date stockpiling from 22 Sep to 3 Dec 2026, barring further entries by importers running substantially above their historic volumes."
+      "notes": "Proclamation 11052 of 6 Aug 2026, effective 4 Dec 2026. BIS restricted pre-effective-date stockpiling from 22 Sep to 3 Dec 2026, barring further entries by importers running substantially above their historic volumes. Re-verified 9 Nov 2026 ahead of the effective date: BIS sent the waiver application for the import-qualification criteria to OMB on 6 Nov 2026 and no later proclamation has moved the 4 Dec 2026 date."
     },
     {
       "id": "us-122-surcharge",
@@ -1265,7 +1267,7 @@
       ],
       "title": "Section 338 tariffs on Canadian dairy, alcoholic beverages and motor vehicles (50%)",
       "rate": 50,
-      "rateNote": "Three proclamations (11046–11048). Scope revised by Proclamations 11064–11065 effective 15 Sep 2026 (cheese, hides, furs, boats, structural steel, aluminum profiles, fasteners, furniture, lighting added; bulk whiskey and liqueurs, salt, cement, refined lead removed) and from that date the 50% stacks on top of Section 232, reaching up to 75% combined.",
+      "rateNote": "Three proclamations (11046–11048). Scope revised by Proclamations 11064–11065 effective 15 Sep 2026 (cheese, hides, furs, boats, structural steel, aluminum profiles, fasteners, furniture, lighting added; bulk whiskey and liqueurs, salt, cement, refined lead removed) and from that date the 50% stacks on top of Section 232, reaching up to 75% combined. Revised again by Proclamation 11076 of 23 Oct 2026, effective 12:01 a.m. eastern time on 30 Oct 2026: the lines in its Annex I Part A come off the 50% duty and those in Annex I Part B go on (reported as about 100 lines added and 22 removed). The rate stays 50% and still applies in addition to Section 232.",
       "hs": [
         "04",
         "22",
@@ -1287,10 +1289,11 @@
         "https://www.federalregister.gov/documents/2026/09/14/2026-18839/modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-imposed-to-offset",
         "https://www.troutman.com/insights/from-duties-to-import-bans-president-trump-escalates-section-338-actions-against-canadian-goods/",
         "https://www.wiley.law/alert-President-Trump-Imposes-New-50-Tariffs-on-Certain-Canadian-Imports",
-        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
+        "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/",
+        "https://www.federalregister.gov/documents/2026/10/30/2026-22292/further-modifying-the-scope-of-products-of-canada-subject-to-the-additional-duties-imposed-to-offset"
       ],
-      "notes": "Signed July 20, 2026; suspended Aug 19–22 during talks, which collapsed Aug 21. First use of Section 338 (Tariff Act of 1930) since the 1930s.",
-      "lastVerified": "2026-10-01",
+      "notes": "Signed July 20, 2026; suspended Aug 19–22 during talks, which collapsed Aug 21. First use of Section 338 (Tariff Act of 1930) since the 1930s. Proclamation 11076 of 23 Oct 2026, published 30 Oct 2026, amends Proclamation 11048 as amended by 11065 and modifies the HTSUS through its Annex II. Its annexes appear in the Federal Register only as scanned images, so the individual tariff lines could not be read mechanically and the hs list below is unchanged from the September scope — it now understates the measure.",
+      "lastVerified": "2026-11-09",
       "expires": null,
       "status": "active",
       "coveredTradeUsd": 28000000000.0,
@@ -1426,7 +1429,7 @@
       ],
       "title": "Canadian steel tariff-rate quotas (50% surtax above quota)",
       "rate": 50,
-      "rateNote": "Over-quota surtax; quotas set at 50% of 2024 volumes for non-FTA countries and 100% for FTA partners; extra 25% on steel melted and poured in China",
+      "rateNote": "Over-quota surtax of 50% of the value for duty. From 26 Dec 2025 the quotas run in quarterly periods, each class of goods carrying a quarterly tonnage total plus a per-country percentage cap within that total (SOR/2025-266); Finance Canada describes the result as roughly 20% of 2024 import volumes for countries with no trade agreement in force and 75% for the Schedule 3 agreement partners, against 50% and 100% under the original June 2025 quotas. A further 25% applies to steel melted and poured in China.",
       "hs": [
         "72",
         "73"
@@ -1437,11 +1440,58 @@
       "effective": "2025-06-27",
       "sources": [
         "https://www.blakes.com/insights/us-canada-tariffs-timeline-of-key-dates-and-documents/",
-        "https://www.cfib-fcei.ca/en/site/us-tariffs"
+        "https://www.cfib-fcei.ca/en/site/us-tariffs",
+        "https://gazette.gc.ca/rp-pr/p2/2025/2025-12-31/html/sor-dors266-eng.html",
+        "https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-tariff-responses/canadas-tariffs-steel-aluminum.html"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-11-09",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "notes": "Order Imposing a Surtax on the Importation of Certain Steel Goods, SOR/2025-148, as amended by SOR/2025-266 (registered 11 Dec 2025), which replaced Schedules 1 and 2 and introduced the quarterly quota periods from 26 Dec 2025. Where a good is subject to this surtax and to another surtax under the Customs Tariff, only this one applies. The quota levels recorded here before 9 Nov 2026 were the original June 2025 figures; the headline 50% over-quota rate has not changed."
+    },
+    {
+      "id": "ca-steel-derivative-2025",
+      "imposer": "CAN",
+      "targets": [
+        "ALL"
+      ],
+      "title": "Canadian 25% surtax on steel derivative goods",
+      "rate": 25,
+      "rateNote": "25% of the value for duty, whatever the origin, on the 63 tariff classification numbers listed in the schedule to the Steel Derivative Goods Surtax Order: plastic doors and window frames, steel bridges and fabricated structural steel, stranded wire and cable of steel and of aluminium, chain, wire cloth, grill and fencing, nails, screws, bolts and other fasteners, springs, other articles of iron or steel, builders' hardware, steel-framed seats and furniture, lamp parts and prefabricated buildings. The surtax does not stack: a good already carrying a surtax under the China Surtax Order (2024), the United States Surtax Order (Steel and Aluminum 2025), the Order Imposing a Surtax on the Importation of Certain Steel Goods or the Steel Goods and Aluminum Goods Surtax Order pays that surtax instead of this one.",
+      "hs": [
+        "3925",
+        "7216",
+        "7308",
+        "7312",
+        "7313",
+        "7314",
+        "7315",
+        "7317",
+        "7318",
+        "7320",
+        "7325",
+        "7326",
+        "7614",
+        "8302",
+        "9401",
+        "9403",
+        "9405",
+        "9406"
+      ],
+      "hsLabel": "steel derivative goods",
+      "exemptions": "Goods originating in Canada; casual goods; goods classified under Chapter 98; utility wind towers and tower sections of 7308.20.00 imported for energy projects west of the Ontario–Manitoba border; goods imported before July 1, 2027 for use in making motor vehicles, their parts and accessories, or for use in aircraft, ground flying trainers and spacecraft; goods in transit on December 26, 2025. Further relief is granted case by case under the Steel Derivative Goods Surtax Remission Order, No. 1.",
+      "legalBasis": "safeguard",
+      "effective": "2025-12-26",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://gazette.gc.ca/rp-pr/p2/2025/2025-12-31/html/sor-dors267-eng.html",
+        "https://gazette.gc.ca/rp-pr/p2/2026/2026-07-01/html/sor-dors155-eng.html",
+        "https://gazette.gc.ca/rp-pr/p2/2026/2026-11-04/html/sor-dors227-eng.html",
+        "https://www.canada.ca/en/department-finance/programs/international-trade-finance-policy/canadas-tariff-responses/canadas-tariffs-steel-aluminum.html"
+      ],
+      "lastVerified": "2026-11-09",
+      "notes": "Steel Derivative Goods Surtax Order, SOR/2025-267, registered 11 Dec 2025 under subsection 53(2) and paragraph 79(a) of the Customs Tariff. Amended by SOR/2026-155 (registered 22 Jun 2026), which excluded goods originating in Canada retroactive to 26 Dec 2025 and moved the automotive and aerospace input exemptions from 1 Jul 2026 to 1 Jul 2027. The Order Amending the Steel Derivative Goods Surtax Remission Order, No. 1, SOR/2026-227 (registered 23 Oct 2026, published 4 Nov 2026), replaced the single remission schedule with three: open-ended product remissions, remissions conditional on an import-before date, and importer-specific remissions keyed to a business number. hs holds the chapters and headings of the scheduled tariff items; the surtax reaches only the listed 8- and 10-digit lines, not the whole of each heading. This measure was absent from the dataset until 9 Nov 2026 — it is not a new action, and the hs and rateNote here come from the order itself rather than from a summary."
     },
     {
       "id": "ca-counter-us-2026-09-08",
@@ -1524,12 +1574,15 @@
       "effective": "2024-10-22",
       "sources": [
         "https://www.canada.ca/en/department-finance/news/2024/08/canada-implementing-measures-to-protect-canadian-workers-and-key-economic-sectors-from-unfair-chinese-trade-practices.html",
-        "https://www.theglobeandmail.com/canada/article-carney-canada-china-tariffs-trade-deal-electric-vehicles/"
+        "https://www.theglobeandmail.com/canada/article-carney-canada-china-tariffs-trade-deal-electric-vehicles/",
+        "https://www.canada.ca/en/global-affairs/news/2026/11/minister-sidhu-announces-extension-of-favourable-market-access-for-canadian-canola-meal-peas-lobsters-and-crab-through-2028.html",
+        "https://www.international.gc.ca/news-nouvelles/2026/2026-01-16-china-chine.aspx?lang=eng"
       ],
-      "notes": "Unchanged by the January 2026 Canada–China deal.",
-      "lastVerified": "2026-09-13",
+      "notes": "The 25% surtax itself is unchanged by the January 2026 Canada–China deal and by the November 2026 extension of it. What was extended to the end of 2028, in exchange for China's extension of favourable access for Canadian canola meal, peas, lobster and crab, is Canada's remission for certain Chinese steel and aluminum goods not made in Canada, which had run only to the end of 2026.",
+      "lastVerified": "2026-11-09",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "exemptions": "Remission for certain Chinese steel and aluminum goods not manufactured in Canada, granted under the China Surtax Remission Order (2024) as part of the Preliminary Joint Arrangement and extended on Nov 4, 2026 to the end of 2028."
     },
     {
       "id": "cn-301-retaliation-2018",
@@ -1655,7 +1708,7 @@
       ],
       "title": "Chinese tariffs on Canadian canola oil and meal, peas (100%), pork and seafood (25%)",
       "rate": 100,
-      "rateNote": "From Mar 1, 2026 canola meal, peas, lobster and crab are tariff-free until at least end-2026; 100% on canola oil and 25% on pork and other seafood remain",
+      "rateNote": "From Mar 1, 2026 canola meal, peas, lobster and crab are tariff-free; 100% on canola oil and 25% on pork and other seafood remain. The suspension was due to lapse at the end of 2026 and was extended on Nov 4, 2026 to the end of 2028.",
       "hs": [
         "1514",
         "2306",
@@ -1668,10 +1721,12 @@
       "effective": "2025-03-20",
       "sources": [
         "https://www.china-briefing.com/news/us-china-tariff-rates-2025/",
-        "https://www.theglobeandmail.com/canada/article-carney-canada-china-tariffs-trade-deal-electric-vehicles/"
+        "https://www.theglobeandmail.com/canada/article-carney-canada-china-tariffs-trade-deal-electric-vehicles/",
+        "https://www.canada.ca/en/global-affairs/news/2026/11/minister-sidhu-announces-extension-of-favourable-market-access-for-canadian-canola-meal-peas-lobsters-and-crab-through-2028.html",
+        "https://www.international.gc.ca/news-nouvelles/2026/2026-01-16-china-chine.aspx?lang=eng"
       ],
-      "notes": "Retaliation for Canada's 2024 EV and steel surtaxes.",
-      "lastVerified": "2026-09-13",
+      "notes": "Retaliation for Canada's 2024 EV and steel surtaxes. The favourable access for canola meal, peas, lobster and crab sits under the Preliminary Joint Arrangement on Addressing Bilateral Economic and Trade Issues of Jan 2026; the first ministerial-level Canada–China Joint Economic and Trade Commission, in Beijing on Nov 4, 2026, extended it by two years to the end of 2028. China's State Council Customs Tariff Commission had published no corresponding tariff decree when this was verified, and english.mofcom.gov.cn listed none, so the end-2028 date rests on the Canadian release.",
+      "lastVerified": "2026-11-09",
       "expires": null,
       "status": "active"
     },
@@ -1703,11 +1758,13 @@
       "effective": "2025-08-14",
       "sources": [
         "https://www.theglobeandmail.com/canada/article-carney-canada-china-tariffs-trade-deal-electric-vehicles/",
-        "https://www.cnbc.com/amp/2026/01/17/canada-and-china-slash-tariffs-on-evs-and-canola-in-reset-of-ties.html"
+        "https://www.cnbc.com/amp/2026/01/17/canada-and-china-slash-tariffs-on-evs-and-canola-in-reset-of-ties.html",
+        "https://www.canada.ca/en/global-affairs/news/2026/11/minister-sidhu-announces-extension-of-favourable-market-access-for-canadian-canola-meal-peas-lobsters-and-crab-through-2028.html"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-11-09",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "notes": "Re-verified 9 Nov 2026 and left unchanged. The Nov 4, 2026 extension of the Preliminary Joint Arrangement covers canola meal, peas, lobster and crab; the Canadian release does not mention canola seed, so the 14.9% combined rate recorded here still stands. Some trade reporting instead describes a 5.9% final anti-dumping duty determined in Feb 2026; the MOFCOM determination could not be read from the curation environment to settle which figure is the current duty, and this needs a reviewer's eye."
     },
     {
       "id": "eu-ev-chn-2024",
