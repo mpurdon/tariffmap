@@ -51,11 +51,14 @@
       "effective": "2018-07-06",
       "sources": [
         "https://ustr.gov/issue-areas/enforcement/section-301-investigations/section-301-china/china-section-301-tariff-actions-and-exclusion-process",
-        "https://www.congress.gov/crs-product/IF12990"
+        "https://www.congress.gov/crs-product/IF12990",
+        "https://www.govinfo.gov/content/pkg/FR-2026-11-10/html/2026-22925.htm"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-11-16",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "exemptions": "178 product exclusions (164 extended in May 2024 plus 14 solar-manufacturing-equipment exclusions granted September 2024) remain in force and were extended again on November 10, 2026 through 11:59 p.m. eastern time on January 9, 2027. Most other exclusions from the 2018-19 tranches lapsed in 2019-20.",
+      "notes": "The exclusions were due to expire November 9, 2026 under the one-year extension agreed in the November 2025 Trump-Xi arrangement; USTR extended all 178 for a further two months on the day they lapsed, citing ongoing discussions with China. China reciprocated the same week by extending the suspension of its own 24% countermeasure to the same date (see cn-counter-us-reciprocal-2025). The headline rate is unchanged."
     },
     {
       "id": "us-ieepa-fentanyl-chn",
@@ -532,7 +535,7 @@
         "https://www.whitehouse.gov/presidential-actions/2025/06/adjusting-imports-of-aluminum-and-steel-into-the-united-states/",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-11-16",
       "expires": null,
       "status": "active"
     },
@@ -737,7 +740,7 @@
         "https://www.whitehouse.gov/presidential-actions/2025/07/adjusting-imports-of-copper-into-the-united-states/",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-11-16",
       "expires": null,
       "status": "active"
     },
@@ -901,7 +904,7 @@
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/",
         "https://www.cov.com/news-and-insights/insights/2026/04/current-and-forthcoming-section-232-actions-by-the-trump-administration"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-11-16",
       "status": "active"
     },
     {
@@ -928,7 +931,7 @@
       "sources": [
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-09-13",
+      "lastVerified": "2026-11-16",
       "status": "active"
     },
     {
@@ -1258,6 +1261,32 @@
       "status": "active"
     },
     {
+      "id": "us-301-ships-cranes-2025",
+      "imposer": "USA",
+      "targets": [
+        "CHN"
+      ],
+      "title": "Section 301 duties on Chinese ship-to-shore cranes and intermodal chassis",
+      "rate": 100,
+      "rateNote": "100% additional duty on STS cranes (HTSUS 9903.91.14, covering 8426.19.00) and on intermodal chassis, subassemblies and parts (HTSUS 9903.91.12, covering 8716.39.0090, 8716.90.30 and 8716.90.50). Suspended throughout: no party has accrued liability since the day after it took effect. A further Annex V.B of up to 150% on rubber-tyre and rail-mounted gantry cranes, reachstackers, straddle carriers, terminal tractors and top handlers was proposed in October 2025 and has never been imposed.",
+      "hs": [
+        "8426",
+        "8716"
+      ],
+      "hsLabel": "ship-to-shore cranes & intermodal chassis",
+      "exemptions": "Cranes contracted before April 17, 2025 and entered before April 17, 2027 are grandfathered under HTSUS 9903.91.16.",
+      "legalBasis": "Section 301",
+      "effective": "2025-11-09",
+      "expires": null,
+      "status": "suspended",
+      "sources": [
+        "https://www.govinfo.gov/content/pkg/FR-2025-10-16/html/2025-19568.htm",
+        "https://www.govinfo.gov/content/pkg/FR-2026-11-10/html/2026-22867.htm"
+      ],
+      "notes": "The goods half of the Section 301 maritime, logistics and shipbuilding action. The rest of that action is fees on maritime transport services and vessel-operator restrictions, which are out of scope for this dataset. The duties took effect November 9, 2025 and were suspended from November 10, 2025 under the November 2025 Trump-Xi arrangement; on November 10, 2026 USTR further suspended the whole action through 11:59 p.m. eastern time on January 9, 2027, so no duty has ever been collected. Recorded as suspended rather than revoked because the HTSUS headings remain in place with a date that is being rolled forward.",
+      "lastVerified": "2026-11-16"
+    },
+    {
       "id": "us-338-can",
       "imposer": "USA",
       "targets": [
@@ -1332,6 +1361,78 @@
       "expires": null,
       "exemptions": "Bulk alcohol for US bottling or blending, motorcycles of 800cc or less, passenger vehicles and non-whey dairy stay dutiable at 50% rather than banned",
       "notes": "Proclamations 11061 (alcoholic beverages), 11062 (dairy, molasses, non-alcoholic beer) and 11063 (motorcycles >800cc), signed 8 Sep 2026, published 14 Sep 2026. If a ban is invalidated in court the 50% Section 338 duty reapplies to the affected goods. First use of the Section 338 exclusion power."
+    },
+    {
+      "id": "us-adcvd-solar-ind-2026",
+      "imposer": "USA",
+      "targets": [
+        "IND"
+      ],
+      "title": "US anti-dumping and countervailing duties on solar cells from India",
+      "rate": 233.26,
+      "rateNote": "All-Others rates combined: 107.17% anti-dumping cash deposit (from a 123.04% dumping margin, adjusted for export-subsidy offsets) plus a 126.09% countervailing duty. The headline is the sum of the two All-Others duties, which are collected together on the same goods; neither figure alone is what an importer pays.",
+      "hs": [
+        "8541"
+      ],
+      "hsLabel": "solar cells & modules",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-09",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22825.htm",
+        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22824.htm"
+      ],
+      "notes": "Antidumping and countervailing duty orders applicable November 9, 2026, following affirmative final determinations by Commerce and the ITC. Cases A-533-942 / C-533-943 (India), A-560-846 / C-560-847 (Indonesia) and A-553-003 / C-553-004 (Laos). Recorded under the anti-dumping legal basis because the schema has no separate countervailing value, as for eu-ev-chn-2024. Provisional CVD measures lapsed on June 25, 2026 and entries between June 26, 2026 and the ITC determination were liquidated without countervailing duties. These duties are additional to the Section 232 tariff on polysilicon, wafers, cells and modules (us-232-polysilicon) once that takes effect on December 4, 2026.",
+      "lastVerified": "2026-11-16"
+    },
+    {
+      "id": "us-adcvd-solar-idn-2026",
+      "imposer": "USA",
+      "targets": [
+        "IDN"
+      ],
+      "title": "US anti-dumping and countervailing duties on solar cells from Indonesia",
+      "rate": 167.56,
+      "rateNote": "All-Others rates combined: 94.36% anti-dumping plus 73.20% countervailing. One producer, PT Blue Sky Solar Indonesia, carries a 173.70% countervailing rate based on adverse inferences. The headline is the sum of the two All-Others duties, which are collected together on the same goods; neither figure alone is what an importer pays.",
+      "hs": [
+        "8541"
+      ],
+      "hsLabel": "solar cells & modules",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-09",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22825.htm",
+        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22824.htm"
+      ],
+      "notes": "Antidumping and countervailing duty orders applicable November 9, 2026, following affirmative final determinations by Commerce and the ITC. Cases A-533-942 / C-533-943 (India), A-560-846 / C-560-847 (Indonesia) and A-553-003 / C-553-004 (Laos). Recorded under the anti-dumping legal basis because the schema has no separate countervailing value, as for eu-ev-chn-2024. Provisional CVD measures lapsed on June 25, 2026 and entries between June 26, 2026 and the ITC determination were liquidated without countervailing duties. These duties are additional to the Section 232 tariff on polysilicon, wafers, cells and modules (us-232-polysilicon) once that takes effect on December 4, 2026.",
+      "lastVerified": "2026-11-16"
+    },
+    {
+      "id": "us-adcvd-solar-lao-2026",
+      "imposer": "USA",
+      "targets": [
+        "LAO"
+      ],
+      "title": "US anti-dumping and countervailing duties on solar cells from Laos",
+      "rate": 147.39,
+      "rateNote": "Laos-wide rates combined: 65.36% anti-dumping cash deposit (from a 65.76% dumping margin, adjusted for export-subsidy offsets) plus an 82.03% countervailing duty. Vietnam Sunergy carries a 153.67% countervailing rate based on adverse inferences. The headline is the sum of the two All-Others duties, which are collected together on the same goods; neither figure alone is what an importer pays.",
+      "hs": [
+        "8541"
+      ],
+      "hsLabel": "solar cells & modules",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-09",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22825.htm",
+        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22824.htm"
+      ],
+      "notes": "Antidumping and countervailing duty orders applicable November 9, 2026, following affirmative final determinations by Commerce and the ITC. Cases A-533-942 / C-533-943 (India), A-560-846 / C-560-847 (Indonesia) and A-553-003 / C-553-004 (Laos). Recorded under the anti-dumping legal basis because the schema has no separate countervailing value, as for eu-ev-chn-2024. Provisional CVD measures lapsed on June 25, 2026 and entries between June 26, 2026 and the ITC determination were liquidated without countervailing duties. These duties are additional to the Section 232 tariff on polysilicon, wafers, cells and modules (us-232-polysilicon) once that takes effect on December 4, 2026.",
+      "lastVerified": "2026-11-16"
     },
     {
       "id": "ca-counter-us-2025-03-04",
@@ -1639,13 +1740,15 @@
       "legalBasis": "countermeasure",
       "effective": "2025-04-10",
       "sources": [
+        "https://gss.mof.gov.cn/gzdt/zhengcefabu/202611/t20261109_4004260.htm",
         "https://www.china-briefing.com/news/us-china-tariff-rates-2025/",
         "https://www.whitehouse.gov/fact-sheets/2025/11/fact-sheet-president-donald-j-trump-strikes-deal-on-economic-and-trade-relations-with-china/"
       ],
-      "notes": "Still collected after the US reciprocal tariff was struck down; Beijing has said it will 'assess' US changes and has not added tariff countermeasures to the 2026 Section 301 forced-labor duty.",
-      "lastVerified": "2026-09-13",
+      "notes": "Still collected after the US reciprocal tariff was struck down; Beijing has said it will \"assess\" US changes and has not added tariff countermeasures to the 2026 Section 301 forced-labor duty. The 24% suspension agreed for one year in November 2025 was due to end November 10, 2026 and has now been rolled over twice-monthly rather than made permanent, so the headline rate could return to 34% at short notice. The announcement cites the Washington Trump-Xi meeting and says China will adjust its countermeasures in light of how the United States replaces the invalidated IEEPA tariffs.",
+      "lastVerified": "2026-11-16",
       "expires": null,
-      "status": "active"
+      "status": "active",
+      "rateNote": "10% is the rate actually collected. A further 24% remains suspended: State Council Tariff Commission Announcement No. 6 of 2026 continued the suspension for another two months from 13:01 Beijing time on November 10, 2026, i.e. to January 10, 2027, and kept the 10% in force."
     },
     {
       "id": "cn-can-ag-2025",
@@ -1780,6 +1883,141 @@
       "lastVerified": "2026-09-13",
       "expires": null,
       "status": "active"
+    },
+    {
+      "id": "eu-ad-crc-ind-2026",
+      "imposer": "EUN",
+      "targets": [
+        "IND"
+      ],
+      "title": "EU anti-dumping duties on cold-rolled flat steel from India",
+      "rate": 9.5,
+      "rateNote": "9.5% for all Indian exporters. Definitive anti-dumping duty, on top of the MFN duty.",
+      "hs": [
+        "7209",
+        "7211",
+        "7225",
+        "7226"
+      ],
+      "hsLabel": "cold-rolled flat steel",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://policy.trade.ec.europa.eu/news/commission-imposes-anti-dumping-duties-certain-cold-rolled-flat-steel-products-2026-11-16_en",
+        "https://eur-lex.europa.eu/eli/reg_impl/2026/2547/oj"
+      ],
+      "notes": "Commission Implementing Regulation (EU) 2026/2547, published in the Official Journal on November 16, 2026 and applicable the following day. Rates are from the Commission press release; eur-lex.europa.eu could not be reached from the curation environment, so the CN codes in hs follow the scope used in earlier EU cold-rolled flat steel cases and should be confirmed against the regulation, and expires is left null rather than assuming the usual five-year term. The Commission rejected EUROFER's request to collect the definitive duties retroactively on imports registered from December 2025. These duties are separate from, and additional to, the EU steel overcapacity measure (eu-steel-2026).",
+      "lastVerified": "2026-11-16"
+    },
+    {
+      "id": "eu-ad-crc-jpn-2026",
+      "imposer": "EUN",
+      "targets": [
+        "JPN"
+      ],
+      "title": "EU anti-dumping duties on cold-rolled flat steel from Japan",
+      "rate": 27.9,
+      "rateNote": "27.9% for all Japanese exporters. Definitive anti-dumping duty, on top of the MFN duty.",
+      "hs": [
+        "7209",
+        "7211",
+        "7225",
+        "7226"
+      ],
+      "hsLabel": "cold-rolled flat steel",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://policy.trade.ec.europa.eu/news/commission-imposes-anti-dumping-duties-certain-cold-rolled-flat-steel-products-2026-11-16_en",
+        "https://eur-lex.europa.eu/eli/reg_impl/2026/2547/oj"
+      ],
+      "notes": "Commission Implementing Regulation (EU) 2026/2547, published in the Official Journal on November 16, 2026 and applicable the following day. Rates are from the Commission press release; eur-lex.europa.eu could not be reached from the curation environment, so the CN codes in hs follow the scope used in earlier EU cold-rolled flat steel cases and should be confirmed against the regulation, and expires is left null rather than assuming the usual five-year term. The Commission rejected EUROFER's request to collect the definitive duties retroactively on imports registered from December 2025. These duties are separate from, and additional to, the EU steel overcapacity measure (eu-steel-2026).",
+      "lastVerified": "2026-11-16"
+    },
+    {
+      "id": "eu-ad-crc-twn-2026",
+      "imposer": "EUN",
+      "targets": [
+        "TWN"
+      ],
+      "title": "EU anti-dumping duties on cold-rolled flat steel from Taiwan",
+      "rate": 27.0,
+      "rateNote": "Company-specific rates of 20.7% to 27%; the headline is the top of the range. Definitive anti-dumping duty, on top of the MFN duty.",
+      "hs": [
+        "7209",
+        "7211",
+        "7225",
+        "7226"
+      ],
+      "hsLabel": "cold-rolled flat steel",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://policy.trade.ec.europa.eu/news/commission-imposes-anti-dumping-duties-certain-cold-rolled-flat-steel-products-2026-11-16_en",
+        "https://eur-lex.europa.eu/eli/reg_impl/2026/2547/oj"
+      ],
+      "notes": "Commission Implementing Regulation (EU) 2026/2547, published in the Official Journal on November 16, 2026 and applicable the following day. Rates are from the Commission press release; eur-lex.europa.eu could not be reached from the curation environment, so the CN codes in hs follow the scope used in earlier EU cold-rolled flat steel cases and should be confirmed against the regulation, and expires is left null rather than assuming the usual five-year term. The Commission rejected EUROFER's request to collect the definitive duties retroactively on imports registered from December 2025. These duties are separate from, and additional to, the EU steel overcapacity measure (eu-steel-2026).",
+      "lastVerified": "2026-11-16"
+    },
+    {
+      "id": "eu-ad-crc-tur-2026",
+      "imposer": "EUN",
+      "targets": [
+        "TUR"
+      ],
+      "title": "EU anti-dumping duties on cold-rolled flat steel from Türkiye",
+      "rate": 7.8,
+      "rateNote": "Company-specific rates of 3% to 7.8%; the headline is the top of the range. The Commission cut these from the 5.6% to 9.7% proposed at provisional stage. Definitive anti-dumping duty, on top of the MFN duty.",
+      "hs": [
+        "7209",
+        "7211",
+        "7225",
+        "7226"
+      ],
+      "hsLabel": "cold-rolled flat steel",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://policy.trade.ec.europa.eu/news/commission-imposes-anti-dumping-duties-certain-cold-rolled-flat-steel-products-2026-11-16_en",
+        "https://eur-lex.europa.eu/eli/reg_impl/2026/2547/oj"
+      ],
+      "notes": "Commission Implementing Regulation (EU) 2026/2547, published in the Official Journal on November 16, 2026 and applicable the following day. Rates are from the Commission press release; eur-lex.europa.eu could not be reached from the curation environment, so the CN codes in hs follow the scope used in earlier EU cold-rolled flat steel cases and should be confirmed against the regulation, and expires is left null rather than assuming the usual five-year term. The Commission rejected EUROFER's request to collect the definitive duties retroactively on imports registered from December 2025. These duties are separate from, and additional to, the EU steel overcapacity measure (eu-steel-2026).",
+      "lastVerified": "2026-11-16"
+    },
+    {
+      "id": "eu-ad-crc-vnm-2026",
+      "imposer": "EUN",
+      "targets": [
+        "VNM"
+      ],
+      "title": "EU anti-dumping duties on cold-rolled flat steel from Vietnam",
+      "rate": 16.0,
+      "rateNote": "16% for all Vietnamese exporters. Definitive anti-dumping duty, on top of the MFN duty.",
+      "hs": [
+        "7209",
+        "7211",
+        "7225",
+        "7226"
+      ],
+      "hsLabel": "cold-rolled flat steel",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://policy.trade.ec.europa.eu/news/commission-imposes-anti-dumping-duties-certain-cold-rolled-flat-steel-products-2026-11-16_en",
+        "https://eur-lex.europa.eu/eli/reg_impl/2026/2547/oj"
+      ],
+      "notes": "Commission Implementing Regulation (EU) 2026/2547, published in the Official Journal on November 16, 2026 and applicable the following day. Rates are from the Commission press release; eur-lex.europa.eu could not be reached from the curation environment, so the CN codes in hs follow the scope used in earlier EU cold-rolled flat steel cases and should be confirmed against the regulation, and expires is left null rather than assuming the usual five-year term. The Commission rejected EUROFER's request to collect the definitive duties retroactively on imports registered from December 2025. These duties are separate from, and additional to, the EU steel overcapacity measure (eu-steel-2026).",
+      "lastVerified": "2026-11-16"
     },
     {
       "id": "mx-nonfta-2026",
