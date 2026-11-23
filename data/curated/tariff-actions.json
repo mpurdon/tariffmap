@@ -1071,7 +1071,7 @@
         "https://www.federalregister.gov/documents/2026/09/24/2026-19537/measures-to-restrict-stockpiling-of-polysilicon-and-polysilicon-derivatives-under-proclamation-11052",
         "https://www.tradecomplianceresourcehub.com/2026/09/10/trump-2-0-tariff-tracker/"
       ],
-      "lastVerified": "2026-10-01",
+      "lastVerified": "2026-11-23",
       "expires": null,
       "exemptions": "For EU, Japan, Korea, Taiwan, Switzerland and Liechtenstein the Section 232 duty plus the Column 1 rate is capped at 15% all-in; UK 10%",
       "notes": "Proclamation 11052 of 6 Aug 2026, effective 4 Dec 2026. BIS restricted pre-effective-date stockpiling from 22 Sep to 3 Dec 2026, barring further entries by importers running substantially above their historic volumes."
@@ -1850,6 +1850,206 @@
       ],
       "lastVerified": "2026-10-01",
       "notes": "Commission Implementing Regulation (EU) 2026/2133 of 18 Sep 2026, a provisional measure under Regulations (EU) 2015/478 and 2015/755 running 155 calendar days from 25 Sep 2026. Quotas are first-come, first-served: China 30,693.68 t, Japan 23,103.61 t, Korea 4,789.93 t and 5,360.39 t for other eligible origins. The duty also reaches cores already incorporated in transformers under headings 8504 21 to 8504 34."
+    },
+    {
+      "id": "eu-ad-cr-steel-ind-2026",
+      "imposer": "EUN",
+      "targets": [
+        "IND"
+      ],
+      "title": "EU anti-dumping duties on cold-rolled flat steel from India",
+      "rate": 9.5,
+      "rateNote": "Definitive duty of 9.5%, on top of the MFN rate. A particular market situation was found in India over government measures affecting iron ore prices.",
+      "hs": [
+        "72"
+      ],
+      "hsLabel": "cold-rolled flat steel",
+      "exemptions": "Stainless steel and several categories of specialised flat products are outside the product scope.",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://policy.trade.ec.europa.eu/news/commission-imposes-anti-dumping-duties-certain-cold-rolled-flat-steel-products-2026-11-16_en",
+        "https://eur-lex.europa.eu/eli/reg_impl/2026/2547/oj"
+      ],
+      "lastVerified": "2026-11-23",
+      "notes": "Commission Implementing Regulation (EU) 2026/2547, Official Journal L of 16 Nov 2026; duties apply from the day after publication. Subject imports in the investigation period, per the Commission: India EUR 282M, Taiwan EUR 345M, Turkiye EUR 240M, Japan EUR 180M, Vietnam EUR 125M (EUR 1.17B in total) against an EU market of about EUR 23.2B. Not collected retroactively. EU anti-dumping measures normally run five years, but the Official Journal text could not be read directly (EUR-Lex serves an automated-access challenge), so expires is left open and company-level rates are not recorded."
+    },
+    {
+      "id": "eu-ad-cr-steel-jpn-2026",
+      "imposer": "EUN",
+      "targets": [
+        "JPN"
+      ],
+      "title": "EU anti-dumping duties on cold-rolled flat steel from Japan",
+      "rate": 27.9,
+      "rateNote": "Definitive duty of 27.9%, the highest in the measure, on top of the MFN rate.",
+      "hs": [
+        "72"
+      ],
+      "hsLabel": "cold-rolled flat steel",
+      "exemptions": "Stainless steel and several categories of specialised flat products are outside the product scope.",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://policy.trade.ec.europa.eu/news/commission-imposes-anti-dumping-duties-certain-cold-rolled-flat-steel-products-2026-11-16_en",
+        "https://eur-lex.europa.eu/eli/reg_impl/2026/2547/oj"
+      ],
+      "lastVerified": "2026-11-23",
+      "notes": "Commission Implementing Regulation (EU) 2026/2547, Official Journal L of 16 Nov 2026; duties apply from the day after publication. Subject imports in the investigation period, per the Commission: India EUR 282M, Taiwan EUR 345M, Turkiye EUR 240M, Japan EUR 180M, Vietnam EUR 125M (EUR 1.17B in total) against an EU market of about EUR 23.2B. Not collected retroactively. EU anti-dumping measures normally run five years, but the Official Journal text could not be read directly (EUR-Lex serves an automated-access challenge), so expires is left open and company-level rates are not recorded."
+    },
+    {
+      "id": "eu-ad-cr-steel-twn-2026",
+      "imposer": "EUN",
+      "targets": [
+        "TWN"
+      ],
+      "title": "EU anti-dumping duties on cold-rolled flat steel from Taiwan",
+      "rate": 27.0,
+      "rateNote": "Definitive duties of 20.7-27% by producer, on top of the MFN rate. A particular market situation was found in Taiwan over Chinese overcapacity.",
+      "hs": [
+        "72"
+      ],
+      "hsLabel": "cold-rolled flat steel",
+      "exemptions": "Stainless steel and several categories of specialised flat products are outside the product scope.",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://policy.trade.ec.europa.eu/news/commission-imposes-anti-dumping-duties-certain-cold-rolled-flat-steel-products-2026-11-16_en",
+        "https://eur-lex.europa.eu/eli/reg_impl/2026/2547/oj"
+      ],
+      "lastVerified": "2026-11-23",
+      "notes": "Commission Implementing Regulation (EU) 2026/2547, Official Journal L of 16 Nov 2026; duties apply from the day after publication. Subject imports in the investigation period, per the Commission: India EUR 282M, Taiwan EUR 345M, Turkiye EUR 240M, Japan EUR 180M, Vietnam EUR 125M (EUR 1.17B in total) against an EU market of about EUR 23.2B. Not collected retroactively. EU anti-dumping measures normally run five years, but the Official Journal text could not be read directly (EUR-Lex serves an automated-access challenge), so expires is left open and company-level rates are not recorded."
+    },
+    {
+      "id": "eu-ad-cr-steel-tur-2026",
+      "imposer": "EUN",
+      "targets": [
+        "TUR"
+      ],
+      "title": "EU anti-dumping duties on cold-rolled flat steel from Turkiye",
+      "rate": 7.8,
+      "rateNote": "Definitive duties of 3-7.8% by producer, on top of the MFN rate.",
+      "hs": [
+        "72"
+      ],
+      "hsLabel": "cold-rolled flat steel",
+      "exemptions": "Stainless steel and several categories of specialised flat products are outside the product scope.",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://policy.trade.ec.europa.eu/news/commission-imposes-anti-dumping-duties-certain-cold-rolled-flat-steel-products-2026-11-16_en",
+        "https://eur-lex.europa.eu/eli/reg_impl/2026/2547/oj"
+      ],
+      "lastVerified": "2026-11-23",
+      "notes": "Commission Implementing Regulation (EU) 2026/2547, Official Journal L of 16 Nov 2026; duties apply from the day after publication. Subject imports in the investigation period, per the Commission: India EUR 282M, Taiwan EUR 345M, Turkiye EUR 240M, Japan EUR 180M, Vietnam EUR 125M (EUR 1.17B in total) against an EU market of about EUR 23.2B. Not collected retroactively. EU anti-dumping measures normally run five years, but the Official Journal text could not be read directly (EUR-Lex serves an automated-access challenge), so expires is left open and company-level rates are not recorded."
+    },
+    {
+      "id": "eu-ad-cr-steel-vnm-2026",
+      "imposer": "EUN",
+      "targets": [
+        "VNM"
+      ],
+      "title": "EU anti-dumping duties on cold-rolled flat steel from Vietnam",
+      "rate": 16.0,
+      "rateNote": "Definitive duty of 16%, on top of the MFN rate.",
+      "hs": [
+        "72"
+      ],
+      "hsLabel": "cold-rolled flat steel",
+      "exemptions": "Stainless steel and several categories of specialised flat products are outside the product scope.",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://policy.trade.ec.europa.eu/news/commission-imposes-anti-dumping-duties-certain-cold-rolled-flat-steel-products-2026-11-16_en",
+        "https://eur-lex.europa.eu/eli/reg_impl/2026/2547/oj"
+      ],
+      "lastVerified": "2026-11-23",
+      "notes": "Commission Implementing Regulation (EU) 2026/2547, Official Journal L of 16 Nov 2026; duties apply from the day after publication. Subject imports in the investigation period, per the Commission: India EUR 282M, Taiwan EUR 345M, Turkiye EUR 240M, Japan EUR 180M, Vietnam EUR 125M (EUR 1.17B in total) against an EU market of about EUR 23.2B. Not collected retroactively. EU anti-dumping measures normally run five years, but the Official Journal text could not be read directly (EUR-Lex serves an automated-access challenge), so expires is left open and company-level rates are not recorded."
+    },
+    {
+      "id": "us-adcvd-plywood-chn-2026",
+      "imposer": "USA",
+      "targets": [
+        "CHN"
+      ],
+      "title": "US anti-dumping and countervailing duties on hardwood and decorative plywood from China",
+      "rate": 187.27,
+      "rateNote": "187.27% antidumping (China-wide entity, adverse facts available; 185.96% cash deposit after subsidy offsets) plus 88.96% countervailing, about 275% all-in.",
+      "hs": [
+        "4412"
+      ],
+      "hsLabel": "hardwood & decorative plywood",
+      "exemptions": "Structural or industrial plywood certified to PS-1-22 or PS 2-18, panels faced with cork, hardwood plywood already covered by the 2018 orders on hardwood plywood from China, and multilayered wood flooring are outside the scope.",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://www.federalregister.gov/documents/2026/11/17/2026-23386/hardwood-and-decorative-plywood-from-the-peoples-republic-of-china-indonesia-and-the-socialist",
+        "https://www.federalregister.gov/documents/2026/11/17/2026-23393/hardwood-and-decorative-plywood-from-the-peoples-republic-of-china-indonesia-and-the-socialist"
+      ],
+      "lastVerified": "2026-11-23",
+      "notes": "The 2024 flow is small because this case expressly excludes the plywood already covered by the 2018 China hardwood plywood orders. Paired antidumping and countervailing duty orders issued by Commerce on 17 Nov 2026 (A-570-211/A-560-844/A-552-851 and C-570-212/C-560-845/C-552-852) after affirmative final ITC injury determinations. Subject imports in 2024, per Commerce: China USD 52.9M, Indonesia USD 337.6M, Vietnam USD 251.6M - about USD 642M for the case as a whole. The ITC report with the full quantitative record is on usitc.gov, which this environment cannot reach."
+    },
+    {
+      "id": "us-adcvd-plywood-idn-2026",
+      "imposer": "USA",
+      "targets": [
+        "IDN"
+      ],
+      "title": "US anti-dumping and countervailing duties on hardwood and decorative plywood from Indonesia",
+      "rate": 18.1,
+      "rateNote": "18.10% antidumping for all others (18.06% cash deposit) plus 40.87% countervailing for all others, about 59% all-in. Company rates reach 84.94% antidumping and 128.66% countervailing, about 213% all-in.",
+      "hs": [
+        "4412"
+      ],
+      "hsLabel": "hardwood & decorative plywood",
+      "exemptions": "Structural or industrial plywood certified to PS-1-22 or PS 2-18, panels faced with cork, hardwood plywood already covered by the 2018 orders on hardwood plywood from China, and multilayered wood flooring are outside the scope.",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://www.federalregister.gov/documents/2026/11/17/2026-23386/hardwood-and-decorative-plywood-from-the-peoples-republic-of-china-indonesia-and-the-socialist",
+        "https://www.federalregister.gov/documents/2026/11/17/2026-23393/hardwood-and-decorative-plywood-from-the-peoples-republic-of-china-indonesia-and-the-socialist"
+      ],
+      "lastVerified": "2026-11-23",
+      "notes": "Indonesia is the largest subject supplier. Paired antidumping and countervailing duty orders issued by Commerce on 17 Nov 2026 (A-570-211/A-560-844/A-552-851 and C-570-212/C-560-845/C-552-852) after affirmative final ITC injury determinations. Subject imports in 2024, per Commerce: China USD 52.9M, Indonesia USD 337.6M, Vietnam USD 251.6M - about USD 642M for the case as a whole. The ITC report with the full quantitative record is on usitc.gov, which this environment cannot reach."
+    },
+    {
+      "id": "us-adcvd-plywood-vnm-2026",
+      "imposer": "USA",
+      "targets": [
+        "VNM"
+      ],
+      "title": "US anti-dumping and countervailing duties on hardwood and decorative plywood from Vietnam",
+      "rate": 90.12,
+      "rateNote": "90.12% antidumping (Vietnam-wide entity; 84.95% cash deposit after subsidy offsets) plus 47.68% countervailing for all others, about 138% all-in. Junma Phu Tho carries 165.39% countervailing, about 255% all-in.",
+      "hs": [
+        "4412"
+      ],
+      "hsLabel": "hardwood & decorative plywood",
+      "exemptions": "Structural or industrial plywood certified to PS-1-22 or PS 2-18, panels faced with cork, hardwood plywood already covered by the 2018 orders on hardwood plywood from China, and multilayered wood flooring are outside the scope.",
+      "legalBasis": "anti-dumping",
+      "effective": "2026-11-17",
+      "expires": null,
+      "status": "active",
+      "sources": [
+        "https://www.federalregister.gov/documents/2026/11/17/2026-23386/hardwood-and-decorative-plywood-from-the-peoples-republic-of-china-indonesia-and-the-socialist",
+        "https://www.federalregister.gov/documents/2026/11/17/2026-23393/hardwood-and-decorative-plywood-from-the-peoples-republic-of-china-indonesia-and-the-socialist"
+      ],
+      "lastVerified": "2026-11-23",
+      "notes": "Provisional countervailing measures lapsed for entries between 21 May 2026 and 16 Nov 2026. Paired antidumping and countervailing duty orders issued by Commerce on 17 Nov 2026 (A-570-211/A-560-844/A-552-851 and C-570-212/C-560-845/C-552-852) after affirmative final ITC injury determinations. Subject imports in 2024, per Commerce: China USD 52.9M, Indonesia USD 337.6M, Vietnam USD 251.6M - about USD 642M for the case as a whole. The ITC report with the full quantitative record is on usitc.gov, which this environment cannot reach."
     }
   ]
 }
